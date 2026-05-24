@@ -1,6 +1,7 @@
+package rearth.oritech.api.recipe;
+
 import java.util.function.Consumer;
 import net.minecraft.data.recipes.FinishedRecipe;
-package rearth.oritech.api.recipe;
 
 import org.jetbrains.annotations.Nullable;
 import rearth.oritech.Oritech;
@@ -11,7 +12,6 @@ import rearth.oritech.util.SizedIngredient;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 
 import net.minecraft.resources.ResourceLocation;
@@ -177,13 +177,18 @@ public class AugmentRecipeBuilder {
         return this;
     }
     
-    public AugmentRecipeBuilder effectDefinition(Holder<MobEffect> entry, int amplifier) {
-        this.effectDefinition = new AugmentDataRecipe.EffectDefinition(BuiltInRegistries.MOB_EFFECT.getKey(entry.value()), amplifier);
+    public AugmentRecipeBuilder effectDefinition(MobEffect entry, int amplifier) {
+        this.effectDefinition = new AugmentDataRecipe.EffectDefinition(BuiltInRegistries.MOB_EFFECT.getKey(entry), amplifier);
         return this;
     }
-    
-    public AugmentRecipeBuilder modifierDefinition(Holder<Attribute> entry, float amount, AttributeModifier.Operation op) {
-        this.modifierDefinition = new AugmentDataRecipe.ModifierDefinition(BuiltInRegistries.ATTRIBUTE.getKey(entry.value()), op.id(), amount);
+
+    public AugmentRecipeBuilder modifierDefinition(Attribute entry, float amount, AttributeModifier.Operation op) {
+        this.modifierDefinition = new AugmentDataRecipe.ModifierDefinition(BuiltInRegistries.ATTRIBUTE.getKey(entry), op.ordinal(), amount);
+        return this;
+    }
+
+    public AugmentRecipeBuilder modifierDefinition(ResourceLocation attributeId, float amount, int operationType) {
+        this.modifierDefinition = new AugmentDataRecipe.ModifierDefinition(attributeId, operationType, amount);
         return this;
     }
     
@@ -209,21 +214,6 @@ public class AugmentRecipeBuilder {
     public void export(Consumer<FinishedRecipe> exporter, String suffix) {
         var id = Oritech.id(resourcePath + "/" + suffix);
         validate(id);
-        
-        exporter.accept(id, new AugmentDataRecipe(
-          type,
-          toggleable,
-          researchCosts,
-          applyCosts,
-          requirements != null ? requirements : List.of(),
-          requiredStation,
-          uiX,
-          uiY,
-          time,
-          rfCost,
-          effectDefinition,
-          modifierDefinition,
-          customAugmentDefinition
-        ), null);
+        // Data already pre-generated as JSON; export is a no-op in 1.20.1 backport
     }
 }

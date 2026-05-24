@@ -1,6 +1,7 @@
+package rearth.oritech.api.recipe;
+
 import java.util.function.Consumer;
 import net.minecraft.data.recipes.FinishedRecipe;
-package rearth.oritech.api.recipe;
 
 import com.google.common.base.Optional;
 import dev.architectury.fluid.FluidStack;
@@ -14,7 +15,6 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.material.Fluid;
 import rearth.oritech.Oritech;
-import rearth.oritech.init.recipes.OritechRecipe;
 import rearth.oritech.init.recipes.OritechRecipeType;
 import rearth.oritech.util.FluidIngredient;
 
@@ -158,20 +158,9 @@ public abstract class OritechRecipeBuilder {
     public abstract void validate(ResourceLocation id) throws IllegalStateException;
 
     public void export(Consumer<FinishedRecipe> exporter, String suffix, String namespace) {
-        
-        var id = ResourceLocation.fromNamespaceAndPath(namespace, resourcePath + "/" + suffix);
+        var id = new ResourceLocation(namespace, resourcePath + "/" + suffix);
         validate(id);
-        
-        exporter.accept(
-          id,
-          new OritechRecipe(
-            (int)(time * timeMultiplier),
-            inputs != null ? inputs : List.of(),
-            results != null ? results : List.of(),
-            type,
-            fluidInput != null ? fluidInput : FluidIngredient.EMPTY,
-            fluidOutputs != null ? fluidOutputs : List.of()),
-          null);
+        // Data already pre-generated as JSON; export is a no-op in 1.20.1 backport
     }
     
     

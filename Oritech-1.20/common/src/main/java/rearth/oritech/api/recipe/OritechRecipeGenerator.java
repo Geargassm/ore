@@ -5,6 +5,7 @@ import dev.architectury.fluid.FluidStack;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;
+import net.minecraft.resources.ResourceLocation;
 import java.util.function.Consumer;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.effect.MobEffects;
@@ -35,7 +36,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
     }
     
     @Override
-    protected void buildRecipes(Consumer<FinishedRecipe> exporter) {
+    protected void buildCraftingRecipes(Consumer<FinishedRecipe> exporter) {
         
         addDeepDrillOres(exporter);
         addFuels(exporter);
@@ -724,20 +725,17 @@ public class OritechRecipeGenerator extends RecipeProvider {
         
     }
 
-    // offerSmelting, offerBlasting, and offerMultipleOptions copied from RecipeProvider, and altered to force Oritech id onto recipes
+    // offerSmelting and offerBlasting copied from RecipeProvider, and altered to force Oritech id onto recipes
     // I don't really like this, but any other way I found to get these recipes to have the oritech namespace in Neoforge wasn't working.
     public static void oreSmelting(Consumer<FinishedRecipe> exporter, List<ItemLike> inputs, RecipeCategory category, ItemLike output, float experience, int cookingTime, String group) {
-      oreCooking(exporter, RecipeSerializer.SMELTING_RECIPE, SmeltingRecipe::new, inputs, category, output, experience, cookingTime, group, "_from_smelting");
+        for (var itemConvertible : inputs) {
+            SimpleCookingRecipeBuilder.smelting(Ingredient.of(itemConvertible), category, output, experience, cookingTime).group(group).unlockedBy(getHasName(itemConvertible), has(itemConvertible)).save(exporter, Oritech.id(getItemName(output) + "_from_smelting_" + getItemName(itemConvertible)));
+        }
     }
 
     public static void oreBlasting(Consumer<FinishedRecipe> exporter, List<ItemLike> inputs, RecipeCategory category, ItemLike output, float experience, int cookingTime, String group) {
-      oreCooking(exporter, RecipeSerializer.BLASTING_RECIPE, BlastingRecipe::new, inputs, category, output, experience, cookingTime, group, "_from_blasting");
-    }
-
-    public static <T extends AbstractCookingRecipe> void oreCooking(Consumer<FinishedRecipe> exporter, RecipeSerializer<T> serializer, AbstractCookingRecipe.Factory<T> recipeFactory, List<ItemLike> inputs, RecipeCategory category, ItemLike output, float experience, int cookingTime, String group, String suffix) {
-        
         for (var itemConvertible : inputs) {
-            SimpleCookingRecipeBuilder.generic(Ingredient.of(itemConvertible), category, output, experience, cookingTime, serializer, recipeFactory).group(group).unlockedBy(getHasName(itemConvertible), has(itemConvertible)).save(exporter, Oritech.id(getItemName(output) + suffix + "_" + getItemName(itemConvertible)));
+            SimpleCookingRecipeBuilder.blasting(Ingredient.of(itemConvertible), category, output, experience, cookingTime).group(group).unlockedBy(getHasName(itemConvertible), has(itemConvertible)).save(exporter, Oritech.id(getItemName(output) + "_from_blasting_" + getItemName(itemConvertible)));
         }
     }
     
@@ -958,7 +956,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
           .applyCost(TagContent.MACHINE_PLATING, 8)
           .requiredStation(SIMPLE_AUGMENT_STATION_ID)
           .uiX(5).uiY(70).time(400).rfCost(10_000_000)
-          .modifierDefinition(Attributes.MAX_HEALTH, 6, AttributeModifier.Operation.ADD_VALUE)
+          .modifierDefinition(Attributes.MAX_HEALTH, 6, AttributeModifier.Operation.ADDITION)
           .export(exporter, "hpboost");
         
         AugmentRecipeBuilder.build()
@@ -969,7 +967,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
           .requirement(Oritech.id("augment/armor"))
           .requiredStation(SIMPLE_AUGMENT_STATION_ID)
           .uiX(80).uiY(70).time(800).rfCost(50_000_000)
-          .modifierDefinition(Attributes.MAX_HEALTH, 4, AttributeModifier.Operation.ADD_VALUE)
+          .modifierDefinition(Attributes.MAX_HEALTH, 4, AttributeModifier.Operation.ADDITION)
           .export(exporter, "hpboostmore");
         
         AugmentRecipeBuilder.build()
@@ -980,7 +978,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
           .requirement(Oritech.id("augment/ultimatearmor"))
           .requiredStation(ADVANCED_AUGMENT_STATION_ID)
           .uiX(165).uiY(70).time(1600).rfCost(200_000_000)
-          .modifierDefinition(Attributes.MAX_HEALTH, 10, AttributeModifier.Operation.ADD_VALUE)
+          .modifierDefinition(Attributes.MAX_HEALTH, 10, AttributeModifier.Operation.ADDITION)
           .export(exporter, "hpboostultra");
         
         AugmentRecipeBuilder.build()
@@ -993,7 +991,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
           .requirement(Oritech.id("augment/gravity"))
           .requiredStation(ADVANCED_AUGMENT_STATION_ID)
           .uiX(205).uiY(40).time(2400).rfCost(500_000_000)
-          .modifierDefinition(Attributes.MAX_HEALTH, 10, AttributeModifier.Operation.ADD_VALUE)
+          .modifierDefinition(Attributes.MAX_HEALTH, 10, AttributeModifier.Operation.ADDITION)
           .export(exporter, "hpboostultimate");
         
         AugmentRecipeBuilder.build()
@@ -1003,7 +1001,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
           .applyCost(ItemContent.MOTOR, 4)
           .requiredStation(SIMPLE_AUGMENT_STATION_ID)
           .uiX(5).uiY(30).time(600).rfCost(30_000_000)
-          .modifierDefinition(Attributes.MOVEMENT_SPEED, 0.25f, AttributeModifier.Operation.ADD_MULTIPLIED_BASE)
+          .modifierDefinition(Attributes.MOVEMENT_SPEED, 0.25f, AttributeModifier.Operation.MULTIPLY_BASE)
           .export(exporter, "speedboost");
         
         AugmentRecipeBuilder.build()
@@ -1015,7 +1013,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
           .requirement(Oritech.id("augment/armor"))
           .requiredStation(ADVANCED_AUGMENT_STATION_ID)
           .uiX(55).uiY(50).time(1800).rfCost(150_000_000)
-          .modifierDefinition(Attributes.MOVEMENT_SPEED, 0.25f, AttributeModifier.Operation.ADD_VALUE)
+          .modifierDefinition(Attributes.MOVEMENT_SPEED, 0.25f, AttributeModifier.Operation.ADDITION)
           .toggleable(true)
           .export(exporter, "superspeedboost");
         
@@ -1026,7 +1024,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
           .requirement(Oritech.id("augment/superspeedboost"))
           .requiredStation(SIMPLE_AUGMENT_STATION_ID)
           .uiX(80).uiY(50).time(800).rfCost(75_000_000)
-          .modifierDefinition(Attributes.STEP_HEIGHT, 0.6f, AttributeModifier.Operation.ADD_VALUE)
+          .modifierDefinition(new ResourceLocation("minecraft", "generic.step_height"), 0.6f, 0)
           .toggleable()
           .export(exporter, "stepassist");
         
@@ -1038,7 +1036,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
           .requirement(Oritech.id("augment/hpboost"))
           .requiredStation(SIMPLE_AUGMENT_STATION_ID)
           .uiX(30).uiY(90).time(400).rfCost(20_000_000)
-          .modifierDefinition(Attributes.SCALE, -0.5f, AttributeModifier.Operation.ADD_MULTIPLIED_BASE)
+          .modifierDefinition(new ResourceLocation("minecraft", "generic.scale"), -0.5f, 1)
           .toggleable()
           .export(exporter, "dwarf");
         
@@ -1050,7 +1048,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
           .requirement(Oritech.id("augment/armor"))
           .requiredStation(SIMPLE_AUGMENT_STATION_ID)
           .uiX(55).uiY(90).time(1600).rfCost(40_000_000)
-          .modifierDefinition(Attributes.SCALE, 1f, AttributeModifier.Operation.ADD_MULTIPLIED_BASE)
+          .modifierDefinition(new ResourceLocation("minecraft", "generic.scale"), 1f, 1)
           .toggleable()
           .export(exporter, "giant");
         
@@ -1062,7 +1060,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
           .applyCost(cItemTag("ingots/iron"), 32)
           .requiredStation(SIMPLE_AUGMENT_STATION_ID)
           .uiX(30).uiY(50).time(800).rfCost(80_000_000)
-          .modifierDefinition(Attributes.ARMOR, 4, AttributeModifier.Operation.ADD_VALUE)
+          .modifierDefinition(Attributes.ARMOR, 4, AttributeModifier.Operation.ADDITION)
           .export(exporter, "armor");
         
         AugmentRecipeBuilder.build()
@@ -1073,7 +1071,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
           .requirement(Oritech.id("augment/autofeeder"))
           .requiredStation(SIMPLE_AUGMENT_STATION_ID)
           .uiX(105).uiY(50).time(1600).rfCost(180_000_000)
-          .modifierDefinition(Attributes.ARMOR, 6, AttributeModifier.Operation.ADD_VALUE)
+          .modifierDefinition(Attributes.ARMOR, 6, AttributeModifier.Operation.ADDITION)
           .export(exporter, "betterarmor");
         
         AugmentRecipeBuilder.build()
@@ -1085,7 +1083,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
           .requirement(Oritech.id("augment/betterarmor"))
           .requiredStation(ADVANCED_AUGMENT_STATION_ID)
           .uiX(155).uiY(50).time(2400).rfCost(500_000_000)
-          .modifierDefinition(Attributes.ARMOR, 8, AttributeModifier.Operation.ADD_VALUE)
+          .modifierDefinition(Attributes.ARMOR, 8, AttributeModifier.Operation.ADDITION)
           .export(exporter, "ultimatearmor");
         
         AugmentRecipeBuilder.build()
@@ -1096,7 +1094,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
           .requirement(Oritech.id("augment/blockreach"))
           .requiredStation(ADVANCED_AUGMENT_STATION_ID)
           .uiX(140).uiY(70).time(1600).rfCost(150_000_000)
-          .modifierDefinition(Attributes.ENTITY_INTERACTION_RANGE, 0.3f, AttributeModifier.Operation.ADD_MULTIPLIED_BASE)
+          .modifierDefinition(new ResourceLocation("minecraft", "player.entity_interaction_range"), 0.3f, 1)
           .export(exporter, "weaponreach");
         
         AugmentRecipeBuilder.build()
@@ -1106,7 +1104,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
           .applyCost(ItemContent.MOTOR, 4)
           .requiredStation(SIMPLE_AUGMENT_STATION_ID)
           .uiX(115).uiY(90).time(900).rfCost(100_000_000)
-          .modifierDefinition(Attributes.BLOCK_INTERACTION_RANGE, 0.3f, AttributeModifier.Operation.ADD_MULTIPLIED_BASE)
+          .modifierDefinition(new ResourceLocation("minecraft", "player.block_interaction_range"), 0.3f, 1)
           .export(exporter, "blockreach");
         
         AugmentRecipeBuilder.build()
@@ -1116,7 +1114,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
           .requirement(Oritech.id("augment/blockreach"))
           .requiredStation(ADVANCED_AUGMENT_STATION_ID)
           .uiX(140).uiY(90).time(800).rfCost(200_000_000)
-          .modifierDefinition(Attributes.BLOCK_INTERACTION_RANGE, 1, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL)
+          .modifierDefinition(new ResourceLocation("minecraft", "player.block_interaction_range"), 1, 2)
           .toggleable()
           .export(exporter, "farblockreach");
         
@@ -1129,7 +1127,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
           .requirement(Oritech.id("augment/speedboost"))
           .requiredStation(SIMPLE_AUGMENT_STATION_ID)
           .uiX(30).uiY(10).time(1200).rfCost(50_000_000)
-          .modifierDefinition(Attributes.BLOCK_BREAK_SPEED, 1, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL)
+          .modifierDefinition(new ResourceLocation("minecraft", "player.block_break_speed"), 1, 2)
           .export(exporter, "miningspeed");
         
         AugmentRecipeBuilder.build()
@@ -1141,7 +1139,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
           .requirement(Oritech.id("augment/superspeedboost"))
           .requiredStation(ADVANCED_AUGMENT_STATION_ID)
           .uiX(80).uiY(10).time(2400).rfCost(250_000_000)
-          .modifierDefinition(Attributes.BLOCK_BREAK_SPEED, 1, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL)
+          .modifierDefinition(new ResourceLocation("minecraft", "player.block_break_speed"), 1, 2)
           .toggleable()
           .export(exporter, "superminingspeed");
         
@@ -1152,7 +1150,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
           .applyCost(TagContent.STEEL_INGOTS, 4)
           .requiredStation(SIMPLE_AUGMENT_STATION_ID)
           .uiX(5).uiY(10).time(1600).rfCost(150_000_000)
-          .modifierDefinition(Attributes.ATTACK_DAMAGE, 4, AttributeModifier.Operation.ADD_VALUE)
+          .modifierDefinition(Attributes.ATTACK_DAMAGE, 4, AttributeModifier.Operation.ADDITION)
           .export(exporter, "attackdamage");
         
         AugmentRecipeBuilder.build()
@@ -1163,7 +1161,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
           .requirement(Oritech.id("augment/ultimatearmor"))
           .requiredStation(ARCANE_AUGMENT_STATION_ID)
           .uiX(180).uiY(50).time(2800).rfCost(500_000_000)
-          .modifierDefinition(Attributes.ATTACK_DAMAGE, 6, AttributeModifier.Operation.ADD_VALUE)
+          .modifierDefinition(Attributes.ATTACK_DAMAGE, 6, AttributeModifier.Operation.ADDITION)
           .export(exporter, "superattackdamage");
         
         AugmentRecipeBuilder.build()
@@ -1173,7 +1171,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
           .applyCost(Items.LAPIS_LAZULI, 16)
           .requiredStation(ARCANE_AUGMENT_STATION_ID)
           .uiX(55).uiY(30).time(1800).rfCost(200_000_000)
-          .modifierDefinition(Attributes.LUCK, 5, AttributeModifier.Operation.ADD_VALUE)
+          .modifierDefinition(Attributes.LUCK, 5, AttributeModifier.Operation.ADDITION)
           .export(exporter, "luck");
         
         AugmentRecipeBuilder.build()
@@ -1184,7 +1182,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
           .requirement(Oritech.id("augment/flight"))
           .requiredStation(ARCANE_AUGMENT_STATION_ID)
           .uiX(180).uiY(10).time(2200).rfCost(300_000_000)
-          .modifierDefinition(Attributes.GRAVITY, -0.5f, AttributeModifier.Operation.ADD_MULTIPLIED_BASE)
+          .modifierDefinition(Attributes.GRAVITY, -0.5f, AttributeModifier.Operation.MULTIPLY_BASE)
           .toggleable()
           .export(exporter, "gravity");
         

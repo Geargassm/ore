@@ -1,6 +1,7 @@
+package rearth.oritech.api.recipe.util;
+
 import java.util.function.Consumer;
 import net.minecraft.data.recipes.FinishedRecipe;
-package rearth.oritech.api.recipe.util;
 
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeCategory;

@@ -1,6 +1,7 @@
+package rearth.oritech.api.recipe;
+
 import java.util.function.Consumer;
 import net.minecraft.data.recipes.FinishedRecipe;
-package rearth.oritech.api.recipe;
 
 
 import net.minecraft.resources.ResourceLocation;
