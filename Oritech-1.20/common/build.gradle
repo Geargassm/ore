@@ -1,0 +1,50 @@
+architectury {
+    common("forge")
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDir(file("src/main/generated"))
+            exclude("**/.cache")
+        }
+    }
+}
+
+configurations {
+    commonJava {
+        canBeResolved = false
+        canBeConsumed = true
+    }
+    commonResources {
+        canBeResolved = false
+        canBeConsumed = true
+    }
+}
+
+artifacts {
+    commonJava(sourceSets.main.java.sourceDirectories.first()) { builtBy compileJava }
+    commonResources(sourceSets.main.resources.sourceDirectories.first())
+}
+
+dependencies {
+    modImplementation "dev.architectury:architectury:${architectury_version}+${minecraft_version}"
+
+    // GeckoLib (common)
+    modImplementation("software.bernie.geckolib:geckolib-common-${minecraft_version}:${geckolib_version}") {
+        transitive = false
+    }
+
+    // Recipe viewers (compileOnly — implementation provided by loader module)
+    switch (recipe_viewer) {
+        case "emi":
+            modCompileOnly "dev.emi:emi-xplat-intermediary:${emi_version}"
+            break
+        case "rei":
+            modCompileOnly "me.shedaniel:RoughlyEnoughItems-api:${rei_version}"
+            break
+        case "jei":
+            modCompileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
+            break
+    }
+}
