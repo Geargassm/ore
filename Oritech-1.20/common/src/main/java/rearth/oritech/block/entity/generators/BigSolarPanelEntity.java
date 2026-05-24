@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Set;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
+
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -55,15 +55,15 @@ public class BigSolarPanelEntity extends PassiveGeneratorBlockEntity implements 
     }
     
     @Override
-    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.saveAdditional(nbt, registryLookup);
+    protected void saveAdditional(CompoundTag nbt) {
+        super.saveAdditional(nbt);
         addMultiblockToNbt(nbt);
         nbt.putBoolean("folded", isFolded);
     }
     
     @Override
-    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.loadAdditional(nbt, registryLookup);
+    protected void loadAdditional(CompoundTag nbt) {
+        super.loadAdditional(nbt);
         loadMultiblockNbtData(nbt);
         isFolded = nbt.getBoolean("folded");
     }

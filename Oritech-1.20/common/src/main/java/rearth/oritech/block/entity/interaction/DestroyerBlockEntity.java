@@ -2,10 +2,8 @@ package rearth.oritech.block.entity.interaction;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
+
 import net.minecraft.core.Vec3i;
-// TODO_1_20: DataComponents not available in 1.20.1 - needs NBT conversion
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -18,7 +16,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.component.Unbreakable;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.*;
@@ -114,8 +111,8 @@ public class DestroyerBlockEntity extends MultiblockFrameInteractionEntity {
     }
     
     @Override
-    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.saveAdditional(nbt, registryLookup);
+    protected void saveAdditional(CompoundTag nbt) {
+        super.saveAdditional(nbt);
         nbt.putBoolean("cropAddon", hasCropFilterAddon);
         nbt.putBoolean("silkTouchAddon", hasSilkTouchAddon);
         nbt.putInt("range", range);
@@ -123,8 +120,8 @@ public class DestroyerBlockEntity extends MultiblockFrameInteractionEntity {
     }
     
     @Override
-    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.loadAdditional(nbt, registryLookup);
+    protected void loadAdditional(CompoundTag nbt) {
+        super.loadAdditional(nbt);
         hasCropFilterAddon = nbt.getBoolean("cropAddon");
         hasSilkTouchAddon = nbt.getBoolean("silkTouchAddon");
         range = nbt.getInt("range");
@@ -252,8 +249,7 @@ public class DestroyerBlockEntity extends MultiblockFrameInteractionEntity {
     public static List<ItemStack> getLootDrops(BlockState state, ServerLevel world, BlockPos pos, @Nullable BlockEntity blockEntity, int yieldAddons, @Nullable Player entity) {
         
         var sampleTool = new ItemStack(Items.NETHERITE_PICKAXE);
-// TODO_1_20: DataComponents not available in 1.20.1 - needs NBT conversion
-        sampleTool.set(DataComponents.UNBREAKABLE, new Unbreakable(false));
+        sampleTool.getOrCreateTag().putBoolean("Unbreakable", true);
         var fortuneEntry = world.registryAccess().registryOrThrow(Registries.ENCHANTMENT).getHolder(Enchantments.FORTUNE).get();
         sampleTool.enchant(fortuneEntry, Math.min(yieldAddons, 3));
         
@@ -267,8 +263,7 @@ public class DestroyerBlockEntity extends MultiblockFrameInteractionEntity {
     
     public static List<ItemStack> getSilkTouchDrops(BlockState state, ServerLevel world, BlockPos pos, @Nullable BlockEntity blockEntity, @Nullable Player entity) {
         var sampleTool = new ItemStack(Items.NETHERITE_PICKAXE);
-// TODO_1_20: DataComponents not available in 1.20.1 - needs NBT conversion
-        sampleTool.set(DataComponents.UNBREAKABLE, new Unbreakable(false));
+        sampleTool.getOrCreateTag().putBoolean("Unbreakable", true);
         var silkTouchEntry = world.registryAccess().registryOrThrow(Registries.ENCHANTMENT).getHolder(Enchantments.SILK_TOUCH).get();
         sampleTool.enchant(silkTouchEntry, 1);
         

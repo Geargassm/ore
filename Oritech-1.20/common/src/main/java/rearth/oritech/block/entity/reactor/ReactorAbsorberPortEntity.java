@@ -21,7 +21,7 @@ import rearth.oritech.util.ScreenProvider;
 import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
+
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -57,23 +57,23 @@ public class ReactorAbsorberPortEntity extends BlockEntity implements ExtendedMe
     }
     
     @Override
-    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.saveAdditional(nbt, registryLookup);
+    protected void saveAdditional(CompoundTag nbt) {
+        super.saveAdditional(nbt);
         
         nbt.putInt("available", availableFuel);
         nbt.putInt("capacity", currentFuelOriginalCapacity);
         
-        ContainerHelper.saveAllItems(nbt, inventory.heldStacks, false, registryLookup);
+        ContainerHelper.saveAllItems(nbt, inventory.heldStacks, false);
     }
     
     @Override
-    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.loadAdditional(nbt, registryLookup);
+    protected void loadAdditional(CompoundTag nbt) {
+        super.loadAdditional(nbt);
         
         availableFuel = nbt.getInt("available");
         currentFuelOriginalCapacity = nbt.getInt("capacity");
         
-        ContainerHelper.loadAllItems(nbt, inventory.heldStacks, registryLookup);
+        ContainerHelper.loadAllItems(nbt, inventory.heldStacks);
     }
     
     public int getAvailableFuel() {

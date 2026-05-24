@@ -18,9 +18,12 @@ public record SizedIngredient(int count, Ingredient ingredient) implements Predi
       Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(SizedIngredient::ingredient)
     ).apply(instance, SizedIngredient::new));
     
+    public static final StreamCodec<FriendlyByteBuf, Ingredient> INGREDIENT_STREAM_CODEC =
+        StreamCodec.of((buf, ing) -> ing.toNetwork(buf), Ingredient::fromNetwork);
+
     public static StreamCodec<FriendlyByteBuf, SizedIngredient> PACKET_CODEC = StreamCodec.composite(
       ByteBufCodecs.INT, SizedIngredient::count,
-      Ingredient.CONTENTS_STREAM_CODEC, SizedIngredient::ingredient,
+      INGREDIENT_STREAM_CODEC, SizedIngredient::ingredient,
       SizedIngredient::new
     );
     

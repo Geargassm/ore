@@ -14,14 +14,12 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RenderHighlightEvent;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.jetbrains.annotations.NotNull;
 import rearth.oritech.Oritech;
 import rearth.oritech.OritechClient;
@@ -31,7 +29,6 @@ import rearth.oritech.client.other.OreFinderRenderer;
 import rearth.oritech.client.renderers.BlockOutlineRenderer;
 import rearth.oritech.client.renderers.PortalEntityRenderer;
 import rearth.oritech.client.renderers.SmallTankItemRenderer;
-import rearth.oritech.init.BlockContent;
 import rearth.oritech.init.EntitiesContent;
 
 /**
@@ -47,11 +44,13 @@ import rearth.oritech.init.EntitiesContent;
 @Mod.EventBusSubscriber(modid = Oritech.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class OritechClientForge {
 
-    public static void init() {
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(OritechClientForge::onClientSetup);
-    }
-
-    private static void onClientSetup(FMLClientSetupEvent event) {
+    /**
+     * Called during client-side mod setup.
+     * Auto-subscribed because the outer class is annotated with
+     * {@code @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)}.
+     */
+    @SubscribeEvent
+    public static void onClientSetup(FMLClientSetupEvent event) {
         OritechClient.initialize();
     }
 
@@ -106,12 +105,8 @@ public class OritechClientForge {
             BlockOutlineRenderer.render(Minecraft.getInstance().level, event.getCamera(), event.getPoseStack(), event.getMultiBufferSource());
         }
 
-        @SubscribeEvent
-        public static void onMouseLaserInput(InputEvent.MouseButton event) {
-            var client = Minecraft.getInstance();
-            var handled = OritechClient.handleMouseClicked(client, event.getButton(), event.getAction(), event.getModifiers());
-            if (handled) event.setCanceled(true);
-        }
+        // Mouse click handling is registered via Architectury ClientRawInputEvent.MOUSE_CLICKED_PRE
+        // inside OritechClient.initialize(), so we do not duplicate it here.
     }
 
     // -------------------------------------------------------------------------

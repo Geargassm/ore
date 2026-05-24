@@ -2,9 +2,8 @@ package rearth.oritech.block.blocks.storage;
 
 import dev.architectury.registry.menu.ExtendedMenuProvider;
 import dev.architectury.registry.menu.MenuRegistry;
+import dev.architectury.fluid.FluidStack;
 import net.minecraft.core.BlockPos;
-// TODO_1_20: DataComponents not available in 1.20.1 - needs NBT conversion
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -35,6 +34,7 @@ import rearth.oritech.Oritech;
 import rearth.oritech.api.fluid.FluidApi;
 import rearth.oritech.block.entity.storage.SmallTankEntity;
 import rearth.oritech.init.BlockContent;
+import rearth.oritech.init.ComponentContent;
 import rearth.oritech.util.ComparatorOutputProvider;
 import rearth.oritech.util.StackContext;
 
@@ -153,9 +153,7 @@ public class SmallFluidTank extends Block implements EntityBlock {
         
         if (tankEntity.fluidStorage.getAmount() > 0) {
             var fluidStack = tankEntity.fluidStorage.getStack().copy();
-            stack.set(FluidApi.ITEM.getFluidComponent(), fluidStack);
-// TODO_1_20: DataComponents not available in 1.20.1 - needs NBT conversion
-            stack.set(DataComponents.MAX_STACK_SIZE, 1);
+            ComponentContent.setToNbt(stack, ComponentContent.storedFluidKey(), fluidStack, FluidStack.CODEC);
         }
         
         return stack;
@@ -169,10 +167,13 @@ public class SmallFluidTank extends Block implements EntityBlock {
     public void setPlacedBy(Level world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
         super.setPlacedBy(world, pos, state, placer, itemStack);
         
-        if (itemStack.has(FluidApi.ITEM.getFluidComponent())) {
+        if (ComponentContent.hasNbtKey(itemStack, ComponentContent.storedFluidKey())) {
             var tankEntity = (SmallTankEntity) world.getBlockEntity(pos);
-            tankEntity.fluidStorage.setStack(itemStack.get(FluidApi.ITEM.getFluidComponent()).copy());
-            tankEntity.setChanged();
+            var storedFluid = ComponentContent.getFromNbt(itemStack, ComponentContent.storedFluidKey(), FluidStack.CODEC);
+            if (storedFluid != null) {
+                tankEntity.fluidStorage.setStack(storedFluid.copy());
+                tankEntity.setChanged();
+            }
         }
     }
     

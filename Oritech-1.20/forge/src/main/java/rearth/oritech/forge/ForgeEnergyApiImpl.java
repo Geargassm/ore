@@ -10,9 +10,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import org.jetbrains.annotations.NotNull;
@@ -53,7 +53,7 @@ public class ForgeEnergyApiImpl implements BlockEnergyApi, ItemEnergyApi {
     }
 
     /**
-     * Called from {@link OritechModForge.ModBusEventHandler#onAttachBlockEntityCapabilities}.
+     * Called from {@link OritechModForge.ForgeGameBusEvents#onAttachBlockEntityCapabilities}.
      */
     public void onAttachBlockEntityCapabilities(AttachCapabilitiesEvent<BlockEntity> event) {
         var entity = event.getObject();
@@ -66,7 +66,7 @@ public class ForgeEnergyApiImpl implements BlockEnergyApi, ItemEnergyApi {
                     new ICapabilityProvider() {
                         @Override
                         public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-                            if (cap == CapabilityEnergy.ENERGY) {
+                            if (cap == ForgeCapabilities.ENERGY) {
                                 var storage = provider.getEnergyStorage(side);
                                 if (storage == null) return LazyOptional.empty();
                                 return LazyOptional.of(() -> new ContainerStorageWrapper(storage)).cast();
@@ -81,7 +81,7 @@ public class ForgeEnergyApiImpl implements BlockEnergyApi, ItemEnergyApi {
     }
 
     /**
-     * Called from {@link OritechModForge.ModBusEventHandler#onAttachItemStackCapabilities}.
+     * Called from {@link OritechModForge.ForgeGameBusEvents#onAttachItemStackCapabilities}.
      */
     public void onAttachItemStackCapabilities(AttachCapabilitiesEvent<net.minecraft.world.item.ItemStack> event) {
         var stack = event.getObject();
@@ -95,7 +95,7 @@ public class ForgeEnergyApiImpl implements BlockEnergyApi, ItemEnergyApi {
                     new ICapabilityProvider() {
                         @Override
                         public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-                            if (cap == CapabilityEnergy.ENERGY) {
+                            if (cap == ForgeCapabilities.ENERGY) {
                                 var storage = itemProvider.getEnergyStorage(capturedStack);
                                 if (storage == null) return LazyOptional.empty();
                                 return LazyOptional.of(() -> new ContainerStorageWrapper(storage)).cast();
@@ -118,7 +118,7 @@ public class ForgeEnergyApiImpl implements BlockEnergyApi, ItemEnergyApi {
                                         @Nullable Direction direction) {
         BlockEntity be = entity != null ? entity : world.getBlockEntity(pos);
         if (be == null) return null;
-        LazyOptional<IEnergyStorage> opt = be.getCapability(CapabilityEnergy.ENERGY, direction);
+        LazyOptional<IEnergyStorage> opt = be.getCapability(ForgeCapabilities.ENERGY, direction);
         return opt.map(storage -> {
             if (storage instanceof ContainerStorageWrapper wrapper) return wrapper.container;
             return (EnergyApi.EnergyStorage) new ForgeStorageWrapper(storage);
@@ -143,7 +143,7 @@ public class ForgeEnergyApiImpl implements BlockEnergyApi, ItemEnergyApi {
     @Override
     public EnergyApi.EnergyStorage find(StackContext stack) {
         if (stack.getValue().getCount() > 1) return null;
-        LazyOptional<IEnergyStorage> opt = stack.getValue().getCapability(CapabilityEnergy.ENERGY);
+        LazyOptional<IEnergyStorage> opt = stack.getValue().getCapability(ForgeCapabilities.ENERGY);
         return opt.map(storage -> {
             if (storage instanceof ContainerStorageWrapper wrapper) {
                 if (wrapper.container instanceof SimpleEnergyItemStorage itemStorage) {

@@ -6,7 +6,7 @@ import rearth.oritech.util.FluidIngredient;
 import rearth.oritech.util.SimpleCraftingInventory;
 
 import java.util.List;
-import net.minecraft.core.HolderLookup;
+
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -100,7 +100,7 @@ public class OritechRecipe implements Recipe<RecipeInput> {
     }
     
     @Override
-    public ItemStack assemble(RecipeInput input, HolderLookup.Provider lookup) {
+    public ItemStack assemble(RecipeInput input) {
         return null;
     }
     
@@ -110,7 +110,7 @@ public class OritechRecipe implements Recipe<RecipeInput> {
     }
     
     @Override
-    public ItemStack getResultItem(HolderLookup.Provider registriesLookup) {
+    public ItemStack getResultItem(net.minecraft.core.RegistryAccess registryAccess) {
         return ItemStack.EMPTY;
     }
 

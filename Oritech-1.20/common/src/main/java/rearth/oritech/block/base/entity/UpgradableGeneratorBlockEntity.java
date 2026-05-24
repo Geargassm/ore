@@ -4,7 +4,7 @@ import dev.architectury.fluid.FluidStack;
 import dev.architectury.hooks.fluid.FluidStackHooks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -201,8 +201,8 @@ public abstract class UpgradableGeneratorBlockEntity extends UpgradableMachineBl
     }
     
     @Override
-    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.saveAdditional(nbt, registryLookup);
+    protected void saveAdditional(CompoundTag nbt) {
+        super.saveAdditional(nbt);
         nbt.putInt("storedBurn", currentMaxBurnTime);
         boilerStorage.writeNbt(nbt, "");
         nbt.putBoolean("steamAddon", isProducingSteam);
@@ -216,8 +216,8 @@ public abstract class UpgradableGeneratorBlockEntity extends UpgradableMachineBl
     }
     
     @Override
-    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.loadAdditional(nbt, registryLookup);
+    protected void loadAdditional(CompoundTag nbt) {
+        super.loadAdditional(nbt);
         currentMaxBurnTime = nbt.getInt("storedBurn");
         boilerStorage.readNbt(nbt, "");
         isProducingSteam = nbt.getBoolean("steamAddon");

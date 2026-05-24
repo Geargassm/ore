@@ -1,13 +1,11 @@
 package rearth.oritech.block.entity.pipes;
+import rearth.oritech.api.networking.PacketId;
 
 import dev.architectury.platform.Platform;
 import dev.architectury.registry.menu.ExtendedMenuProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.RegistryAccess;
-// TODO_1_20: DataComponents not available in 1.20.1 - needs NBT conversion
-import net.minecraft.core.component.DataComponents;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -16,7 +14,6 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import rearth.oritech.compat.ByteBufCodecs;
 import rearth.oritech.compat.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -48,9 +45,9 @@ public class ItemFilterBlockEntity extends NetworkedBlockEntity implements ItemA
     protected FilterData filterSettings = new FilterData(false, true, false, new HashMap<>());
     
     @Override
-    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.saveAdditional(nbt, registryLookup);
-        ContainerHelper.saveAllItems(nbt, inventory.heldStacks, false, registryLookup);
+    protected void saveAdditional(CompoundTag nbt) {
+        super.saveAdditional(nbt);
+        ContainerHelper.saveAllItems(nbt, inventory.heldStacks, false);
         nbt.putBoolean("whitelist", filterSettings.useWhitelist);
         nbt.putBoolean("useNbt", filterSettings.useNbt);
         nbt.putBoolean("useComponents", filterSettings.useComponents);
@@ -67,9 +64,9 @@ public class ItemFilterBlockEntity extends NetworkedBlockEntity implements ItemA
     }
     
     @Override
-    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.loadAdditional(nbt, registryLookup);
-        ContainerHelper.loadAllItems(nbt, inventory.heldStacks, registryLookup);
+    protected void loadAdditional(CompoundTag nbt) {
+        super.loadAdditional(nbt);
+        ContainerHelper.loadAllItems(nbt, inventory.heldStacks);
         
         var whiteList = nbt.getBoolean("whitelist");
         var useNbt = nbt.getBoolean("useNbt");
@@ -151,7 +148,7 @@ public class ItemFilterBlockEntity extends NetworkedBlockEntity implements ItemA
             level.blockEntityChanged(worldPosition);
     }
     
-    public static void handleClientUpdate(ItemFilterPayload message, Player player, RegistryAccess registryAccess) {
+    public static void handleClientUpdate(ItemFilterPayload message, Player player,  Level level) {
         var blockEntity = player.level().getBlockEntity(message.pos(), BlockEntitiesContent.ITEM_FILTER_ENTITY);
         if (blockEntity.isPresent()) {
             blockEntity.get().setFilterSettings(message.data);
@@ -173,16 +170,12 @@ public class ItemFilterBlockEntity extends NetworkedBlockEntity implements ItemA
     }
     
     // used to send data to server
-    public record ItemFilterPayload(BlockPos pos, FilterData data) implements CustomPacketPayload {
-        @Override
-        public Type<? extends CustomPacketPayload> type() {
-            return FILTER_PACKET_ID;
-        }
-        
-        public static final CustomPacketPayload.Type<ItemFilterPayload> FILTER_PACKET_ID = new CustomPacketPayload.Type<>(Oritech.id("filter"));
+    public record ItemFilterPayload(BlockPos pos, FilterData data) {
+
+        public static final PacketId<ItemFilterPayload> FILTER_PACKET_ID = new PacketId<>(Oritech.id("filter"));
         
         public static final StreamCodec<FriendlyByteBuf, ItemFilterPayload> PACKET_CODEC = StreamCodec.composite(
-          BlockPos.STREAM_CODEC, ItemFilterPayload::pos,
+          ByteBufCodecs.BLOCK_POS, ItemFilterPayload::pos,
           FilterData.PACKET_CODEC, ItemFilterPayload::data,
           ItemFilterPayload::new
         );
@@ -226,16 +219,15 @@ public class ItemFilterBlockEntity extends NetworkedBlockEntity implements ItemA
                 if (checkNbt) {
                     // check if both have nbt, if so compare them
                     // if not both check if neither has nbt, and type matches
-// TODO_1_20: DataComponents not available in 1.20.1 - needs NBT conversion
-                    if (stack.has(DataComponents.CUSTOM_DATA) && filterItem.has(DataComponents.CUSTOM_DATA)) {
-// TODO_1_20: DataComponents not available in 1.20.1 - needs NBT conversion
-                        var match = stack.get(DataComponents.CUSTOM_DATA).equals(filterItem.get(DataComponents.CUSTOM_DATA));
+                    var stackTag = stack.getTag();
+                    var filterTag = filterItem.getTag();
+                    if (stackTag != null && filterTag != null) {
+                        var match = stackTag.equals(filterTag);
                         if (match) {
                             matchesFilterItems = true;
                             break;
                         }
-// TODO_1_20: DataComponents not available in 1.20.1 - needs NBT conversion
-                    } else if (!stack.has(DataComponents.CUSTOM_DATA) && !filterItem.has(DataComponents.CUSTOM_DATA)) {
+                    } else if (stackTag == null && filterTag == null) {
                         matchesFilterItems = true;
                         break;
                     }

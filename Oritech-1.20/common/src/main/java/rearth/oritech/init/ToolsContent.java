@@ -7,8 +7,6 @@ import dev.architectury.event.events.common.TickEvent;
 import dev.architectury.registry.registries.RegistrySupplier;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
-// TODO_1_20: DataComponents not available in 1.20.1 - needs NBT conversion
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundSource;
@@ -16,7 +14,6 @@ import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
-import net.minecraft.world.item.component.Unbreakable;
 import rearth.oritech.api.energy.EnergyApi;
 import rearth.oritech.api.fluid.FluidApi;
 import rearth.oritech.item.tools.ElectricMaceItem;
@@ -32,9 +29,7 @@ public class ToolsContent implements ArchitecturyRegistryContainer<Item> {
     
     protected static final Item.Properties UNBREAKING_SETTINGS = new Item.Properties()
                                                                .stacksTo(1)
-                                                               .durability(0)
-// TODO_1_20: DataComponents not available in 1.20.1 - needs NBT conversion
-                                                               .component(DataComponents.UNBREAKABLE, new Unbreakable(true));
+                                                               .durability(0);
     
     protected static final Item.Properties ELECTRIC_SETTINGS = UNBREAKING_SETTINGS; //.component(Oritech.ENERGY_CONTENT.componentType(), 0L);
     protected static final Item.Properties JETPACK_SETTINGS = UNBREAKING_SETTINGS; // .component(ComponentContent.STORED_FLUID.get(), FluidStack.create(FluidContent.STILL_FUEL.get().getStill(), 0)); //.component(Oritech.ENERGY_CONTENT.componentType(), 0L);
@@ -80,7 +75,7 @@ public class ToolsContent implements ArchitecturyRegistryContainer<Item> {
         
         if (EnergyApi.ITEM != null && value instanceof OritechEnergyItem energyItem) {
             var variantStack = new ItemStack(value);
-            variantStack.set(EnergyApi.ITEM.getEnergyComponent(), energyItem.getEnergyCapacity(variantStack));
+            variantStack.getOrCreateTag().putLong("oritech_energy", energyItem.getEnergyCapacity(variantStack));
             ItemGroups.add(targetGroup, variantStack);
             
             EnergyApi.ITEM.registerForItem(() -> value);

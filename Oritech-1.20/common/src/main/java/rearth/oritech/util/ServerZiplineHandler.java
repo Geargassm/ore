@@ -1,11 +1,10 @@
 package rearth.oritech.util;
+import rearth.oritech.api.networking.PacketId;
 
 import com.mojang.serialization.Codec;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.core.RegistryAccess;
 import rearth.oritech.compat.ByteBufCodecs;
 import rearth.oritech.compat.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -48,7 +47,7 @@ public class ServerZiplineHandler {
         AttachmentApi.register(ZIPLINING_STATE);
     }
     
-    public static void onZipLineTickUseEvent(ZiplinePlayerUsePacket packet, Player player, RegistryAccess dynamicRegistryManager) {
+    public static void onZipLineTickUseEvent(ZiplinePlayerUsePacket packet, Player player, Level level) {
         LAST_ZIPLINED_AT.put(player.getUUID(), player.level().getGameTime());
     }
     
@@ -74,14 +73,10 @@ public class ServerZiplineHandler {
             serverPlayer.connection.aboveGroundTickCount = 0;
     }
     
-    public record ZiplinePlayerUsePacket() implements CustomPacketPayload {
+    public record ZiplinePlayerUsePacket() {
         
-        public static final CustomPacketPayload.Type<ZiplinePlayerUsePacket> PACKET_ID = new CustomPacketPayload.Type<>(Oritech.id("zipline_use"));
+        public static final PacketId<ZiplinePlayerUsePacket> PACKET_ID = new PacketId<>(Oritech.id("zipline_use"));
         
-        @Override
-        public Type<? extends CustomPacketPayload> type() {
-            return PACKET_ID;
-        }
     }
     
 }

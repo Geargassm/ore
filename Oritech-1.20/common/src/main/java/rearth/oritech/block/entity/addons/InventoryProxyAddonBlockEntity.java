@@ -1,4 +1,5 @@
 package rearth.oritech.block.entity.addons;
+import rearth.oritech.api.networking.PacketId;
 
 import dev.architectury.registry.menu.ExtendedMenuProvider;
 import org.jetbrains.annotations.Nullable;
@@ -13,12 +14,10 @@ import rearth.oritech.util.MachineAddonController;
 import java.util.Objects;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.RegistryAccess;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -105,14 +104,14 @@ public class InventoryProxyAddonBlockEntity extends AddonBlockEntity implements 
     }
     
     @Override
-    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.saveAdditional(nbt, registryLookup);
+    protected void saveAdditional(CompoundTag nbt) {
+        super.saveAdditional(nbt);
         nbt.putInt("target_slot", targetSlot);
     }
     
     @Override
-    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.loadAdditional(nbt, registryLookup);
+    protected void loadAdditional(CompoundTag nbt) {
+        super.loadAdditional(nbt);
         targetSlot = nbt.getInt("target_slot");
     }
     
@@ -121,18 +120,14 @@ public class InventoryProxyAddonBlockEntity extends AddonBlockEntity implements 
         return inventory;
     }
     
-    public static void receiveSlotSelection(InventoryProxySlotSelectorPacket packet, Player player, RegistryAccess dynamicRegistryManager) {
+    public static void receiveSlotSelection(InventoryProxySlotSelectorPacket packet, Player player, Level level) {
         if (player.level().getBlockEntity(packet.position) instanceof InventoryProxyAddonBlockEntity addonBlock)
             addonBlock.setTargetSlot(packet.slot);
     }
     
-    public record InventoryProxySlotSelectorPacket(BlockPos position, int slot) implements CustomPacketPayload {
+    public record InventoryProxySlotSelectorPacket(BlockPos position, int slot) {
         
-        public static final CustomPacketPayload.Type<InventoryProxySlotSelectorPacket> PACKET_ID = new CustomPacketPayload.Type<>(Oritech.id("proxy_slot_sel"));
+        public static final PacketId<InventoryProxySlotSelectorPacket> PACKET_ID = new PacketId<>(Oritech.id("proxy_slot_sel"));
         
-        @Override
-        public Type<? extends CustomPacketPayload> type() {
-            return PACKET_ID;
-        }
     }
 }

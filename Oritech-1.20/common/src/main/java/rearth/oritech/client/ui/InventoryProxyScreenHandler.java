@@ -30,8 +30,8 @@ public class InventoryProxyScreenHandler extends AbstractContainerMenu {
     
     public record InvProxyData(BlockPos ownPos, BlockPos controllerPos, int slot) {
         public static final StreamCodec<FriendlyByteBuf, InvProxyData> PACKET_CODEC = StreamCodec.composite(
-          BlockPos.STREAM_CODEC, InvProxyData::ownPos,
-          BlockPos.STREAM_CODEC, InvProxyData::controllerPos,
+          ByteBufCodecs.BLOCK_POS, InvProxyData::ownPos,
+          ByteBufCodecs.BLOCK_POS, InvProxyData::controllerPos,
           ByteBufCodecs.INT, InvProxyData::slot,
           InvProxyData::new
         );

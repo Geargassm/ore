@@ -1,14 +1,13 @@
 package rearth.oritech.block.base.entity;
+import rearth.oritech.api.networking.PacketId;
 
 import dev.architectury.registry.menu.ExtendedMenuProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.RegistryAccess;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.SimpleContainer;
@@ -260,9 +259,9 @@ public abstract class MachineBlockEntity extends NetworkedBlockEntity
     }
     
     @Override
-    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
+    protected void saveAdditional(CompoundTag nbt) {
         
-        ContainerHelper.saveAllItems(nbt, inventory.heldStacks, false, registryLookup);
+        ContainerHelper.saveAllItems(nbt, inventory.heldStacks, false);
         nbt.putInt("oritech.machine_progress", progress);
         nbt.putLong("oritech.machine_energy", energyStorage.amount);
         nbt.putShort("oritech.machine_input_mode", (short) inventoryInputMode.ordinal());
@@ -272,8 +271,8 @@ public abstract class MachineBlockEntity extends NetworkedBlockEntity
     }
     
     @Override
-    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        ContainerHelper.loadAllItems(nbt, inventory.heldStacks, registryLookup);
+    protected void loadAdditional(CompoundTag nbt) {
+        ContainerHelper.loadAllItems(nbt, inventory.heldStacks);
         progress = nbt.getInt("oritech.machine_progress");
         energyStorage.amount = nbt.getLong("oritech.machine_energy");
         inventoryInputMode = InventoryInputMode.values()[nbt.getShort("oritech.machine_input_mode")];
@@ -529,7 +528,7 @@ public abstract class MachineBlockEntity extends NetworkedBlockEntity
         }
     }
     
-    public static void receiveCycleModePacket(InventoryInputModeSelectorPacket packet, Player player, RegistryAccess dynamicRegistryManager) {
+    public static void receiveCycleModePacket(InventoryInputModeSelectorPacket packet, Player player, Level level) {
         if (player.level().getBlockEntity(packet.position()) instanceof MachineBlockEntity machineBlock)
             machineBlock.cycleInputMode();
     }
@@ -653,13 +652,9 @@ public abstract class MachineBlockEntity extends NetworkedBlockEntity
     }
     
     // Client -> Server (e.g. from UI interactions
-    public record InventoryInputModeSelectorPacket(BlockPos position) implements CustomPacketPayload {
+    public record InventoryInputModeSelectorPacket(BlockPos position) {
         
-        public static final CustomPacketPayload.Type<InventoryInputModeSelectorPacket> PACKET_ID = new CustomPacketPayload.Type<>(Oritech.id("input_mode"));
+        public static final PacketId<InventoryInputModeSelectorPacket> PACKET_ID = new PacketId<>(Oritech.id("input_mode"));
         
-        @Override
-        public Type<? extends CustomPacketPayload> type() {
-            return PACKET_ID;
-        }
     }
 }

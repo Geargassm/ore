@@ -1,17 +1,14 @@
 package rearth.oritech.block.entity.arcane;
+import rearth.oritech.api.networking.PacketId;
 
 import dev.architectury.registry.menu.ExtendedMenuProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.RegistryAccess;
-// TODO_1_20: DataComponents not available in 1.20.1 - needs NBT conversion
-import net.minecraft.core.component.DataComponents;
+
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
@@ -19,9 +16,12 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.state.BlockState;
@@ -165,17 +165,17 @@ public class EnchantmentCatalystBlockEntity extends BaseSoulCollectionEntity
     }
     
     @Override
-    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.saveAdditional(nbt, registryLookup);
-        ContainerHelper.saveAllItems(nbt, inventory.heldStacks, false, registryLookup);
+    protected void saveAdditional(CompoundTag nbt) {
+        super.saveAdditional(nbt);
+        ContainerHelper.saveAllItems(nbt, inventory.heldStacks, false);
         nbt.putInt("souls", collectedSouls);
         nbt.putInt("maxSouls", maxSouls);
     }
     
     @Override
-    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.loadAdditional(nbt, registryLookup);
-        ContainerHelper.loadAllItems(nbt, inventory.heldStacks, registryLookup);
+    protected void loadAdditional(CompoundTag nbt) {
+        super.loadAdditional(nbt);
+        ContainerHelper.loadAllItems(nbt, inventory.heldStacks);
         collectedSouls = nbt.getInt("souls");
         maxSouls = nbt.getInt("maxSouls");
     }
@@ -201,24 +201,43 @@ public class EnchantmentCatalystBlockEntity extends BaseSoulCollectionEntity
     }
     
     private void enchantInput() {
-        
+
         var bookCandidate = inventory.getItem(0);
-// TODO_1_20: DataComponents not available in 1.20.1 - needs NBT conversion
-        if (!bookCandidate.getItem().equals(Items.ENCHANTED_BOOK) || !bookCandidate.has(DataComponents.STORED_ENCHANTMENTS))
-            return;
-        
-// TODO_1_20: DataComponents not available in 1.20.1 - needs NBT conversion
-        var enchantment = bookCandidate.get(DataComponents.STORED_ENCHANTMENTS).keySet().stream().findFirst().get();
-        
+        var storedEnchants = getStoredEnchantmentsFromBook(bookCandidate);
+        if (storedEnchants == null || storedEnchants.isEmpty()) return;
+
+        var firstEnchantTag = storedEnchants.getCompound(0);
+        var enchantHolder = getEnchantmentHolderFromTag(firstEnchantTag);
+        if (enchantHolder == null) return;
+
         var inputStack = inventory.getItem(1);
-        var toolLevel = inputStack.getEnchantments().getLevel(enchantment);
-        inputStack.enchant(enchantment, toolLevel + 1);
-        
-        collectedSouls -= getEnchantmentCost(enchantment.value(), toolLevel + 1, isHyperEnchanting);
-        
+        var toolLevel = EnchantmentHelper.getItemEnchantmentLevel(enchantHolder.value(), inputStack);
+        inputStack.enchant(enchantHolder, toolLevel + 1);
+
+        collectedSouls -= getEnchantmentCost(enchantHolder.value(), toolLevel + 1, isHyperEnchanting);
+
         if (isHyperEnchanting)
             inventory.setItem(0, ItemStack.EMPTY);
-        
+
+    }
+
+    /** Returns the StoredEnchantments NBT list from an enchanted book, or null if not applicable. */
+    @Nullable
+    private ListTag getStoredEnchantmentsFromBook(ItemStack bookStack) {
+        if (!bookStack.getItem().equals(Items.ENCHANTED_BOOK)) return null;
+        var storedEnchants = EnchantedBookItem.getEnchantments(bookStack);
+        return storedEnchants.isEmpty() ? null : storedEnchants;
+    }
+
+    @Nullable
+    private net.minecraft.core.Holder<Enchantment> getEnchantmentHolderFromTag(net.minecraft.nbt.CompoundTag enchantTag) {
+        if (level == null) return null;
+        var id = enchantTag.getString("id");
+        var registry = level.registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT);
+        var loc = net.minecraft.resources.ResourceLocation.tryParse(id);
+        if (loc == null) return null;
+        var enchant = registry.get(loc);
+        return enchant != null ? registry.wrapAsHolder(enchant) : null;
     }
     
     private boolean hasEnoughSouls(Enchantment enchantment, int targetLevel) {
@@ -237,52 +256,52 @@ public class EnchantmentCatalystBlockEntity extends BaseSoulCollectionEntity
     public int getDisplayedCost() {
         if (inventory.getItem(0).isEmpty() || inventory.getItem(1).isEmpty()) return 0;
         var bookCandidate = inventory.getItem(0);
-        
-// TODO_1_20: DataComponents not available in 1.20.1 - needs NBT conversion
-        if (bookCandidate.getItem().equals(Items.ENCHANTED_BOOK) && bookCandidate.has(DataComponents.STORED_ENCHANTMENTS)) {
-            
-// TODO_1_20: DataComponents not available in 1.20.1 - needs NBT conversion
-            var enchantment = bookCandidate.get(DataComponents.STORED_ENCHANTMENTS).keySet().stream().findFirst().get();
-            var maxLevel = enchantment.value().getMaxLevel();
-// TODO_1_20: DataComponents not available in 1.20.1 - needs NBT conversion
-            var bookLevel = bookCandidate.get(DataComponents.STORED_ENCHANTMENTS).getLevel(enchantment);
-            
+
+        var storedEnchants = getStoredEnchantmentsFromBook(bookCandidate);
+        if (storedEnchants != null && !storedEnchants.isEmpty()) {
+            var firstEnchantTag = storedEnchants.getCompound(0);
+            var enchantHolder = getEnchantmentHolderFromTag(firstEnchantTag);
+            if (enchantHolder == null) return 0;
+
+            var maxLevel = enchantHolder.value().getMaxLevel();
+            var bookLevel = firstEnchantTag.getShort("lvl");
+
             if (bookLevel != maxLevel) return 0;
-            
+
             var inputStack = inventory.getItem(1);
-            var toolLevel = inputStack.getEnchantments().getLevel(enchantment);
+            var toolLevel = EnchantmentHelper.getItemEnchantmentLevel(enchantHolder.value(), inputStack);
             var isHyper = toolLevel >= maxLevel;
-            
-            return getEnchantmentCost(enchantment.value(), toolLevel + 1, isHyper);
+
+            return getEnchantmentCost(enchantHolder.value(), toolLevel + 1, isHyper);
         }
-        
+
         return 0;
     }
     
     private boolean canProceed() {
-        
+
         if (inventory.getItem(0).isEmpty() || inventory.getItem(1).isEmpty()) return false;
-        
+
         var bookCandidate = inventory.getItem(0);
-// TODO_1_20: DataComponents not available in 1.20.1 - needs NBT conversion
-        if (bookCandidate.getItem().equals(Items.ENCHANTED_BOOK) && bookCandidate.has(DataComponents.STORED_ENCHANTMENTS)) {
-            
-// TODO_1_20: DataComponents not available in 1.20.1 - needs NBT conversion
-            var enchantment = bookCandidate.get(DataComponents.STORED_ENCHANTMENTS).keySet().stream().findFirst().get();
-            var maxLevel = enchantment.value().getMaxLevel();
-// TODO_1_20: DataComponents not available in 1.20.1 - needs NBT conversion
-            var level = bookCandidate.get(DataComponents.STORED_ENCHANTMENTS).getLevel(enchantment);
-            
-            if (enchantment.is(TagContent.CATALYST_ENCHANTMENT_BLACKLIST)) return false;
-            
-            // yes this does not check if the item can be enchanted with this enchantment. This is intentional, allowing you to skip the normal limitations
+        var storedEnchants = getStoredEnchantmentsFromBook(bookCandidate);
+        if (storedEnchants != null && !storedEnchants.isEmpty()) {
+            var firstEnchantTag = storedEnchants.getCompound(0);
+            var enchantHolder = getEnchantmentHolderFromTag(firstEnchantTag);
+            if (enchantHolder == null) return false;
+
+            var maxLevel = enchantHolder.value().getMaxLevel();
+            var bookLevel = firstEnchantTag.getShort("lvl");
+
+            if (enchantHolder.is(TagContent.CATALYST_ENCHANTMENT_BLACKLIST)) return false;
+
+            // yes this does not check if the item can be enchanted with this enchantment. This is intentional
             var inputStack = inventory.getItem(1);
-            var toolLevel = inputStack.getEnchantments().getLevel(enchantment);
+            var toolLevel = EnchantmentHelper.getItemEnchantmentLevel(enchantHolder.value(), inputStack);
             this.isHyperEnchanting = toolLevel >= maxLevel;
-            
-            return level == maxLevel && hasEnoughSouls(enchantment.value(), toolLevel + 1);
+
+            return bookLevel == maxLevel && hasEnoughSouls(enchantHolder.value(), toolLevel + 1);
         }
-        
+
         return false;
     }
     
@@ -430,7 +449,7 @@ public class EnchantmentCatalystBlockEntity extends BaseSoulCollectionEntity
         return true;
     }
     
-    public static void receiveUpdatePacket(CatalystSyncPacket packet, Level world, RegistryAccess dynamicRegistryManager) {
+    public static void receiveUpdatePacket(CatalystSyncPacket packet, Level world, Player player) {
         if (world.getBlockEntity(packet.position) instanceof EnchantmentCatalystBlockEntity catalystBlock) {
             catalystBlock.isHyperEnchanting = packet.isHyperEnchanting();
             catalystBlock.progress = packet.progress();
@@ -439,13 +458,9 @@ public class EnchantmentCatalystBlockEntity extends BaseSoulCollectionEntity
         }
     }
     
-    public record CatalystSyncPacket(BlockPos position, int storedSouls, int progress, boolean isHyperEnchanting, int maxSouls) implements CustomPacketPayload {
+    public record CatalystSyncPacket(BlockPos position, int storedSouls, int progress, boolean isHyperEnchanting, int maxSouls) {
         
-        public static final CustomPacketPayload.Type<CatalystSyncPacket> PACKET_ID = new CustomPacketPayload.Type<>(Oritech.id("catalyst"));
+        public static final PacketId<CatalystSyncPacket> PACKET_ID = new PacketId<>(Oritech.id("catalyst"));
         
-        @Override
-        public Type<? extends CustomPacketPayload> type() {
-            return PACKET_ID;
-        }
     }
 }

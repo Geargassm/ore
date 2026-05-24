@@ -1,4 +1,5 @@
 package rearth.oritech.block.entity.arcane;
+import rearth.oritech.api.networking.PacketId;
 
 import dev.architectury.registry.menu.ExtendedMenuProvider;
 import net.minecraft.core.*;
@@ -7,7 +8,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
@@ -154,17 +154,17 @@ public class EnchanterBlockEntity extends NetworkedBlockEntity
     }
     
     @Override
-    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.saveAdditional(nbt, registryLookup);
-        ContainerHelper.saveAllItems(nbt, inventory.heldStacks, false, registryLookup);
+    protected void saveAdditional(CompoundTag nbt) {
+        super.saveAdditional(nbt);
+        ContainerHelper.saveAllItems(nbt, inventory.heldStacks, false);
         nbt.putLong("energy", energyStorage.amount);
         nbt.putString("selected", selectedEnchantment.toString());
     }
     
     @Override
-    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.loadAdditional(nbt, registryLookup);
-        ContainerHelper.loadAllItems(nbt, inventory.heldStacks, registryLookup);
+    protected void loadAdditional(CompoundTag nbt) {
+        super.loadAdditional(nbt);
+        ContainerHelper.loadAllItems(nbt, inventory.heldStacks);
         energyStorage.amount = nbt.getLong("energy");
         
         if (nbt.contains("selected")) {
@@ -337,7 +337,7 @@ public class EnchanterBlockEntity extends NetworkedBlockEntity
         return inventory;
     }
     
-    public static void receiveEnchantmentSelection(SelectEnchantingPacket packet, Player player, RegistryAccess dynamicRegistryManager) {
+    public static void receiveEnchantmentSelection(SelectEnchantingPacket packet, Player player, Level level) {
         var blockEntity = player.level().getBlockEntity(packet.self);
         if (blockEntity instanceof EnchanterBlockEntity enchanterBlock) {
             enchanterBlock.selectedEnchantment = packet.enchantmentId;
@@ -345,14 +345,10 @@ public class EnchanterBlockEntity extends NetworkedBlockEntity
         }
     }
     
-    public record SelectEnchantingPacket(BlockPos self, ResourceLocation enchantmentId) implements CustomPacketPayload {
+    public record SelectEnchantingPacket(BlockPos self, ResourceLocation enchantmentId) {
         
-        public static final CustomPacketPayload.Type<SelectEnchantingPacket> PACKET_ID = new CustomPacketPayload.Type<>(Oritech.id("selected_enchant"));
+        public static final PacketId<SelectEnchantingPacket> PACKET_ID = new PacketId<>(Oritech.id("selected_enchant"));
         
-        @Override
-        public Type<? extends CustomPacketPayload> type() {
-            return PACKET_ID;
-        }
     }
     
 }

@@ -4,10 +4,8 @@ import com.mojang.authlib.GameProfile;
 import dev.architectury.registry.menu.ExtendedMenuProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
+
 import net.minecraft.core.Vec3i;
-// TODO_1_20: DataComponents not available in 1.20.1 - needs NBT conversion
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -30,7 +28,6 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.component.Unbreakable;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
@@ -282,8 +279,7 @@ public class LaserArmBlockEntity extends NetworkedBlockEntity implements
         
         if (hunterAddons > 0 && yieldAddons > 0) {
             var lootingSword = new ItemStack(Items.NETHERITE_SWORD);
-// TODO_1_20: DataComponents not available in 1.20.1 - needs NBT conversion
-            lootingSword.set(DataComponents.UNBREAKABLE, new Unbreakable(false));
+            lootingSword.getOrCreateTag().putBoolean("Unbreakable", true);
             var lootingEntry = level.registryAccess().registryOrThrow(Registries.ENCHANTMENT).getHolder(Enchantments.LOOTING).get();
             lootingSword.enchant(lootingEntry, Math.min(yieldAddons, 3));
             laserPlayerEntity.getInventory().items.set(laserPlayerEntity.getInventory().selected, lootingSword);
@@ -558,9 +554,9 @@ public class LaserArmBlockEntity extends NetworkedBlockEntity implements
     }
     
     @Override
-    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.saveAdditional(nbt, registryLookup);
-        ContainerHelper.saveAllItems(nbt, inventory.heldStacks, false, registryLookup);
+    protected void saveAdditional(CompoundTag nbt) {
+        super.saveAdditional(nbt);
+        ContainerHelper.saveAllItems(nbt, inventory.heldStacks, false);
         addMultiblockToNbt(nbt);
         writeAddonToNbt(nbt);
         addColorToNbt(nbt);
@@ -587,9 +583,9 @@ public class LaserArmBlockEntity extends NetworkedBlockEntity implements
     }
     
     @Override
-    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.loadAdditional(nbt, registryLookup);
-        ContainerHelper.loadAllItems(nbt, inventory.heldStacks, registryLookup);
+    protected void loadAdditional(CompoundTag nbt) {
+        super.loadAdditional(nbt);
+        ContainerHelper.loadAllItems(nbt, inventory.heldStacks);
         loadMultiblockNbtData(nbt);
         loadAddonNbtData(nbt);
         loadColorFromNbt(nbt);

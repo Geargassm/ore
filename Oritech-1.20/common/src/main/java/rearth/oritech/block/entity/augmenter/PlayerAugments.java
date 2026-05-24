@@ -1,9 +1,8 @@
 package rearth.oritech.block.entity.augmenter;
+import rearth.oritech.api.networking.PacketId;
 
 import dev.architectury.registry.menu.MenuRegistry;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -49,7 +48,7 @@ public class PlayerAugments {
         }
     }
     
-    public static void receiveInstallTrigger(AugmentInstallTriggerPacket packet, Player player, RegistryAccess dynamicRegistryManager) {
+    public static void receiveInstallTrigger(AugmentInstallTriggerPacket packet, Player player, Level level) {
         var entity = player.level().getBlockEntity(packet.position);
         
         if (entity instanceof AugmentApplicationEntity modifierEntity) {
@@ -68,7 +67,7 @@ public class PlayerAugments {
         }
     }
     
-    public static void receivePlayerLoadMachine(LoadPlayerAugmentsToMachinePacket packet, Player player, RegistryAccess dynamicRegistryManager) {
+    public static void receivePlayerLoadMachine(LoadPlayerAugmentsToMachinePacket packet, Player player, Level level) {
         var entity = player.level().getBlockEntity(packet.position);
         
         if (entity instanceof AugmentApplicationEntity modifierEntity) {
@@ -76,7 +75,7 @@ public class PlayerAugments {
         }
     }
     
-    public static void receiveOpenAugmentScreen(OpenAugmentScreenPacket packet, Player player, RegistryAccess dynamicRegistryManager) {
+    public static void receiveOpenAugmentScreen(OpenAugmentScreenPacket packet, Player player, Level level) {
         var entity = player.level().getBlockEntity(packet.position);
         
         if (entity instanceof AugmentApplicationEntity modifierEntity && player instanceof ServerPlayer serverPlayer) {
@@ -85,7 +84,7 @@ public class PlayerAugments {
         }
     }
     
-    public static void receiveToggleAugment(AugmentPlayerTogglePacket packet, Player player, RegistryAccess dynamicRegistryManager) {
+    public static void receiveToggleAugment(AugmentPlayerTogglePacket packet, Player player, Level level) {
         AugmentApplicationEntity.toggleAugmentForPlayer(packet.id, player);
     }
     
@@ -93,43 +92,27 @@ public class PlayerAugments {
         RESEARCH, ADD, REMOVE, NONE, NEEDS_INIT
     }
     
-    public record AugmentInstallTriggerPacket(BlockPos position, ResourceLocation id, int operationId) implements CustomPacketPayload {
+    public record AugmentInstallTriggerPacket(BlockPos position, ResourceLocation id, int operationId) {
         
-        public static final CustomPacketPayload.Type<AugmentInstallTriggerPacket> PACKET_ID = new CustomPacketPayload.Type<>(Oritech.id("aug_install"));
+        public static final PacketId<AugmentInstallTriggerPacket> PACKET_ID = new PacketId<>(Oritech.id("aug_install"));
         
-        @Override
-        public Type<? extends CustomPacketPayload> type() {
-            return PACKET_ID;
-        }
     }
     
-    public record LoadPlayerAugmentsToMachinePacket(BlockPos position) implements CustomPacketPayload {
+    public record LoadPlayerAugmentsToMachinePacket(BlockPos position) {
         
-        public static final CustomPacketPayload.Type<LoadPlayerAugmentsToMachinePacket> PACKET_ID = new CustomPacketPayload.Type<>(Oritech.id("aug_loadtomachine"));
+        public static final PacketId<LoadPlayerAugmentsToMachinePacket> PACKET_ID = new PacketId<>(Oritech.id("aug_loadtomachine"));
         
-        @Override
-        public Type<? extends CustomPacketPayload> type() {
-            return PACKET_ID;
-        }
     }
     
-    public record OpenAugmentScreenPacket(BlockPos position) implements CustomPacketPayload {
+    public record OpenAugmentScreenPacket(BlockPos position) {
         
-        public static final CustomPacketPayload.Type<OpenAugmentScreenPacket> PACKET_ID = new CustomPacketPayload.Type<>(Oritech.id("aug_openscreen"));
+        public static final PacketId<OpenAugmentScreenPacket> PACKET_ID = new PacketId<>(Oritech.id("aug_openscreen"));
         
-        @Override
-        public Type<? extends CustomPacketPayload> type() {
-            return PACKET_ID;
-        }
     }
     
-    public record AugmentPlayerTogglePacket(ResourceLocation id) implements CustomPacketPayload {
+    public record AugmentPlayerTogglePacket(ResourceLocation id) {
         
-        public static final CustomPacketPayload.Type<AugmentPlayerTogglePacket> PACKET_ID = new CustomPacketPayload.Type<>(Oritech.id("aug_toggle"));
+        public static final PacketId<AugmentPlayerTogglePacket> PACKET_ID = new PacketId<>(Oritech.id("aug_toggle"));
         
-        @Override
-        public Type<? extends CustomPacketPayload> type() {
-            return PACKET_ID;
-        }
     }
 }

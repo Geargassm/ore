@@ -35,7 +35,7 @@ public abstract class Augment {
         @SuppressWarnings("unchecked")
         @Override
         public StreamCodec<ByteBuf, Map<ResourceLocation, AugmentState>> networkCodec() {
-            return ByteBufCodecs.map(HashMap::new, ResourceLocation.STREAM_CODEC, NetworkManager.getAutoCodec(AugmentState.class));
+            return ByteBufCodecs.map(HashMap::new, ByteBufCodecs.RESOURCE_LOCATION, NetworkManager.getAutoCodec(AugmentState.class));
         }
         
         @Override

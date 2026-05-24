@@ -1,4 +1,5 @@
 package rearth.oritech.block.entity.interaction;
+import rearth.oritech.api.networking.PacketId;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -10,7 +11,6 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import rearth.oritech.compat.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -173,8 +173,8 @@ public class ShrinkerBlockEntity extends NetworkedBlockEntity implements ItemApi
     }
     
     @Override
-    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        ContainerHelper.saveAllItems(nbt, inventory.heldStacks, false, registryLookup);
+    protected void saveAdditional(CompoundTag nbt) {
+        ContainerHelper.saveAllItems(nbt, inventory.heldStacks, false);
         addMultiblockToNbt(nbt);
         writeAddonToNbt(nbt);
         addColorToNbt(nbt);
@@ -183,8 +183,8 @@ public class ShrinkerBlockEntity extends NetworkedBlockEntity implements ItemApi
     }
     
     @Override
-    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        ContainerHelper.loadAllItems(nbt, inventory.heldStacks, registryLookup);
+    protected void loadAdditional(CompoundTag nbt) {
+        ContainerHelper.loadAllItems(nbt, inventory.heldStacks);
         loadMultiblockNbtData(nbt);
         loadAddonNbtData(nbt);
         loadColorFromNbt(nbt);
@@ -419,7 +419,7 @@ public class ShrinkerBlockEntity extends NetworkedBlockEntity implements ItemApi
         return false;
     }
     
-    public static void onPlayerUse(ShrinkerPlayerUsePacket packet, Player player, RegistryAccess registryAccess) {
+    public static void onPlayerUse(ShrinkerPlayerUsePacket packet, Player player, Level level) {
         
         var world = player.level();
         var candidate = world.getBlockEntity(packet.pos(), BlockEntitiesContent.SHRINKER_BLOCK_ENTITY);
@@ -469,13 +469,9 @@ public class ShrinkerBlockEntity extends NetworkedBlockEntity implements ItemApi
         }
     }
     
-    public record ShrinkerPlayerUsePacket(BlockPos pos) implements CustomPacketPayload {
+    public record ShrinkerPlayerUsePacket(BlockPos pos) {
         
-        public static final CustomPacketPayload.Type<ShrinkerPlayerUsePacket> PACKET_ID = new CustomPacketPayload.Type<>(Oritech.id("shrink"));
+        public static final PacketId<ShrinkerPlayerUsePacket> PACKET_ID = new PacketId<>(Oritech.id("shrink"));
         
-        @Override
-        public Type<? extends CustomPacketPayload> type() {
-            return PACKET_ID;
-        }
     }
 }

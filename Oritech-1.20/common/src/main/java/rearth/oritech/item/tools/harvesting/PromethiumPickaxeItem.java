@@ -9,13 +9,10 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-// TODO_1_20: DataComponents not available in 1.20.1 - needs NBT conversion
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
-import net.minecraft.util.Unit;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.EquipmentSlotGroup;
@@ -28,9 +25,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.item.enchantment.ItemEnchantments;
+import rearth.oritech.item.tools.PortableLaserItem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -79,28 +75,39 @@ public class PromethiumPickaxeItem extends DiggerItem implements GeoItem {
         return true;
     }
     
+    private static final String TEMP_SILK_TOUCH_KEY = "oritech.temp_silk_touch";
+
     @Override
     public boolean mineBlock(ItemStack stack, Level world, BlockState state, BlockPos pos, LivingEntity miner) {
-// TODO_1_20: DataComponents not available in 1.20.1 - needs NBT conversion
-        if (!world.isClientSide && stack.has(DataComponents.INTANGIBLE_PROJECTILE)) {
-            var enchantments = stack.getEnchantments();
-            var builder = new ItemEnchantments.Mutable(enchantments);
-            builder.removeIf(elem -> elem.is(Enchantments.SILK_TOUCH));
-// TODO_1_20: DataComponents not available in 1.20.1 - needs NBT conversion
-            stack.set(DataComponents.ENCHANTMENTS, builder.toImmutable());
-// TODO_1_20: DataComponents not available in 1.20.1 - needs NBT conversion
-            stack.remove(DataComponents.INTANGIBLE_PROJECTILE);
+        // In 1.20.1, we use an NBT flag to track whether the silk touch was added temporarily.
+        if (!world.isClientSide && stack.hasTag() && stack.getOrCreateTag().getBoolean(TEMP_SILK_TOUCH_KEY)) {
+            stack.getOrCreateTag().remove(TEMP_SILK_TOUCH_KEY);
+            // Remove silk touch from the enchantment NBT list
+            var tag = stack.getTag();
+            if (tag != null && tag.contains("Enchantments", net.minecraft.nbt.Tag.TAG_LIST)) {
+                var enchList = tag.getList("Enchantments", net.minecraft.nbt.Tag.TAG_COMPOUND);
+                enchList.removeIf(elem -> {
+                    if (elem instanceof net.minecraft.nbt.CompoundTag c) {
+                        var id = c.getString("id");
+                        return id.equals("minecraft:silk_touch");
+                    }
+                    return false;
+                });
+                if (enchList.isEmpty()) {
+                    tag.remove("Enchantments");
+                }
+            }
         }
-        
+
         return true;
     }
     
     private static boolean isAreaEnabled(ItemStack stack) {
-        return stack.getOrDefault(ComponentContent.IS_AOE_ACTIVE.get(), false);
+        return ComponentContent.getIsAoeActive(stack);
     }
-    
+
     private static void setAreaEnabled(ItemStack stack, boolean enabled) {
-        stack.set(ComponentContent.IS_AOE_ACTIVE.get(), enabled);
+        ComponentContent.setIsAoeActive(stack, enabled);
     }
     
     @Override
@@ -182,13 +189,12 @@ public class PromethiumPickaxeItem extends DiggerItem implements GeoItem {
             }
         } else {
             // do silk touch
-            var hasExistingSilkTouch = EnchantmentHelper.getEnchantmentsForCrafting(handStack).keySet().stream().anyMatch(elem -> elem.is(Enchantments.SILK_TOUCH));
+            var hasExistingSilkTouch = PortableLaserItem.getEnchantmentLevel(handStack, Enchantments.SILK_TOUCH) > 0;
             
             if (!hasExistingSilkTouch) {
                 var registryEntry = world.registryAccess().registryOrThrow(Registries.ENCHANTMENT).getHolder(Enchantments.SILK_TOUCH).get();
                 handStack.enchant(registryEntry, 1);
-// TODO_1_20: DataComponents not available in 1.20.1 - needs NBT conversion
-                handStack.set(DataComponents.INTANGIBLE_PROJECTILE, Unit.INSTANCE);
+                handStack.getOrCreateTag().putBoolean(TEMP_SILK_TOUCH_KEY, true);
             }
         }
         

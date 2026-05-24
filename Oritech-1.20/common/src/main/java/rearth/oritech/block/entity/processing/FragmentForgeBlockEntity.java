@@ -1,7 +1,7 @@
 package rearth.oritech.block.entity.processing;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
+
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -88,14 +88,14 @@ public class FragmentForgeBlockEntity extends MultiblockMachineEntity {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.saveAdditional(nbt, registryLookup);
+    protected void saveAdditional(CompoundTag nbt) {
+        super.saveAdditional(nbt);
         nbt.putBoolean("byproductAddon", hasByproductAddon);
     }
     
     @Override
-    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.loadAdditional(nbt, registryLookup);
+    protected void loadAdditional(CompoundTag nbt) {
+        super.loadAdditional(nbt);
         hasByproductAddon = nbt.getBoolean("byproductAddon");
     }
     

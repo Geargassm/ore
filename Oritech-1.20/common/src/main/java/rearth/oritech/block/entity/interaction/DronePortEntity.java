@@ -5,7 +5,7 @@ import dev.architectury.hooks.fluid.FluidStackHooks;
 import dev.architectury.registry.menu.ExtendedMenuProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
+
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
@@ -170,9 +170,9 @@ public class DronePortEntity extends NetworkedBlockEntity
     }
     
     @Override
-    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.saveAdditional(nbt, registryLookup);
-        ContainerHelper.saveAllItems(nbt, inventory.getHeldStacks(), false, registryLookup);
+    protected void saveAdditional(CompoundTag nbt) {
+        super.saveAdditional(nbt);
+        ContainerHelper.saveAllItems(nbt, inventory.getHeldStacks(), false);
         addMultiblockToNbt(nbt);
         writeAddonToNbt(nbt);
         addColorToNbt(nbt);
@@ -186,14 +186,14 @@ public class DronePortEntity extends NetworkedBlockEntity
         }
         
         var cardCompound = new CompoundTag();
-        ContainerHelper.saveAllItems(cardCompound, cardInventory.getItems(), false, registryLookup);
+        ContainerHelper.saveAllItems(cardCompound, cardInventory.getItems(), false);
         nbt.put("cards", cardCompound);
         
         if (incomingPacket != null) {
             var compound = new CompoundTag();
             NonNullList<ItemStack> list = NonNullList.createWithCapacity(incomingPacket.transferredStacks.size());
             list.addAll(incomingPacket.transferredStacks);
-            ContainerHelper.saveAllItems(compound, list, false, registryLookup);
+            ContainerHelper.saveAllItems(compound, list, false);
             nbt.put("incoming", compound);
             FluidStack.CODEC.encodeStart(NbtOps.INSTANCE, incomingPacket.movedFluid).result().ifPresent(tag -> nbt.put("fluidmoving", tag));
             nbt.putLong("incomingTime", incomingPacket.arrivesAt);
@@ -203,9 +203,9 @@ public class DronePortEntity extends NetworkedBlockEntity
     }
     
     @Override
-    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.loadAdditional(nbt, registryLookup);
-        ContainerHelper.loadAllItems(nbt, inventory.getHeldStacks(), registryLookup);
+    protected void loadAdditional(CompoundTag nbt) {
+        super.loadAdditional(nbt);
+        ContainerHelper.loadAllItems(nbt, inventory.getHeldStacks());
         loadMultiblockNbtData(nbt);
         loadAddonNbtData(nbt);
         loadColorFromNbt(nbt);
@@ -216,11 +216,11 @@ public class DronePortEntity extends NetworkedBlockEntity
         energyStorage.amount = nbt.getLong("energy_stored");
         targetPosition = BlockPos.of(nbt.getLong("target_position"));
         
-        ContainerHelper.loadAllItems(nbt.getCompound("cards"), cardInventory.getItems(), registryLookup);
+        ContainerHelper.loadAllItems(nbt.getCompound("cards"), cardInventory.getItems());
         
         if (nbt.contains("incoming")) {
             NonNullList<ItemStack> list = NonNullList.withSize(15, ItemStack.EMPTY);
-            ContainerHelper.loadAllItems(nbt.getCompound("incoming"), list, registryLookup);
+            ContainerHelper.loadAllItems(nbt.getCompound("incoming"), list);
             var fluid = FluidStack.CODEC.parse(NbtOps.INSTANCE, nbt.get("fluidmoving")).result().orElse(FluidStack.empty());
             var arrivalTime = nbt.getLong("incomingTime");
             incomingPacket = new DroneTransferData(list, fluid, arrivalTime);

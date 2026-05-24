@@ -31,12 +31,12 @@ public class AugmentDataRecipeType implements RecipeSerializer<AugmentDataRecipe
     
     public static final StreamCodec<FriendlyByteBuf, AugmentDataRecipe> PACKET_CODEC = StreamCodec.of(
       (buf, recipe) -> {
-          ResourceLocation.STREAM_CODEC.encode(buf, recipe.getOriType().getIdentifier());
+          ByteBufCodecs.RESOURCE_LOCATION.encode(buf, recipe.getOriType().getIdentifier());
           buf.writeBoolean(recipe.isToggleable());
           SizedIngredient.PACKET_CODEC.apply(ByteBufCodecs.list()).encode(buf, recipe.getResearchCost());
           SizedIngredient.PACKET_CODEC.apply(ByteBufCodecs.list()).encode(buf, recipe.getApplyCost());
-          ResourceLocation.STREAM_CODEC.apply(ByteBufCodecs.list()).encode(buf, recipe.getRequirements());
-          ResourceLocation.STREAM_CODEC.encode(buf, recipe.getRequiredStation());
+          ByteBufCodecs.RESOURCE_LOCATION.apply(ByteBufCodecs.list()).encode(buf, recipe.getRequirements());
+          ByteBufCodecs.RESOURCE_LOCATION.encode(buf, recipe.getRequiredStation());
           buf.writeInt(recipe.getUiX());
           buf.writeInt(recipe.getUiY());
           buf.writeInt(recipe.getTime());
@@ -44,27 +44,27 @@ public class AugmentDataRecipeType implements RecipeSerializer<AugmentDataRecipe
           var def = recipe.getDefinition();
           if (def.right().isPresent()) {
               buf.writeByte(2);
-              ResourceLocation.STREAM_CODEC.encode(buf, def.right().get().customAugmentId());
+              ByteBufCodecs.RESOURCE_LOCATION.encode(buf, def.right().get().customAugmentId());
           } else if (def.left().get().right().isPresent()) {
               buf.writeByte(1);
               var mod = def.left().get().right().get();
-              ResourceLocation.STREAM_CODEC.encode(buf, mod.entityAttributeId());
+              ByteBufCodecs.RESOURCE_LOCATION.encode(buf, mod.entityAttributeId());
               buf.writeInt(mod.attributeOperationType());
               buf.writeFloat(mod.amount());
           } else {
               buf.writeByte(0);
               var eff = def.left().get().left().get();
-              ResourceLocation.STREAM_CODEC.encode(buf, eff.potionEffectId());
+              ByteBufCodecs.RESOURCE_LOCATION.encode(buf, eff.potionEffectId());
               buf.writeInt(eff.effectStrength());
           }
       },
       buf -> {
-          var type = (AugmentDataRecipeType) BuiltInRegistries.RECIPE_TYPE.get(ResourceLocation.STREAM_CODEC.decode(buf));
+          var type = (AugmentDataRecipeType) BuiltInRegistries.RECIPE_TYPE.get(ByteBufCodecs.RESOURCE_LOCATION.decode(buf));
           var toggleable = buf.readBoolean();
           var researchCost = SizedIngredient.PACKET_CODEC.apply(ByteBufCodecs.list()).decode(buf);
           var applyCost = SizedIngredient.PACKET_CODEC.apply(ByteBufCodecs.list()).decode(buf);
-          var requirements = ResourceLocation.STREAM_CODEC.apply(ByteBufCodecs.list()).decode(buf);
-          var requiredStation = ResourceLocation.STREAM_CODEC.decode(buf);
+          var requirements = ByteBufCodecs.RESOURCE_LOCATION.apply(ByteBufCodecs.list()).decode(buf);
+          var requiredStation = ByteBufCodecs.RESOURCE_LOCATION.decode(buf);
           var uiX = buf.readInt();
           var uiY = buf.readInt();
           var time = buf.readInt();
@@ -72,11 +72,11 @@ public class AugmentDataRecipeType implements RecipeSerializer<AugmentDataRecipe
           var kind = buf.readByte();
           Either<Either<AugmentDataRecipe.EffectDefinition, AugmentDataRecipe.ModifierDefinition>, AugmentDataRecipe.CustomAugmentDefinition> effect;
           if (kind == 2) {
-              effect = Either.right(new AugmentDataRecipe.CustomAugmentDefinition(ResourceLocation.STREAM_CODEC.decode(buf)));
+              effect = Either.right(new AugmentDataRecipe.CustomAugmentDefinition(ByteBufCodecs.RESOURCE_LOCATION.decode(buf)));
           } else if (kind == 1) {
-              effect = Either.left(Either.right(new AugmentDataRecipe.ModifierDefinition(ResourceLocation.STREAM_CODEC.decode(buf), buf.readInt(), buf.readFloat())));
+              effect = Either.left(Either.right(new AugmentDataRecipe.ModifierDefinition(ByteBufCodecs.RESOURCE_LOCATION.decode(buf), buf.readInt(), buf.readFloat())));
           } else {
-              effect = Either.left(Either.left(new AugmentDataRecipe.EffectDefinition(ResourceLocation.STREAM_CODEC.decode(buf), buf.readInt())));
+              effect = Either.left(Either.left(new AugmentDataRecipe.EffectDefinition(ByteBufCodecs.RESOURCE_LOCATION.decode(buf), buf.readInt())));
           }
           return new AugmentDataRecipe(type, toggleable, researchCost, applyCost, requirements, requiredStation, uiX, uiY, time, rfCost, effect);
       }

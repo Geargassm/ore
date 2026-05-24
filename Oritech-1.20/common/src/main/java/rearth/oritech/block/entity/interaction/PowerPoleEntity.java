@@ -4,7 +4,7 @@ import dev.architectury.registry.menu.ExtendedMenuProvider;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
+
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -293,8 +293,8 @@ public class PowerPoleEntity extends NetworkedBlockEntity implements MultiblockM
     }
     
     @Override
-    protected void saveAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider registries) {
-        super.saveAdditional(tag, registries);
+    protected void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
         addMultiblockToNbt(tag);
         
         var connectionList = new ListTag();
@@ -308,8 +308,8 @@ public class PowerPoleEntity extends NetworkedBlockEntity implements MultiblockM
     }
     
     @Override
-    protected void loadAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider registries) {
-        super.loadAdditional(tag, registries);
+    protected void load(CompoundTag tag) {
+        super.load(tag);
         loadMultiblockNbtData(tag);
         
         if (tag.contains("connectionData")) {
@@ -622,7 +622,7 @@ public class PowerPoleEntity extends NetworkedBlockEntity implements MultiblockM
         public static Factory<PoleNetworkData> TYPE = new Factory<>(PoleNetworkData::new, PoleNetworkData::fromNbt, null);
         
         @Override
-        public @NotNull CompoundTag save(@NotNull CompoundTag tag, @NotNull HolderLookup.Provider registryLookup) {
+        public @NotNull CompoundTag save(@NotNull CompoundTag tag, @NotNull ) {
             
             var networksList = new ListTag();
             
@@ -650,7 +650,7 @@ public class PowerPoleEntity extends NetworkedBlockEntity implements MultiblockM
             return tag;
         }
         
-        public static PoleNetworkData fromNbt(CompoundTag nbt, HolderLookup.Provider registryLookup) {
+        public static PoleNetworkData fromNbt(CompoundTag nbt) {
             
             var data = new PoleNetworkData();
             

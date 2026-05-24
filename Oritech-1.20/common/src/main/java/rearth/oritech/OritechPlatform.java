@@ -1,6 +1,7 @@
 package rearth.oritech;
 
 import com.mojang.authlib.GameProfile;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
@@ -16,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import rearth.oritech.api.attachment.Attachment;
 import rearth.oritech.api.item.containers.SimpleInventoryStorage;
 import rearth.oritech.api.networking.PacketId;
+import rearth.oritech.compat.StreamCodec;
 
 import java.util.ServiceLoader;
 import java.util.function.Consumer;
@@ -33,9 +35,9 @@ public interface OritechPlatform {
 
     void sendToServer(PacketId<?> packetId, Consumer<FriendlyByteBuf> writer);
 
-    <T> void registerToClient(PacketId<T> packetId, TriConsumer<T, Level, Player> consumer);
+    <T> void registerToClient(PacketId<T> packetId, StreamCodec<FriendlyByteBuf, T> codec, TriConsumer<T, Level, Player> consumer);
 
-    <T> void registerToServer(PacketId<T> packetId, TriConsumer<T, Player, Level> consumer);
+    <T> void registerToServer(PacketId<T> packetId, StreamCodec<FriendlyByteBuf, T> codec, TriConsumer<T, Player, Level> consumer);
 
     // Attachment
     <T> void register(Attachment<T> attachment);

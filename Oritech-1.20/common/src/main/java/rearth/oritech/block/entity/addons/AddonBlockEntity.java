@@ -8,7 +8,7 @@ import rearth.oritech.util.MachineAddonProvider;
 
 import java.util.HashSet;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -48,16 +48,16 @@ public class AddonBlockEntity extends BlockEntity implements MachineAddonProvide
     }
     
     @Override
-    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.saveAdditional(nbt, registryLookup);
+    protected void saveAdditional(CompoundTag nbt) {
+        super.saveAdditional(nbt);
         nbt.putInt("controller_x", controllerPos.getX());
         nbt.putInt("controller_y", controllerPos.getY());
         nbt.putInt("controller_z", controllerPos.getZ());
     }
     
     @Override
-    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.loadAdditional(nbt, registryLookup);
+    protected void loadAdditional(CompoundTag nbt) {
+        super.loadAdditional(nbt);
         controllerPos = new BlockPos(nbt.getInt("controller_x"), nbt.getInt("controller_y"), nbt.getInt("controller_z"));
     }
 }

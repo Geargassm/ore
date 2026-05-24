@@ -2,10 +2,9 @@ package rearth.oritech.api.fluid.containers;
 
 import dev.architectury.fluid.FluidStack;
 import rearth.oritech.api.fluid.FluidApi;
+import rearth.oritech.init.ComponentContent;
 
 import java.util.function.Consumer;
-// TODO_1_20: DataComponents not available in 1.20.1 - needs NBT conversion
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
 
 public class SimpleItemFluidStorage extends SimpleFluidStorage {
@@ -16,28 +15,22 @@ public class SimpleItemFluidStorage extends SimpleFluidStorage {
     public SimpleItemFluidStorage(Long capacity, ItemStack itemStack) {
         super(capacity);
         this.itemStack = itemStack;
-        this.setStack(itemStack.getOrDefault(FluidApi.ITEM.getFluidComponent(), FluidStack.empty()));
-        
-        if (!this.getStack().isEmpty())
-// TODO_1_20: DataComponents not available in 1.20.1 - needs NBT conversion
-            itemStack.set(DataComponents.MAX_STACK_SIZE, 1);
+        var stored = ComponentContent.getFromNbt(itemStack, ComponentContent.storedFluidKey(), FluidStack.CODEC);
+        this.setStack(stored != null ? stored : FluidStack.empty());
     }
-    
+
     @Override
     public void update() {
         super.update();
-        
+
         if (this.getStack().isEmpty()) {
-            itemStack.remove(FluidApi.ITEM.getFluidComponent());
-// TODO_1_20: DataComponents not available in 1.20.1 - needs NBT conversion
-            itemStack.set(DataComponents.MAX_STACK_SIZE, itemStack.getItem().getDefaultMaxStackSize());
+            var tag = itemStack.getTag();
+            if (tag != null) tag.remove(ComponentContent.storedFluidKey());
             return;
         }
-        
-        itemStack.set(FluidApi.ITEM.getFluidComponent(), this.getStack());
-// TODO_1_20: DataComponents not available in 1.20.1 - needs NBT conversion
-        itemStack.set(DataComponents.MAX_STACK_SIZE, 1);
-        
+
+        ComponentContent.setToNbt(itemStack, ComponentContent.storedFluidKey(), this.getStack(), FluidStack.CODEC);
+
         if (contextCallback != null) contextCallback.accept(itemStack);
     }
     

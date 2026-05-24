@@ -4,7 +4,7 @@ import dev.architectury.fluid.FluidStack;
 import dev.architectury.hooks.fluid.FluidStackHooks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.item.ItemStack;
@@ -140,17 +140,17 @@ public abstract class FluidMultiblockGeneratorBlockEntity extends MultiblockGene
     }
     
     @Override
-    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.saveAdditional(nbt, registryLookup);
+    protected void saveAdditional(CompoundTag nbt) {
+        super.saveAdditional(nbt);
         fluidStorage.writeNbt(nbt, "");
-        ContainerHelper.saveAllItems(nbt, inventory.heldStacks, false, registryLookup);
+        ContainerHelper.saveAllItems(nbt, inventory.heldStacks, false);
     }
     
     @Override
-    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.loadAdditional(nbt, registryLookup);
+    protected void loadAdditional(CompoundTag nbt) {
+        super.loadAdditional(nbt);
         fluidStorage.readNbt(nbt, "");
-        ContainerHelper.loadAllItems(nbt, inventory.heldStacks, registryLookup);
+        ContainerHelper.loadAllItems(nbt, inventory.heldStacks);
     }
     
     @Override

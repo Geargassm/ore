@@ -1,9 +1,8 @@
 package rearth.oritech.block.entity.pipes;
+import rearth.oritech.api.networking.PacketId;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -300,7 +299,7 @@ public class ItemPipeInterfaceEntity extends ExtractablePipeInterfaceEntity {
         return Direction.fromDelta(offset.getX(), offset.getY(), offset.getZ());
     }
     
-    public static void receiveVisualItemsPacket(RenderStackData message, Level world, RegistryAccess registryAccess) {
+    public static void receiveVisualItemsPacket(RenderStackData message, Level world, Player player) {
         var blockEntity = world.getBlockEntity(message.self, BlockEntitiesContent.ITEM_PIPE_ENTITY);
         if (blockEntity.isPresent()) {
             var pipeEntity = blockEntity.get();
@@ -315,13 +314,9 @@ public class ItemPipeInterfaceEntity extends ExtractablePipeInterfaceEntity {
             level.blockEntityChanged(worldPosition);
     }
     
-    public record RenderStackData(BlockPos self, ItemStack rendered, List<BlockPos> path, Long startedAt, int pathLength) implements CustomPacketPayload {
+    public record RenderStackData(BlockPos self, ItemStack rendered, List<BlockPos> path, Long startedAt, int pathLength) {
         
-        public static final CustomPacketPayload.Type<RenderStackData> PIPE_ITEMS_ID = new CustomPacketPayload.Type<>(Oritech.id("pipe_items"));
+        public static final PacketId<RenderStackData> PIPE_ITEMS_ID = new PacketId<>(Oritech.id("pipe_items"));
         
-        @Override
-        public Type<? extends CustomPacketPayload> type() {
-            return PIPE_ITEMS_ID;
-        }
     }
 }

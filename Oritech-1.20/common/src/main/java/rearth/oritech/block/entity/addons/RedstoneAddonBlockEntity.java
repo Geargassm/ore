@@ -1,13 +1,12 @@
 package rearth.oritech.block.entity.addons;
+import rearth.oritech.api.networking.PacketId;
 
 import dev.architectury.registry.menu.ExtendedMenuProvider;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.RegistryAccess;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -55,15 +54,15 @@ public class RedstoneAddonBlockEntity extends AddonBlockEntity implements BlockE
     }
     
     @Override
-    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.saveAdditional(nbt, registryLookup);
+    protected void saveAdditional(CompoundTag nbt) {
+        super.saveAdditional(nbt);
         nbt.putInt("slot", monitoredSlot);
         nbt.putInt("mode", activeMode.ordinal());
     }
     
     @Override
-    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.loadAdditional(nbt, registryLookup);
+    protected void loadAdditional(CompoundTag nbt) {
+        super.loadAdditional(nbt);
         monitoredSlot = nbt.getInt("slot");
         activeMode = RedstoneMode.values()[nbt.getInt("mode")];
     }
@@ -125,14 +124,14 @@ public class RedstoneAddonBlockEntity extends AddonBlockEntity implements BlockE
         return Component.literal("");
     }
     
-    public static void receiveOnServer(RedstoneAddonServerUpdate message, Player player, RegistryAccess dynamicRegistryManager) {
+    public static void receiveOnServer(RedstoneAddonServerUpdate message, Player player, Level level) {
         if (player.level().getBlockEntity(message.position) instanceof RedstoneAddonBlockEntity addonEntity) {
             addonEntity.activeMode = RedstoneMode.values()[message.targetMode()];
             addonEntity.monitoredSlot = message.targetSlot();
         }
     }
     
-    public static void receiveOnClient(RedstoneAddonClientUpdate message, Level world, RegistryAccess dynamicRegistryManager) {
+    public static void receiveOnClient(RedstoneAddonClientUpdate message, Level world, Player player) {
         if (world.getBlockEntity(message.position) instanceof RedstoneAddonBlockEntity addonEntity) {
             addonEntity.currentOutput = message.currentOutput();
             addonEntity.activeMode = RedstoneMode.values()[message.targetMode()];
@@ -163,23 +162,15 @@ public class RedstoneAddonBlockEntity extends AddonBlockEntity implements BlockE
     }
     
     // we need 2 here because Neoforge is annoying as always and doesnt let me register it in both directions
-    public record RedstoneAddonClientUpdate(BlockPos position, BlockPos controllerPos, int targetSlot, int targetMode, int currentOutput) implements CustomPacketPayload {
+    public record RedstoneAddonClientUpdate(BlockPos position, BlockPos controllerPos, int targetSlot, int targetMode, int currentOutput) {
         
-        public static final CustomPacketPayload.Type<RedstoneAddonClientUpdate> PACKET_ID = new CustomPacketPayload.Type<>(Oritech.id("redstoneaddonclient"));
+        public static final PacketId<RedstoneAddonClientUpdate> PACKET_ID = new PacketId<>(Oritech.id("redstoneaddonclient"));
         
-        @Override
-        public Type<? extends CustomPacketPayload> type() {
-            return PACKET_ID;
-        }
     }
     
-    public record RedstoneAddonServerUpdate(BlockPos position, BlockPos controllerPos, int targetSlot, int targetMode, int currentOutput) implements CustomPacketPayload {
+    public record RedstoneAddonServerUpdate(BlockPos position, BlockPos controllerPos, int targetSlot, int targetMode, int currentOutput) {
         
-        public static final CustomPacketPayload.Type<RedstoneAddonServerUpdate> PACKET_ID = new CustomPacketPayload.Type<>(Oritech.id("redstoneaddonserver"));
+        public static final PacketId<RedstoneAddonServerUpdate> PACKET_ID = new PacketId<>(Oritech.id("redstoneaddonserver"));
         
-        @Override
-        public Type<? extends CustomPacketPayload> type() {
-            return PACKET_ID;
-        }
     }
 }

@@ -1,7 +1,7 @@
 package rearth.oritech.block.entity.addons;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
@@ -21,8 +21,8 @@ public class CombiAddonEntity extends AddonBlockEntity {
     }
     
     @Override
-    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.saveAdditional(nbt, registryLookup);
+    protected void saveAdditional(CompoundTag nbt) {
+        super.saveAdditional(nbt);
         
         if (this.storedData != null) {
             ShrinkerBlockEntity.ShrunkAddonData.CODEC.encodeStart(registryLookup.createSerializationContext(NbtOps.INSTANCE), this.storedData)
@@ -32,8 +32,8 @@ public class CombiAddonEntity extends AddonBlockEntity {
     }
     
     @Override
-    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.loadAdditional(nbt, registryLookup);
+    protected void loadAdditional(CompoundTag nbt) {
+        super.loadAdditional(nbt);
         
         if (nbt.contains("data", Tag.TAG_COMPOUND)) {
             var dataTag = nbt.get("data");

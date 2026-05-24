@@ -3,7 +3,7 @@ package rearth.oritech.block.entity.augmenter;
 import dev.architectury.registry.menu.ExtendedMenuProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
+
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -108,9 +108,9 @@ public class AugmentApplicationEntity extends NetworkedBlockEntity implements Mu
     
     // persist researched augments, inventory, energy
     @Override
-    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.saveAdditional(nbt, registryLookup);
-        ContainerHelper.saveAllItems(nbt, inventory.heldStacks, false, registryLookup);
+    protected void saveAdditional(CompoundTag nbt) {
+        super.saveAdditional(nbt);
+        ContainerHelper.saveAllItems(nbt, inventory.heldStacks, false);
         nbt.putLong("rf", energyStorage.getAmount());
         addMultiblockToNbt(nbt);
         
@@ -133,9 +133,9 @@ public class AugmentApplicationEntity extends NetworkedBlockEntity implements Mu
     }
     
     @Override
-    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.loadAdditional(nbt, registryLookup);
-        ContainerHelper.loadAllItems(nbt, inventory.heldStacks, registryLookup);
+    protected void loadAdditional(CompoundTag nbt) {
+        super.loadAdditional(nbt);
+        ContainerHelper.loadAllItems(nbt, inventory.heldStacks);
         energyStorage.setAmount(nbt.getLong("rf"));
         loadMultiblockNbtData(nbt);
         
@@ -520,9 +520,9 @@ public class AugmentApplicationEntity extends NetworkedBlockEntity implements Mu
         public long researchStartedAt;
         
         public static StreamCodec<FriendlyByteBuf, ResearchState> PACKET_CODEC = StreamCodec.composite(
-          ResourceLocation.STREAM_CODEC.map(BuiltInRegistries.BLOCK::get, BuiltInRegistries.BLOCK::getKey), ResearchState::getType,
+          ByteBufCodecs.RESOURCE_LOCATION.map(BuiltInRegistries.BLOCK::get, BuiltInRegistries.BLOCK::getKey), ResearchState::getType,
           ByteBufCodecs.BOOL, ResearchState::getWorking,
-          ResourceLocation.STREAM_CODEC, ResearchState::getSelectedResearch,
+          ByteBufCodecs.RESOURCE_LOCATION, ResearchState::getSelectedResearch,
           ByteBufCodecs.INT, ResearchState::getWorkTime,
           ByteBufCodecs.VAR_LONG, ResearchState::getResearchStartedAt,
           ResearchState::new

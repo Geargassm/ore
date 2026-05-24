@@ -473,12 +473,12 @@ public class BlockContent implements ArchitecturyBlockRegistryContainer {
             Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(namespace, identifier), item);
             FluidApi.ITEM.registerForItem(() -> item);
         } else if (value.equals(BlockContent.SMALL_STORAGE_BLOCK) && EnergyApi.ITEM != null) {
-            var item = new SmallEnergyStorageBlockItem(value, new Item.Properties().component(EnergyApi.ITEM.getEnergyComponent(), 0L));
+            var item = new SmallEnergyStorageBlockItem(value, new Item.Properties());
             Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(namespace, identifier), item);
             EnergyApi.ITEM.registerForItem(() -> item);
-            
+
             var variantStack = new ItemStack(item);
-            variantStack.set(EnergyApi.ITEM.getEnergyComponent(), 1_000_000L);
+            variantStack.getOrCreateTag().putLong("oritech_energy", 1_000_000L);
             ItemGroups.add(targetGroup, variantStack);
             
         } else {

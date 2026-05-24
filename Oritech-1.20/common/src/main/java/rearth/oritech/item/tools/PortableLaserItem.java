@@ -1,15 +1,12 @@
 package rearth.oritech.item.tools;
+import rearth.oritech.api.networking.PacketId;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.RegistryAccess;
-// TODO_1_20: DataComponents not available in 1.20.1 - needs NBT conversion
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -31,7 +28,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -357,13 +353,16 @@ public class PortableLaserItem extends Item implements OritechEnergyItem, GeoIte
         
     }
     
-    // A hack to do this without context of the DRM
+    // Get enchantment level from NBT in 1.20.1
     public static int getEnchantmentLevel(ItemStack stack, ResourceKey<Enchantment> enchantment) {
-// TODO_1_20: DataComponents not available in 1.20.1 - needs NBT conversion
-        var enchantments = stack.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
-        for (var entry : enchantments.keySet()) {
-            if (entry.unwrapKey().isPresent() && entry.unwrapKey().get().equals(enchantment)) {
-                return enchantments.getLevel(entry);
+        var tag = stack.getTag();
+        if (tag == null || !tag.contains("Enchantments", net.minecraft.nbt.Tag.TAG_LIST)) return 0;
+        var enchList = tag.getList("Enchantments", net.minecraft.nbt.Tag.TAG_COMPOUND);
+        var targetId = enchantment.location().toString();
+        for (int i = 0; i < enchList.size(); i++) {
+            var entry = enchList.getCompound(i);
+            if (targetId.equals(entry.getString("id"))) {
+                return entry.getShort("lvl");
             }
         }
         return 0;
@@ -421,11 +420,11 @@ public class PortableLaserItem extends Item implements OritechEnergyItem, GeoIte
     }
     
     public boolean isMiningEnabled(ItemStack stack) {
-        return stack.getOrDefault(ComponentContent.IS_AOE_ACTIVE.get(), false);
+        return ComponentContent.getIsAoeActive(stack);
     }
-    
+
     public void setMiningEnabled(ItemStack stack, boolean status) {
-        stack.set(ComponentContent.IS_AOE_ACTIVE.get(), status);
+        ComponentContent.setIsAoeActive(stack, status);
     }
     
     @Override
@@ -493,17 +492,13 @@ public class PortableLaserItem extends Item implements OritechEnergyItem, GeoIte
         return cache;
     }
     
-    public static void receiveUsePacket(LaserPlayerUsePacket packet, Player player, RegistryAccess dynamicRegistryManager) {
+    public static void receiveUsePacket(LaserPlayerUsePacket packet, Player player, Level level) {
         PortableLaserItem.onUseTick(player);
     }
     
-    public record LaserPlayerUsePacket() implements CustomPacketPayload {
+    public record LaserPlayerUsePacket() {
         
-        public static final CustomPacketPayload.Type<LaserPlayerUsePacket> PACKET_ID = new CustomPacketPayload.Type<>(Oritech.id("laser_use"));
+        public static final PacketId<LaserPlayerUsePacket> PACKET_ID = new PacketId<>(Oritech.id("laser_use"));
         
-        @Override
-        public Type<? extends CustomPacketPayload> type() {
-            return PACKET_ID;
-        }
     }
 }

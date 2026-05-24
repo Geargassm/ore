@@ -1,4 +1,5 @@
 package rearth.oritech.block.entity.accelerator;
+import rearth.oritech.api.networking.PacketId;
 
 import dev.architectury.registry.menu.ExtendedMenuProvider;
 import net.minecraft.client.Minecraft;
@@ -7,7 +8,6 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -83,9 +83,9 @@ public class AcceleratorControllerBlockEntity extends BlockEntity implements Blo
     }
     
     @Override
-    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.saveAdditional(nbt, registryLookup);
-        ContainerHelper.saveAllItems(nbt, inventory.heldStacks, false, registryLookup);
+    protected void saveAdditional(CompoundTag nbt) {
+        super.saveAdditional(nbt);
+        ContainerHelper.saveAllItems(nbt, inventory.heldStacks, false);
         
         if (particle != null && activeItemParticle != null && activeItemParticle != ItemStack.EMPTY) {
             var data = new CompoundTag();
@@ -103,9 +103,9 @@ public class AcceleratorControllerBlockEntity extends BlockEntity implements Blo
     }
     
     @Override
-    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.loadAdditional(nbt, registryLookup);
-        ContainerHelper.loadAllItems(nbt, inventory.heldStacks, registryLookup);
+    protected void loadAdditional(CompoundTag nbt) {
+        super.loadAdditional(nbt);
+        ContainerHelper.loadAllItems(nbt, inventory.heldStacks);
         
         if (nbt.contains("particle")) {
             var data = nbt.getCompound("particle");
@@ -485,7 +485,7 @@ public class AcceleratorControllerBlockEntity extends BlockEntity implements Blo
         return false;
     }
     
-    public static void receiveTrail(ParticleRenderTrail packet, Level world, RegistryAccess dynamicRegistryManager) {
+    public static void receiveTrail(ParticleRenderTrail packet, Level world, Player player) {
         if (world.getBlockEntity(packet.position) instanceof AcceleratorControllerBlockEntity acceleratorBlock) {
             var displayTrail = packet.particleTrail;
             acceleratorBlock.displayTrail = displayTrail;
@@ -510,7 +510,7 @@ public class AcceleratorControllerBlockEntity extends BlockEntity implements Blo
         }
     }
     
-    public static void receiveEvent(LastEventPacket packet, Level world, RegistryAccess dynamicRegistryManager) {
+    public static void receiveEvent(LastEventPacket packet, Level world, Player player) {
         if (world.getBlockEntity(packet.position) instanceof AcceleratorControllerBlockEntity acceleratorBlock) {
             acceleratorBlock.lastEvent = packet;
             
@@ -531,14 +531,10 @@ public class AcceleratorControllerBlockEntity extends BlockEntity implements Blo
                                   BlockPos lastEventPosition,  // where it collided/exited
                                   float minBendDist,   // acceptable dist can be calculated from dist
                                   ItemStack activeParticle
-    ) implements CustomPacketPayload {
+    ) {
         
-        public static final CustomPacketPayload.Type<LastEventPacket> PACKET_ID = new CustomPacketPayload.Type<>(Oritech.id("accel_event"));
+        public static final PacketId<LastEventPacket> PACKET_ID = new PacketId<>(Oritech.id("accel_event"));
         
-        @Override
-        public Type<? extends CustomPacketPayload> type() {
-            return PACKET_ID;
-        }
     }
     
     public enum ParticleEvent {
@@ -550,13 +546,9 @@ public class AcceleratorControllerBlockEntity extends BlockEntity implements Blo
         EXITED_NO_GATE  // no gate found in range
     }
     
-    public record ParticleRenderTrail(BlockPos position, List<Vec3> particleTrail) implements CustomPacketPayload {
+    public record ParticleRenderTrail(BlockPos position, List<Vec3> particleTrail) {
         
-        public static final CustomPacketPayload.Type<ParticleRenderTrail> PACKET_ID = new CustomPacketPayload.Type<>(Oritech.id("accel_render"));
+        public static final PacketId<ParticleRenderTrail> PACKET_ID = new PacketId<>(Oritech.id("accel_render"));
         
-        @Override
-        public Type<? extends CustomPacketPayload> type() {
-            return PACKET_ID;
-        }
     }
 }

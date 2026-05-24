@@ -1,10 +1,11 @@
 package rearth.oritech.api.recipe;
 
 import dev.architectury.fluid.FluidStack;
-import net.minecraft.core.HolderLookup;
+
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;
+import java.util.function.Consumer;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -22,19 +23,19 @@ import rearth.oritech.block.entity.augmenter.api.CustomAugmentsCollection;
 import rearth.oritech.init.*;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
+
 
 import static rearth.oritech.api.recipe.util.RecipeHelpers.*;
 import static rearth.oritech.util.TagUtils.*;
 
 public class OritechRecipeGenerator extends RecipeProvider {
     
-    public OritechRecipeGenerator(PackOutput output, CompletableFuture<HolderLookup.Provider> registriesFuture) {
-        super(output, registriesFuture);
+    public OritechRecipeGenerator(PackOutput output) {
+        super(output);
     }
     
     @Override
-    public void buildRecipes(RecipeOutput exporter) {
+    protected void buildRecipes(Consumer<FinishedRecipe> exporter) {
         
         addDeepDrillOres(exporter);
         addFuels(exporter);
@@ -59,7 +60,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
         addPaintRecipes(exporter);
     }
     
-    private void addVanillaAdditions(RecipeOutput exporter) {
+    private void addVanillaAdditions(Consumer<FinishedRecipe> exporter) {
         
         // slimeball from honey and biomass
         AssemblerRecipeBuilder.build().input(Items.HONEYCOMB).input(TagContent.BIOMASS).input(TagContent.BIOMASS).input(TagContent.BIOMASS).result(Items.SLIME_BALL).timeMultiplier(0.8f).export(exporter, "slime");
@@ -115,7 +116,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
         PulverizerRecipeBuilder.build().input(TagContent.RECYCLES_TO_BIOMASS).result(ItemContent.BIOMASS).export(exporter, "recycle/biomass");
     }
     
-    private void addDyes(RecipeOutput exporter) {
+    private void addDyes(Consumer<FinishedRecipe> exporter) {
         PulverizerRecipeBuilder.build().input(TagContent.RAW_WHITE_DYE).result(Items.WHITE_DYE).addToGrinder().export(exporter, "dyes/white");
         PulverizerRecipeBuilder.build().input(TagContent.RAW_LIGHT_GRAY_DYE).result(Items.LIGHT_GRAY_DYE).addToGrinder().export(exporter, "dyes/light_gray");
         PulverizerRecipeBuilder.build().input(TagContent.RAW_BLACK_DYE).result(Items.BLACK_DYE).addToGrinder().export(exporter, "dyes/black");
@@ -128,7 +129,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
         PulverizerRecipeBuilder.build().input(TagContent.RAW_PINK_DYE).result(Items.PINK_DYE).addToGrinder().export(exporter, "dyes/pink");
     }
     
-    private void addDeepDrillOres(RecipeOutput exporter) {
+    private void addDeepDrillOres(Consumer<FinishedRecipe> exporter) {
         DeepDrillRecipeBuilder.build().input(BlockContent.RESOURCE_NODE_REDSTONE).result(Items.REDSTONE).export(exporter, "redstone");
         DeepDrillRecipeBuilder.build().input(BlockContent.RESOURCE_NODE_LAPIS).result(Items.LAPIS_LAZULI).export(exporter, "lapis");
         DeepDrillRecipeBuilder.build().input(BlockContent.RESOURCE_NODE_IRON).result(Items.RAW_IRON).export(exporter, "iron");
@@ -142,7 +143,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
         DeepDrillRecipeBuilder.build().input(BlockContent.RESOURCE_NODE_URANIUM).result(ItemContent.RAW_URANIUM).export(exporter, "uranium");
     }
     
-    private void addFuels(RecipeOutput exporter) {
+    private void addFuels(Consumer<FinishedRecipe> exporter) {
         
         // bio
         BioGeneratorRecipeBuilder.build().input(TagContent.BIOMATTER).timeInSeconds(15).export(exporter, "rawbio");
@@ -167,7 +168,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
         SteamGeneratorRecipeBuilder.build().specificFluidInput(TagContent.STEAM, 32).time(1).export(exporter, "steameng");
     }
     
-    private void addFluidProcessing(RecipeOutput exporter) {
+    private void addFluidProcessing(Consumer<FinishedRecipe> exporter) {
         
         // crude oil processing
         RefineryRecipeBuilder.build()
@@ -317,7 +318,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
           .export(exporter, "unholyai");
     }
     
-    private void addBiomass(RecipeOutput exporter) {
+    private void addBiomass(Consumer<FinishedRecipe> exporter) {
         // biomass
         PulverizerRecipeBuilder.build().input(TagContent.BIOMATTER).result(ItemContent.BIOMASS).addToGrinder().export(exporter, "biobasic");
         PulverizerRecipeBuilder.build().input(ItemContent.PACKED_WHEAT).result(ItemContent.BIOMASS, 16).addToGrinder().export(exporter, "packagedwheatbio");
@@ -325,7 +326,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
         AssemblerRecipeBuilder.build().input(TagContent.BIOMASS).input(TagContent.BIOMASS).input(TagContent.BIOMASS).input(ItemTags.PLANKS).result(ItemContent.SOLID_BIOFUEL).timeMultiplier(0.8f).export(exporter, "solidbiofuel");
     }
     
-    private void addEquipment(RecipeOutput exporter) {
+    private void addEquipment(Consumer<FinishedRecipe> exporter) {
         offerDrillRecipe(exporter, ToolsContent.HAND_DRILL, of(TagContent.STEEL_INGOTS), of(ItemContent.MOTOR), of(ItemContent.ENDERIC_COMPOUND), of(ItemContent.ADAMANT_INGOT), "handdrill");
         offerChainsawRecipe(exporter, ToolsContent.CHAINSAW, of(TagContent.STEEL_INGOTS), of(ItemContent.MOTOR), of(ItemContent.ENDERIC_COMPOUND), of(ItemContent.ADAMANT_INGOT), "chainsaw");
         offerAxeRecipe(exporter, ToolsContent.PROMETHIUM_AXE, of(ItemContent.PROMETHEUM_INGOT), of(BlockContent.DESTROYER_BLOCK.asItem()), "promaxe");
@@ -368,7 +369,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
         
     }
     
-    private void addDecorative(RecipeOutput exporter) {
+    private void addDecorative(Consumer<FinishedRecipe> exporter) {
         // ceiling light
         offerInsulatedCableRecipe(exporter, new ItemStack(BlockContent.CEILING_LIGHT.asItem(), 6), of(Items.GLOWSTONE_DUST), of(TagContent.STEEL_INGOTS), "ceilightlight");
         // hanging light
@@ -412,7 +413,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
         offerPressurePlateRecipe(exporter, BlockContent.CARBON_PLATING_PRESSURE_PLATE.asItem(), of(BlockContent.CARBON_PLATING_BLOCK.asItem()), "carbon");
     }
     
-    private void addMachines(RecipeOutput exporter) {
+    private void addMachines(Consumer<FinishedRecipe> exporter) {
         // basic generator
         offerGeneratorRecipe(exporter, BlockContent.BASIC_GENERATOR_BLOCK.asItem(), of(cItemTag("player_workstations/furnaces")), of(ItemContent.MAGNETIC_COIL), of(cItemTag("ingots/copper")), of(TagContent.NICKEL_INGOTS), "basicgen");
         // pulverizer
@@ -605,7 +606,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
         
     }
     
-    private void addComponents(RecipeOutput exporter) {
+    private void addComponents(Consumer<FinishedRecipe> exporter) {
         // coal stuff (including basic steel)
         CentrifugeRecipeBuilder.build().input(TagContent.COAL_DUSTS).result(ItemContent.CARBON_FIBRE_STRANDS).timeMultiplier(0.5f).export(exporter, "carbon");
         offerManualAlloyRecipe(exporter, ItemContent.STEEL_INGOT, of(cItemTag("ingots/iron")), of(ItemTags.COALS), "steel");
@@ -703,7 +704,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
         CoolerRecipeBuilder.build().fluidInput(Fluids.LAVA).result(Items.OBSIDIAN, 2).export(exporter, "obsidian");
     }
     
-    private void addCompactingRecipes(RecipeOutput exporter) {
+    private void addCompactingRecipes(Consumer<FinishedRecipe> exporter) {
         addCompactingRecipe(exporter, BlockContent.STEEL_BLOCK, ItemContent.STEEL_INGOT, of(TagContent.STEEL_INGOTS), of(getStorageBlockTag("steel")));
         addCompactingRecipe(exporter, BlockContent.ENERGITE_BLOCK, ItemContent.ENERGITE_INGOT, of(getIngotTag("energite")), of(getStorageBlockTag("energite")));
         addCompactingRecipe(exporter, BlockContent.NICKEL_BLOCK, ItemContent.NICKEL_INGOT, of(getIngotTag("nickel")), of(getStorageBlockTag("nickel")));
@@ -725,22 +726,22 @@ public class OritechRecipeGenerator extends RecipeProvider {
 
     // offerSmelting, offerBlasting, and offerMultipleOptions copied from RecipeProvider, and altered to force Oritech id onto recipes
     // I don't really like this, but any other way I found to get these recipes to have the oritech namespace in Neoforge wasn't working.
-    public static void oreSmelting(RecipeOutput exporter, List<ItemLike> inputs, RecipeCategory category, ItemLike output, float experience, int cookingTime, String group) {
+    public static void oreSmelting(Consumer<FinishedRecipe> exporter, List<ItemLike> inputs, RecipeCategory category, ItemLike output, float experience, int cookingTime, String group) {
       oreCooking(exporter, RecipeSerializer.SMELTING_RECIPE, SmeltingRecipe::new, inputs, category, output, experience, cookingTime, group, "_from_smelting");
     }
 
-    public static void oreBlasting(RecipeOutput exporter, List<ItemLike> inputs, RecipeCategory category, ItemLike output, float experience, int cookingTime, String group) {
+    public static void oreBlasting(Consumer<FinishedRecipe> exporter, List<ItemLike> inputs, RecipeCategory category, ItemLike output, float experience, int cookingTime, String group) {
       oreCooking(exporter, RecipeSerializer.BLASTING_RECIPE, BlastingRecipe::new, inputs, category, output, experience, cookingTime, group, "_from_blasting");
     }
 
-    public static <T extends AbstractCookingRecipe> void oreCooking(RecipeOutput exporter, RecipeSerializer<T> serializer, AbstractCookingRecipe.Factory<T> recipeFactory, List<ItemLike> inputs, RecipeCategory category, ItemLike output, float experience, int cookingTime, String group, String suffix) {
+    public static <T extends AbstractCookingRecipe> void oreCooking(Consumer<FinishedRecipe> exporter, RecipeSerializer<T> serializer, AbstractCookingRecipe.Factory<T> recipeFactory, List<ItemLike> inputs, RecipeCategory category, ItemLike output, float experience, int cookingTime, String group, String suffix) {
         
         for (var itemConvertible : inputs) {
             SimpleCookingRecipeBuilder.generic(Ingredient.of(itemConvertible), category, output, experience, cookingTime, serializer, recipeFactory).group(group).unlockedBy(getHasName(itemConvertible), has(itemConvertible)).save(exporter, Oritech.id(getItemName(output) + suffix + "_" + getItemName(itemConvertible)));
         }
     }
     
-    private void addOreChains(RecipeOutput exporter) {
+    private void addOreChains(Consumer<FinishedRecipe> exporter) {
         
         // basic smelting for nickel + platinum
         oreSmelting(exporter, List.of(ItemContent.RAW_NICKEL), RecipeCategory.MISC, ItemContent.NICKEL_INGOT, 1f, 200, "nickelsmelting");
@@ -808,7 +809,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
         
     }
     
-    private void addAlloys(RecipeOutput exporter) {
+    private void addAlloys(Consumer<FinishedRecipe> exporter) {
         FoundryRecipeBuilder.build().input(TagContent.PLATINUM_INGOTS).input(cItemTag("ingots/netherite")).result(ItemContent.DURATIUM_INGOT).export(exporter, "duratium");
         FoundryRecipeBuilder.build().input(cItemTag("ingots/gold")).input(cItemTag("dusts/redstone")).result(ItemContent.ELECTRUM_INGOT).export(exporter, "electrum");
         FoundryRecipeBuilder.build().input(cItemTag("gems/diamond")).input(TagContent.NICKEL_INGOTS).result(ItemContent.ADAMANT_INGOT).export(exporter, "adamant");
@@ -817,7 +818,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
         AtomicForgeRecipeBuilder.build().input(TagContent.PLATINUM_INGOTS).input(ItemContent.REINFORCED_CARBON_SHEET).input(ItemContent.REINFORCED_CARBON_SHEET).result(ItemContent.DURATIUM_INGOT).export(exporter, "duratium");
     }
     
-    private void addParticleCollisions(RecipeOutput exporter) {
+    private void addParticleCollisions(Consumer<FinishedRecipe> exporter) {
         // diamond from coal dust
         ParticleCollisionRecipeBuilder.build().input(TagContent.COAL_DUSTS).input(TagContent.COAL_DUSTS).result(Items.DIAMOND).time(500).export(exporter, "diamond");
         // overcharged crystal from fluxite and energite dust
@@ -840,7 +841,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
         ParticleCollisionRecipeBuilder.build().input(Items.REINFORCED_DEEPSLATE).input(ItemContent.DURATIUM_DUST).result(Items.HEAVY_CORE).time(8000).export(exporter, "heavy_core");
     }
     
-    private void addDusts(RecipeOutput exporter) {
+    private void addDusts(Consumer<FinishedRecipe> exporter) {
         addDustRecipe(exporter, of(ItemContent.BIOSTEEL_INGOT), ItemContent.BIOSTEEL_DUST, ItemContent.BIOSTEEL_INGOT, "biosteel");
         addDustRecipe(exporter, of(ItemContent.DURATIUM_INGOT), ItemContent.DURATIUM_DUST, ItemContent.DURATIUM_INGOT, "duratium");
         addDustRecipe(exporter, of(TagContent.ELECTRUM_INGOTS), ItemContent.ELECTRUM_DUST, ItemContent.ELECTRUM_INGOT, "electrum");
@@ -882,7 +883,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
         GrinderRecipeBuilder.build().input(Items.ANCIENT_DEBRIS).result(Items.NETHERITE_SCRAP, 2).export(exporter, "netheritescrap");
     }
     
-    private void addUraniumProcessing(RecipeOutput exporter) {
+    private void addUraniumProcessing(Consumer<FinishedRecipe> exporter) {
         // uranium order is:
         // raw ore -> dust/gem, dust -> gem, gem -> pellets
         
@@ -930,7 +931,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
         addCompactingRecipe(exporter, ItemContent.PLUTONIUM_PELLET, ItemContent.SMALL_PLUTONIUM_PELLET, of(ItemContent.SMALL_PLUTONIUM_PELLET), of(ItemContent.PLUTONIUM_PELLET));
     }
     
-    private void addPaintRecipes(RecipeOutput exporter) {
+    private void addPaintRecipes(Consumer<FinishedRecipe> exporter) {
         
         offerPaintRecipe(exporter, ItemContent.DIAMOND_PAINT, of(ItemContent.ADAMANT_DUST), of(Items.CYAN_DYE), of(TagContent.PLASTIC_PLATES), "_diamondpaint");
         offerPaintRecipe(exporter, ItemContent.CAMO_PAINT, of(TagContent.BIOMASS), of(Items.GREEN_DYE), of(TagContent.PLASTIC_PLATES), "_camopaint");
@@ -944,7 +945,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
         
     }
     
-    private void addAugmentRecipes(RecipeOutput exporter) {
+    private void addAugmentRecipes(Consumer<FinishedRecipe> exporter) {
         
         var SIMPLE_AUGMENT_STATION_ID = BuiltInRegistries.BLOCK.getKey(BlockContent.SIMPLE_AUGMENT_STATION);
         var ADVANCED_AUGMENT_STATION_ID = BuiltInRegistries.BLOCK.getKey(BlockContent.ADVANCED_AUGMENT_STATION);
@@ -1286,7 +1287,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
           .export(exporter, "orefinder");
     }
     
-    private void addReactorBlocks(RecipeOutput exporter) {
+    private void addReactorBlocks(Consumer<FinishedRecipe> exporter) {
         
         // single rod
         offerRodRecipe(exporter, BlockContent.REACTOR_ROD.asItem(), of(TagContent.PLASTIC_PLATES), of(ItemContent.ENERGITE_INGOT), "singlerod");
@@ -1331,19 +1332,19 @@ public class OritechRecipeGenerator extends RecipeProvider {
         offerMachinePlatingRecipe(exporter, BlockContent.NUKE.asItem(), of(ItemContent.HEISENBERG_COMPENSATOR), of(ItemContent.PLUTONIUM_PELLET), of(Items.TNT), 1, "nukebetter");
     }
     
-    private void addReactorFuels(RecipeOutput exporter) {
+    private void addReactorFuels(Consumer<FinishedRecipe> exporter) {
         ReactorGeneratorRecipeBuilder.build().input(ItemContent.SMALL_URANIUM_PELLET).time(400).export(exporter, "smallpellet");
         ReactorGeneratorRecipeBuilder.build().input(ItemContent.URANIUM_PELLET).time(4000).export(exporter, "pellet");
         ReactorGeneratorRecipeBuilder.build().input(ItemContent.SMALL_PLUTONIUM_PELLET).time(4000).export(exporter, "smallplutoniumpellet");
         ReactorGeneratorRecipeBuilder.build().input(ItemContent.PLUTONIUM_PELLET).time(40000).export(exporter, "plutoniumpellet");
     }
     
-    private void addLaserTransformations(RecipeOutput exporter) {
+    private void addLaserTransformations(Consumer<FinishedRecipe> exporter) {
         LaserRecipeBuilder.build().input(Items.AMETHYST_CLUSTER).result(ItemContent.FLUXITE).export(exporter, "fluxite");
         LaserRecipeBuilder.build().input(BlockContent.URANIUM_CRYSTAL).result(ItemContent.PLUTONIUM_DUST).export(exporter, "plutoniumdust");
     }
     
-    private void addCompactingRecipe(RecipeOutput exporter, ItemLike resBlock, ItemLike resItem, Ingredient itemIng, Ingredient blockIng) {
+    private void addCompactingRecipe(Consumer<FinishedRecipe> exporter, ItemLike resBlock, ItemLike resItem, Ingredient itemIng, Ingredient blockIng) {
         ShapelessRecipeBuilder
           .shapeless(RecipeCategory.MISC, resItem, 9)
           .requires(blockIng)
@@ -1360,37 +1361,37 @@ public class OritechRecipeGenerator extends RecipeProvider {
     }
     
     // crafting shapes
-    public void offerCableRecipe(RecipeOutput exporter, ItemStack output, Ingredient input, String suffix) {
+    public void offerCableRecipe(Consumer<FinishedRecipe> exporter, ItemStack output, Ingredient input, String suffix) {
         var item = output.getItem();
         createCableRecipe(RecipeCategory.MISC, output.getItem(), output.getCount(), input).unlockedBy(getHasName(item), has(item)).save(exporter, Oritech.id("crafting/" + suffix));
     }
     
-    public void offerInsulatedCableRecipe(RecipeOutput exporter, ItemStack output, Ingredient input, Ingredient insulation, String suffix) {
+    public void offerInsulatedCableRecipe(Consumer<FinishedRecipe> exporter, ItemStack output, Ingredient input, Ingredient insulation, String suffix) {
         var item = output.getItem();
         createInsulatedCableRecipe(RecipeCategory.MISC, output.getItem(), output.getCount(), input, insulation).unlockedBy(getHasName(item), has(item)).save(exporter, Oritech.id("crafting/" + suffix));
     }
     
-    public void offerRotatedCableRecipe(RecipeOutput exporter, ItemStack output, Ingredient input, Ingredient insulation, String suffix) {
+    public void offerRotatedCableRecipe(Consumer<FinishedRecipe> exporter, ItemStack output, Ingredient input, Ingredient insulation, String suffix) {
         var item = output.getItem();
         createRotatedCableRecipe(RecipeCategory.MISC, output.getItem(), output.getCount(), input, insulation).unlockedBy(getHasName(item), has(item)).save(exporter, Oritech.id("crafting/" + suffix));
     }
     
-    public void offerFramedCableRecipe(RecipeOutput exporter, ItemStack output, Ingredient input, String suffix) {
+    public void offerFramedCableRecipe(Consumer<FinishedRecipe> exporter, ItemStack output, Ingredient input, String suffix) {
         var item = output.getItem();
         createFramedCableRecipe(RecipeCategory.MISC, output.getItem(), output.getCount(), input).unlockedBy(getHasName(item), has(item)).save(exporter, Oritech.id("crafting/frame_" + suffix));
     }
     
-    public void offerCableFromFrameRecipe(RecipeOutput exporter, ItemStack output, Ingredient frame, String suffix) {
+    public void offerCableFromFrameRecipe(Consumer<FinishedRecipe> exporter, ItemStack output, Ingredient frame, String suffix) {
         var item = output.getItem();
         ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, item, output.getCount()).requires(frame).unlockedBy(getHasName(item), has(item)).save(exporter, Oritech.id("crafting/unframe_" + suffix));
     }
     
-    public void offerCableDuctRecipe(RecipeOutput exporter, ItemStack output, Ingredient input, String suffix) {
+    public void offerCableDuctRecipe(Consumer<FinishedRecipe> exporter, ItemStack output, Ingredient input, String suffix) {
         var item = output.getItem();
         createCableDuctRecipe(RecipeCategory.MISC, item, output.getCount(), input).unlockedBy(getHasName(item), has(item)).save(exporter, Oritech.id("crafting/duct_" + suffix));
     }
     
-    public void offerCableFromDuctRecipe(RecipeOutput exporter, ItemStack output, Ingredient duct, String suffix) {
+    public void offerCableFromDuctRecipe(Consumer<FinishedRecipe> exporter, ItemStack output, Ingredient duct, String suffix) {
         var item = output.getItem();
         ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, item, output.getCount()).requires(duct).unlockedBy(getHasName(item), has(item)).save(exporter, Oritech.id("crafting/unduct_" + suffix));
     }
@@ -1407,21 +1408,21 @@ public class OritechRecipeGenerator extends RecipeProvider {
         return ShapedRecipeBuilder.shaped(category, output, count).define('c', input).define('p', Ingredient.of(TagContent.MACHINE_PLATING)).define('s', of(Blocks.STONE)).pattern("csc").pattern("sps").pattern("csc");
     }
     
-    public void offerMotorRecipe(RecipeOutput exporter, Item output, Ingredient shaft, Ingredient core, Ingredient wall, String suffix) {
+    public void offerMotorRecipe(Consumer<FinishedRecipe> exporter, Item output, Ingredient shaft, Ingredient core, Ingredient wall, String suffix) {
         var builder = ShapedRecipeBuilder.shaped(RecipeCategory.MISC, output, 1).define('s', shaft).define('c', core).define('w', wall).pattern(" s ").pattern("wcw").pattern("wcw");
         builder.unlockedBy(getHasName(output), has(output)).save(exporter, Oritech.id("motor/" + suffix));
     }
     
-    public void offerManualAlloyRecipe(RecipeOutput exporter, Item output, Ingredient A, Ingredient B, String suffix) {
+    public void offerManualAlloyRecipe(Consumer<FinishedRecipe> exporter, Item output, Ingredient A, Ingredient B, String suffix) {
         offerManualAlloyRecipe(exporter, output, A, B, 1, suffix);
     }
     
-    public void offerManualAlloyRecipe(RecipeOutput exporter, Item output, Ingredient A, Ingredient B, int count, String suffix) {
+    public void offerManualAlloyRecipe(Consumer<FinishedRecipe> exporter, Item output, Ingredient A, Ingredient B, int count, String suffix) {
         var builder = ShapedRecipeBuilder.shaped(RecipeCategory.MISC, output, count).define('a', A).define('b', B).pattern("aa ").pattern("bb ");
         builder.unlockedBy(getHasName(output), has(output)).save(exporter, Oritech.id("crafting/alloy/" + suffix));
     }
     
-    public void offerGeneratorRecipe(RecipeOutput exporter, Item output, Ingredient base, Ingredient sides, Ingredient core, Ingredient frame, String suffix) {
+    public void offerGeneratorRecipe(Consumer<FinishedRecipe> exporter, Item output, Ingredient base, Ingredient sides, Ingredient core, Ingredient frame, String suffix) {
         var builder = ShapedRecipeBuilder.shaped(RecipeCategory.MISC, output, 1).define('s', sides).define('c', core).define('f', frame).define('b', base)
                         .pattern("fff")
                         .pattern("fcf")
@@ -1429,7 +1430,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
         builder.unlockedBy(getHasName(output), has(output)).save(exporter, Oritech.id("crafting/" + suffix));
     }
     
-    public void offerFurnaceRecipe(RecipeOutput exporter, Item output, Ingredient bottom, Ingredient botSides, Ingredient middleSides, Ingredient core, Ingredient top, String suffix) {
+    public void offerFurnaceRecipe(Consumer<FinishedRecipe> exporter, Item output, Ingredient bottom, Ingredient botSides, Ingredient middleSides, Ingredient core, Ingredient top, String suffix) {
         var builder = ShapedRecipeBuilder.shaped(RecipeCategory.MISC, output, 1).define('s', botSides).define('c', core).define('f', top).define('b', bottom).define('m', middleSides)
                         .pattern("fff")
                         .pattern("mcm")
@@ -1437,7 +1438,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
         builder.unlockedBy(getHasName(output), has(output)).save(exporter, Oritech.id("crafting/" + suffix));
     }
     
-    public void offerPowerPoleRecipe(RecipeOutput exporter, Item output, Ingredient coil, Ingredient sides, Ingredient inner, Ingredient base, String suffix) {
+    public void offerPowerPoleRecipe(Consumer<FinishedRecipe> exporter, Item output, Ingredient coil, Ingredient sides, Ingredient inner, Ingredient base, String suffix) {
         var builder = ShapedRecipeBuilder.shaped(RecipeCategory.MISC, output, 1).define('c', coil).define('s', sides).define('i', inner).define('b', base)
                         .pattern("c c")
                         .pattern("sis")
@@ -1445,7 +1446,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
         builder.unlockedBy(getHasName(output), has(output)).save(exporter, Oritech.id("crafting/" + suffix));
     }
     
-    public void offerAtomicForgeRecipe(RecipeOutput exporter, Item output, Ingredient base, Ingredient middleSides, Ingredient core, Ingredient top, Ingredient frame, String suffix) {
+    public void offerAtomicForgeRecipe(Consumer<FinishedRecipe> exporter, Item output, Ingredient base, Ingredient middleSides, Ingredient core, Ingredient top, Ingredient frame, String suffix) {
         var builder = ShapedRecipeBuilder.shaped(RecipeCategory.MISC, output, 1).define('s', top).define('c', core).define('f', frame).define('b', base).define('m', middleSides)
                         .pattern("fsf")
                         .pattern("mcm")
@@ -1453,7 +1454,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
         builder.unlockedBy(getHasName(output), has(output)).save(exporter, Oritech.id("crafting/" + suffix));
     }
     
-    public void offerBatteryRecipe(RecipeOutput exporter, Item output, Ingredient inner, Ingredient sides, Ingredient top, String suffix) {
+    public void offerBatteryRecipe(Consumer<FinishedRecipe> exporter, Item output, Ingredient inner, Ingredient sides, Ingredient top, String suffix) {
         var builder = ShapedRecipeBuilder.shaped(RecipeCategory.MISC, output, 1).define('t', top).define('c', inner).define('f', sides)
                         .pattern(" t ")
                         .pattern("fcf")
@@ -1461,7 +1462,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
         builder.unlockedBy(getHasName(output), has(output)).save(exporter, Oritech.id("crafting/" + suffix));
     }
     
-    public void offerMachineFrameRecipe(RecipeOutput exporter, Item output, Ingredient base, Ingredient alt, int count, String suffix) {
+    public void offerMachineFrameRecipe(Consumer<FinishedRecipe> exporter, Item output, Ingredient base, Ingredient alt, int count, String suffix) {
         var builder = ShapedRecipeBuilder.shaped(RecipeCategory.MISC, output, count).define('s', base).define('c', alt)
                         .pattern(" s ")
                         .pattern("csc")
@@ -1469,11 +1470,11 @@ public class OritechRecipeGenerator extends RecipeProvider {
         builder.unlockedBy(getHasName(output), has(output)).save(exporter, Oritech.id("crafting/" + suffix));
     }
     
-    public void offerMachineCoreRecipe(RecipeOutput exporter, Item output, Ingredient base, Ingredient alt, String suffix) {
+    public void offerMachineCoreRecipe(Consumer<FinishedRecipe> exporter, Item output, Ingredient base, Ingredient alt, String suffix) {
         offerMachineCoreRecipe(exporter, output, 1, base, alt, suffix);
     }
     
-    public void offerMachineCoreRecipe(RecipeOutput exporter, Item output, int count, Ingredient base, Ingredient alt, String suffix) {
+    public void offerMachineCoreRecipe(Consumer<FinishedRecipe> exporter, Item output, int count, Ingredient base, Ingredient alt, String suffix) {
         var builder = ShapedRecipeBuilder.shaped(RecipeCategory.MISC, output, count).define('s', base).define('c', alt)
                         .pattern("sss")
                         .pattern("scs")
@@ -1481,11 +1482,11 @@ public class OritechRecipeGenerator extends RecipeProvider {
         builder.unlockedBy(getHasName(output), has(output)).save(exporter, Oritech.id("crafting/" + suffix));
     }
     
-    public void offerManualFluidApplication(RecipeOutput exporter, Item output, Ingredient fluid, Ingredient base, String suffix) {
+    public void offerManualFluidApplication(Consumer<FinishedRecipe> exporter, Item output, Ingredient fluid, Ingredient base, String suffix) {
         offerManualFluidApplication(exporter, output, 1, fluid, base, suffix);
     }
     
-    public void offerManualFluidApplication(RecipeOutput exporter, Item output, int count, Ingredient fluid, Ingredient base, String suffix) {
+    public void offerManualFluidApplication(Consumer<FinishedRecipe> exporter, Item output, int count, Ingredient fluid, Ingredient base, String suffix) {
         var builder = ShapedRecipeBuilder.shaped(RecipeCategory.MISC, output, count).define('f', fluid).define('b', base)
                         .pattern("bb ")
                         .pattern("bf ")
@@ -1493,7 +1494,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
         builder.unlockedBy(getHasName(output), has(output)).save(exporter, Oritech.id("crafting/" + suffix));
     }
     
-    public void offerPaintRecipe(RecipeOutput exporter, Item output, Ingredient base, Ingredient sides, Ingredient plate, String suffix) {
+    public void offerPaintRecipe(Consumer<FinishedRecipe> exporter, Item output, Ingredient base, Ingredient sides, Ingredient plate, String suffix) {
         var builder = ShapedRecipeBuilder.shaped(RecipeCategory.MISC, output, 4).define('s', sides).define('p', plate).define('b', base)
                         .pattern(" s ")
                         .pattern("pbp")
@@ -1501,7 +1502,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
         builder.unlockedBy(getHasName(output), has(output)).save(exporter, Oritech.id("crafting/" + suffix));
     }
     
-    public void offerBeadsRecipe(RecipeOutput exporter, Item output, int count, Ingredient fluid, Ingredient base, Ingredient catalyst, String suffix) {
+    public void offerBeadsRecipe(Consumer<FinishedRecipe> exporter, Item output, int count, Ingredient fluid, Ingredient base, Ingredient catalyst, String suffix) {
         var builder = ShapedRecipeBuilder.shaped(RecipeCategory.MISC, output, count).define('f', fluid).define('b', base).define('c', catalyst)
                         .pattern("bb ")
                         .pattern("cf ")
@@ -1509,7 +1510,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
         builder.unlockedBy(getHasName(output), has(output)).save(exporter, Oritech.id("crafting/" + suffix));
     }
     
-    public void offerDrillRecipe(RecipeOutput exporter, Item output, Ingredient doubleBase, Ingredient motor, Ingredient outer, Ingredient head, String suffix) {
+    public void offerDrillRecipe(Consumer<FinishedRecipe> exporter, Item output, Ingredient doubleBase, Ingredient motor, Ingredient outer, Ingredient head, String suffix) {
         var builder = ShapedRecipeBuilder.shaped(RecipeCategory.MISC, output, 1).define('s', doubleBase).define('m', motor).define('a', outer).define('e', head)
                         .pattern(" a ")
                         .pattern("aea")
@@ -1517,7 +1518,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
         builder.unlockedBy(getHasName(output), has(output)).save(exporter, Oritech.id("crafting/" + suffix));
     }
     
-    public void offerWrenchRecipe(RecipeOutput exporter, Item output, Ingredient A, Ingredient B, String suffix) {
+    public void offerWrenchRecipe(Consumer<FinishedRecipe> exporter, Item output, Ingredient A, Ingredient B, String suffix) {
         var builder = ShapedRecipeBuilder.shaped(RecipeCategory.MISC, output, 1).define('a', A).define('b', B)
                         .pattern(" a ")
                         .pattern(" ba")
@@ -1525,7 +1526,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
         builder.unlockedBy(getHasName(output), has(output)).save(exporter, Oritech.id("crafting/" + suffix));
     }
     
-    public void offerChainsawRecipe(RecipeOutput exporter, Item output, Ingredient core, Ingredient motor, Ingredient center, Ingredient head, String suffix) {
+    public void offerChainsawRecipe(Consumer<FinishedRecipe> exporter, Item output, Ingredient core, Ingredient motor, Ingredient center, Ingredient head, String suffix) {
         var builder = ShapedRecipeBuilder.shaped(RecipeCategory.MISC, output, 1).define('s', core).define('m', motor).define('a', center).define('e', head)
                         .pattern("aa ")
                         .pattern("ae ")
@@ -1533,7 +1534,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
         builder.unlockedBy(getHasName(output), has(output)).save(exporter, Oritech.id("crafting/" + suffix));
     }
     
-    public void offerAxeRecipe(RecipeOutput exporter, Item output, Ingredient plating, Ingredient core, String suffix) {
+    public void offerAxeRecipe(Consumer<FinishedRecipe> exporter, Item output, Ingredient plating, Ingredient core, String suffix) {
         var builder = ShapedRecipeBuilder.shaped(RecipeCategory.MISC, output, 1).define('p', plating).define('c', core)
                         .pattern("pp ")
                         .pattern("pc ")
@@ -1541,7 +1542,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
         builder.unlockedBy(getHasName(output), has(output)).save(exporter, Oritech.id("crafting/" + suffix));
     }
     
-    public void offerPickaxeRecipe(RecipeOutput exporter, Item output, Ingredient plating, Ingredient core, String suffix) {
+    public void offerPickaxeRecipe(Consumer<FinishedRecipe> exporter, Item output, Ingredient plating, Ingredient core, String suffix) {
         var builder = ShapedRecipeBuilder.shaped(RecipeCategory.MISC, output, 1).define('p', plating).define('c', core)
                         .pattern("ppp")
                         .pattern(" c ")
@@ -1549,7 +1550,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
         builder.unlockedBy(getHasName(output), has(output)).save(exporter, Oritech.id("crafting/" + suffix));
     }
     
-    public void offerHelmetRecipe(RecipeOutput exporter, Item output, Ingredient plating, Ingredient core, String suffix) {
+    public void offerHelmetRecipe(Consumer<FinishedRecipe> exporter, Item output, Ingredient plating, Ingredient core, String suffix) {
         var builder = ShapedRecipeBuilder.shaped(RecipeCategory.MISC, output, 1).define('p', plating).define('c', core)
                         .pattern("ppp")
                         .pattern("pcp")
@@ -1557,7 +1558,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
         builder.unlockedBy(getHasName(output), has(output)).save(exporter, Oritech.id("crafting/" + suffix));
     }
     
-    public void offerChestplateRecipe(RecipeOutput exporter, Item output, Ingredient plating, Ingredient core, String suffix) {
+    public void offerChestplateRecipe(Consumer<FinishedRecipe> exporter, Item output, Ingredient plating, Ingredient core, String suffix) {
         var builder = ShapedRecipeBuilder.shaped(RecipeCategory.MISC, output, 1).define('p', plating).define('c', core)
                         .pattern("p p")
                         .pattern("ppp")
@@ -1565,7 +1566,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
         builder.unlockedBy(getHasName(output), has(output)).save(exporter, Oritech.id("crafting/" + suffix));
     }
     
-    public void offerLegsRecipe(RecipeOutput exporter, Item output, Ingredient plating, Ingredient core, String suffix) {
+    public void offerLegsRecipe(Consumer<FinishedRecipe> exporter, Item output, Ingredient plating, Ingredient core, String suffix) {
         var builder = ShapedRecipeBuilder.shaped(RecipeCategory.MISC, output, 1).define('p', plating).define('c', core)
                         .pattern("ppp")
                         .pattern("pcp")
@@ -1573,7 +1574,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
         builder.unlockedBy(getHasName(output), has(output)).save(exporter, Oritech.id("crafting/" + suffix));
     }
     
-    public void offerFeetRecipe(RecipeOutput exporter, Item output, Ingredient plating, Ingredient core, String suffix) {
+    public void offerFeetRecipe(Consumer<FinishedRecipe> exporter, Item output, Ingredient plating, Ingredient core, String suffix) {
         var builder = ShapedRecipeBuilder.shaped(RecipeCategory.MISC, output, 1).define('p', plating).define('c', core)
                         .pattern("   ")
                         .pattern("p p")
@@ -1581,7 +1582,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
         builder.unlockedBy(getHasName(output), has(output)).save(exporter, Oritech.id("crafting/" + suffix));
     }
     
-    public void offerRodRecipe(RecipeOutput exporter, Item output, Ingredient cap, Ingredient rod, String suffix) {
+    public void offerRodRecipe(Consumer<FinishedRecipe> exporter, Item output, Ingredient cap, Ingredient rod, String suffix) {
         var builder = ShapedRecipeBuilder.shaped(RecipeCategory.MISC, output, 1).define('c', cap).define('r', rod)
                         .pattern(" c ")
                         .pattern(" r ")
@@ -1589,7 +1590,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
         builder.unlockedBy(getHasName(output), has(output)).save(exporter, Oritech.id("crafting/" + suffix));
     }
     
-    public void offerRodCombinationRecipe(RecipeOutput exporter, Item output, Ingredient cap, Ingredient rod, String suffix) {
+    public void offerRodCombinationRecipe(Consumer<FinishedRecipe> exporter, Item output, Ingredient cap, Ingredient rod, String suffix) {
         var builder = ShapedRecipeBuilder.shaped(RecipeCategory.MISC, output, 1).define('c', cap).define('r', rod)
                         .pattern("   ")
                         .pattern("rcr")
@@ -1597,7 +1598,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
         builder.unlockedBy(getHasName(output), has(output)).save(exporter, Oritech.id("crafting/" + suffix));
     }
     
-    public void offerStarRecipe(RecipeOutput exporter, Item output, Ingredient inner, Ingredient outer, String suffix) {
+    public void offerStarRecipe(Consumer<FinishedRecipe> exporter, Item output, Ingredient inner, Ingredient outer, String suffix) {
         var builder = ShapedRecipeBuilder.shaped(RecipeCategory.MISC, output, 1).define('c', inner).define('o', outer)
                         .pattern(" o ")
                         .pattern("oco")
@@ -1605,11 +1606,11 @@ public class OritechRecipeGenerator extends RecipeProvider {
         builder.unlockedBy(getHasName(output), has(output)).save(exporter, Oritech.id("crafting/" + suffix));
     }
     
-    public void offerTankRecipe(RecipeOutput exporter, Item output, Ingredient plating, Ingredient core, Ingredient sides, String suffix) {
+    public void offerTankRecipe(Consumer<FinishedRecipe> exporter, Item output, Ingredient plating, Ingredient core, Ingredient sides, String suffix) {
         offerTankRecipe(exporter, output, 1, plating, core, sides, suffix);
     }
     
-    public void offerTankRecipe(RecipeOutput exporter, Item output, int count, Ingredient plating, Ingredient core, Ingredient sides, String suffix) {
+    public void offerTankRecipe(Consumer<FinishedRecipe> exporter, Item output, int count, Ingredient plating, Ingredient core, Ingredient sides, String suffix) {
         var builder = ShapedRecipeBuilder.shaped(RecipeCategory.MISC, output, count).define('p', plating).define('s', sides).define('c', core)
                         .pattern("ppp")
                         .pattern("scs")
@@ -1617,20 +1618,20 @@ public class OritechRecipeGenerator extends RecipeProvider {
         builder.unlockedBy(getHasName(output), has(output)).save(exporter, Oritech.id("crafting/" + suffix));
     }
     
-    public void offerTwoComponentRecipe(RecipeOutput exporter, Item output, Ingredient A, Ingredient B, String suffix) {
+    public void offerTwoComponentRecipe(Consumer<FinishedRecipe> exporter, Item output, Ingredient A, Ingredient B, String suffix) {
         var builder = ShapedRecipeBuilder.shaped(RecipeCategory.MISC, output, 1).define('a', A).define('b', B)
                         .pattern("ab ");
         builder.unlockedBy(getHasName(output), has(output)).save(exporter, Oritech.id("crafting/" + suffix));
     }
     
-    public void offerLeverRecipe(RecipeOutput exporter, Item output, Ingredient A, Ingredient B, String suffix) {
+    public void offerLeverRecipe(Consumer<FinishedRecipe> exporter, Item output, Ingredient A, Ingredient B, String suffix) {
         var builder = ShapedRecipeBuilder.shaped(RecipeCategory.MISC, output, 1).define('a', A).define('b', B)
                         .pattern("a  ")
                         .pattern("b  ");
         builder.unlockedBy(getHasName(output), has(output)).save(exporter, Oritech.id("crafting/" + suffix));
     }
     
-    public void offerParticleMotorRecipe(RecipeOutput exporter, Item output, Ingredient rail, Ingredient top, Ingredient baseInner, Ingredient baseOuter, String suffix) {
+    public void offerParticleMotorRecipe(Consumer<FinishedRecipe> exporter, Item output, Ingredient rail, Ingredient top, Ingredient baseInner, Ingredient baseOuter, String suffix) {
         var builder = ShapedRecipeBuilder.shaped(RecipeCategory.MISC, output, 1).define('r', rail).define('t', top).define('i', baseInner).define('o', baseOuter)
                         .pattern(" t ")
                         .pattern("rrr")
@@ -1638,7 +1639,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
         builder.unlockedBy(getHasName(output), has(output)).save(exporter, Oritech.id("crafting/" + suffix));
     }
     
-    public void offerMachinePlatingRecipe(RecipeOutput exporter, Item output, Ingredient side, Ingredient edge, Ingredient core, int count, String suffix) {
+    public void offerMachinePlatingRecipe(Consumer<FinishedRecipe> exporter, Item output, Ingredient side, Ingredient edge, Ingredient core, int count, String suffix) {
         var builder = ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, output, count).define('a', side).define('e', edge).define('c', core)
                         .pattern("eae")
                         .pattern("aca")
@@ -1646,7 +1647,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
         builder.unlockedBy(getHasName(output), has(output)).save(exporter, Oritech.id("crafting/" + suffix));
     }
     
-    public void offerDoorRecipe(RecipeOutput exporter, Item output, Ingredient A, String suffix) {
+    public void offerDoorRecipe(Consumer<FinishedRecipe> exporter, Item output, Ingredient A, String suffix) {
         var builder = ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, output, 1).define('a', A)
                         .pattern("aa ")
                         .pattern("aa ")
@@ -1654,13 +1655,13 @@ public class OritechRecipeGenerator extends RecipeProvider {
         builder.unlockedBy(getHasName(output), has(output)).save(exporter, Oritech.id("crafting/" + suffix));
     }
     
-    public void offerSlabRecipe(RecipeOutput exporter, Item output, Ingredient A, String suffix) {
+    public void offerSlabRecipe(Consumer<FinishedRecipe> exporter, Item output, Ingredient A, String suffix) {
         var builder = ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, output, 6).define('a', A)
                         .pattern("aaa");
         builder.unlockedBy(getHasName(output), has(output)).save(exporter, Oritech.id("crafting/slab/" + suffix));
     }
     
-    public void offerStairsRecipe(RecipeOutput exporter, Item output, Ingredient A, String suffix) {
+    public void offerStairsRecipe(Consumer<FinishedRecipe> exporter, Item output, Ingredient A, String suffix) {
         var builder = ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, output, 4).define('a', A)
                         .pattern("a  ")
                         .pattern("aa ")
@@ -1668,7 +1669,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
         builder.unlockedBy(getHasName(output), has(output)).save(exporter, Oritech.id("crafting/stairs/" + suffix));
     }
     
-    public void offerPressurePlateRecipe(RecipeOutput exporter, Item output, Ingredient A, String suffix) {
+    public void offerPressurePlateRecipe(Consumer<FinishedRecipe> exporter, Item output, Ingredient A, String suffix) {
         var builder = ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, output, 1).define('a', A)
                         .pattern("aa");
         builder.unlockedBy(getHasName(output), has(output)).save(exporter, Oritech.id("crafting/pressureplate/" + suffix));

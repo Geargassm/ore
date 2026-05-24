@@ -164,12 +164,12 @@ public abstract class AbstractPipeBlock extends Block {
      */
     public boolean hasNeighboringMachine(BlockState state, Level world, BlockPos pos, boolean createConnection) {
         var lookup = apiValidationFunction();
-        return (isConnectingInDirection(state, Direction.NORTH, pos, world, createConnection) && hasMachineInDirection(Direction.NORTH, world, pos, lookup))
-                 || (isConnectingInDirection(state, Direction.EAST, pos, world, createConnection) && hasMachineInDirection(Direction.EAST, world, pos, lookup))
-                 || (isConnectingInDirection(state, Direction.SOUTH, pos, world, createConnection) && hasMachineInDirection(Direction.SOUTH, world, pos, lookup))
-                 || (isConnectingInDirection(state, Direction.WEST, pos, world, createConnection) && hasMachineInDirection(Direction.WEST, world, pos, lookup))
-                 || (isConnectingInDirection(state, Direction.UP, pos, world, createConnection) && hasMachineInDirection(Direction.UP, world, pos, lookup))
-                 || (isConnectingInDirection(state, Direction.DOWN, pos, world, createConnection) && hasMachineInDirection(Direction.DOWN, world, pos, lookup));
+        return (isConnectingInDirection(state, Direction.NORTH, pos, world, createConnection) && hasMachineInDirection(Direction.NORTH, world, pos))
+                 || (isConnectingInDirection(state, Direction.EAST, pos, world, createConnection) && hasMachineInDirection(Direction.EAST, world, pos))
+                 || (isConnectingInDirection(state, Direction.SOUTH, pos, world, createConnection) && hasMachineInDirection(Direction.SOUTH, world, pos))
+                 || (isConnectingInDirection(state, Direction.WEST, pos, world, createConnection) && hasMachineInDirection(Direction.WEST, world, pos))
+                 || (isConnectingInDirection(state, Direction.UP, pos, world, createConnection) && hasMachineInDirection(Direction.UP, world, pos))
+                 || (isConnectingInDirection(state, Direction.DOWN, pos, world, createConnection) && hasMachineInDirection(Direction.DOWN, world, pos));
     }
     
     /**

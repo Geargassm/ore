@@ -2,7 +2,7 @@ package rearth.oritech.block.entity.pipes;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
+
 import net.minecraft.nbt.*;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.level.Level;
@@ -300,7 +300,7 @@ public abstract class GenericPipeInterfaceEntity extends BlockEntity implements 
 
         public static Factory<PipeNetworkData> TYPE = new Factory<>(PipeNetworkData::new, PipeNetworkData::fromNbt, null);
 
-        public static PipeNetworkData fromNbt(CompoundTag nbt, HolderLookup.Provider registryLookup) {
+        public static PipeNetworkData fromNbt(CompoundTag nbt) {
 
             var result = new PipeNetworkData();
 
@@ -384,7 +384,7 @@ public abstract class GenericPipeInterfaceEntity extends BlockEntity implements 
         }
 
         @Override
-        public CompoundTag save(CompoundTag nbt, HolderLookup.Provider registryLookup) {
+        public CompoundTag save(CompoundTag nbt) {
 
             // Serialize pipeNetworkLinks
             var pipeNetworkLinksList = new ListTag();

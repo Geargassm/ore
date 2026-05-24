@@ -1,4 +1,5 @@
 package rearth.oritech.item.tools.armor;
+import rearth.oritech.api.networking.PacketId;
 
 import dev.architectury.fluid.FluidStack;
 import org.jetbrains.annotations.Nullable;
@@ -21,10 +22,8 @@ import java.util.function.Consumer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.core.Holder;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -160,7 +159,7 @@ public class JetpackItem extends ArmorItem implements GeoItem, BaseJetpackItem {
         return OritechStartupConfig.basicJetpack.chargeSpeed.get();
     }
     
-    public static void receiveUsagePacket(JetpackUsageUpdatePacket packet, Player player, RegistryAccess dynamicRegistryManager) {
+    public static void receiveUsagePacket(JetpackUsageUpdatePacket packet, Player player, Level level) {
         var stack = player.getItemBySlot(EquipmentSlot.CHEST);
         if (!(stack.getItem() instanceof BaseJetpackItem)) return;
         
@@ -174,13 +173,9 @@ public class JetpackItem extends ArmorItem implements GeoItem, BaseJetpackItem {
             stack.set(ComponentContent.STORED_FLUID.get(), FluidStack.create(BuiltInRegistries.FLUID.get(ResourceLocation.parse(packet.fluidType)), packet.fluidAmount));
     }
     
-    public record JetpackUsageUpdatePacket(long energyStored, String fluidType, long fluidAmount) implements CustomPacketPayload {
+    public record JetpackUsageUpdatePacket(long energyStored, String fluidType, long fluidAmount) {
         
-        public static final CustomPacketPayload.Type<JetpackUsageUpdatePacket> PACKET_ID = new CustomPacketPayload.Type<>(Oritech.id("jetpack_use"));
+        public static final PacketId<JetpackUsageUpdatePacket> PACKET_ID = new PacketId<>(Oritech.id("jetpack_use"));
         
-        @Override
-        public net.minecraft.network.protocol.common.custom.CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
-            return PACKET_ID;
-        }
     }
 }

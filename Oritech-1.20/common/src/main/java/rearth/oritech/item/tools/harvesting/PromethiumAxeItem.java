@@ -3,8 +3,6 @@ package rearth.oritech.item.tools.harvesting;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
-// TODO_1_20: DataComponents not available in 1.20.1 - needs NBT conversion
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
@@ -15,8 +13,6 @@ import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.component.Tool;
-import net.minecraft.world.item.component.Tool.Rule;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -46,17 +42,8 @@ public class PromethiumAxeItem extends AxeItem implements GeoItem {
     
     public PromethiumAxeItem(Tier toolMaterial, Properties settings) {
         super(toolMaterial, settings);
-        // a bit of a hack, but set tool components again after super()
-        // this lets PromethiumAxeItem extend AxeItem (for the right-click actions) and still ignore
-        // the default tool components set up by AxeItem
-        var toolComponent = new Tool(List.of(
-            Rule.deniesDrops(toolMaterial.getIncorrectBlocksForDrops()),
-            Rule.minesAndDrops(BlockTags.MINEABLE_WITH_AXE, toolMaterial.getSpeed()),
-            Rule.overrideSpeed(BlockTags.SWORD_EFFICIENT, 1.5F),
-            Rule.minesAndDrops(List.of(Blocks.COBWEB), 15.0F)),
-            1.0F, 1);
-// TODO_1_20: DataComponents not available in 1.20.1 - needs NBT conversion
-        this.components = settings.component(DataComponents.TOOL, toolComponent).buildAndValidateComponents();
+        // In 1.20.1, AxeItem already handles axe-like breaking via its built-in Item subclass logic.
+        // The Tool/Rule/DataComponents system doesn't exist in 1.20.1.
     }
     
     @Override

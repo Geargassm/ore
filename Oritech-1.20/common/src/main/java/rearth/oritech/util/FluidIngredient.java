@@ -48,10 +48,10 @@ public record FluidIngredient(Either<TagKey<Fluid>, ResourceLocation> fluidConte
       Codec.LONG.optionalFieldOf("amount", FluidStack.bucketAmount()).forGetter(FluidIngredient::amount)
     ).apply(instance, FluidIngredient::new));
     
-    public static final StreamCodec<ByteBuf, TagKey<Fluid>> FLUID_TAG_KEY_CODEC = ResourceLocation.STREAM_CODEC.map(id -> TagKey.create(Registries.FLUID, id), TagKey::location);
+    public static final StreamCodec<ByteBuf, TagKey<Fluid>> FLUID_TAG_KEY_CODEC = ByteBufCodecs.RESOURCE_LOCATION.map(id -> TagKey.create(Registries.FLUID, id), TagKey::location);
     
     public static final StreamCodec<FriendlyByteBuf, Either<TagKey<Fluid>, ResourceLocation>> FLUID_CONTENT_CODEC =
-      ByteBufCodecs.either(FLUID_TAG_KEY_CODEC, ResourceLocation.STREAM_CODEC);
+      ByteBufCodecs.either(FLUID_TAG_KEY_CODEC, ByteBufCodecs.RESOURCE_LOCATION);
     
     public static final StreamCodec<FriendlyByteBuf, FluidIngredient> PACKET_CODEC =
       StreamCodec.composite(

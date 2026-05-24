@@ -193,7 +193,7 @@ public class SimpleInventoryStorage implements Container, ItemApi.InventoryStora
     
     @Override
     public StreamCodec<? extends ByteBuf, List<ItemStack>> getDeltaCodec() {
-        return ItemStack.OPTIONAL_LIST_STREAM_CODEC;
+        return rearth.oritech.compat.ByteBufCodecs.ITEM_STACK.apply(rearth.oritech.compat.ByteBufCodecs.list());
     }
     
     @Override

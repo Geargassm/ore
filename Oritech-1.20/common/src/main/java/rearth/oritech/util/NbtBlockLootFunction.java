@@ -2,8 +2,6 @@ package rearth.oritech.util;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-// TODO_1_20: DataComponents not available in 1.20.1 - needs NBT conversion
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
@@ -11,13 +9,14 @@ import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import org.jetbrains.annotations.NotNull;
-import rearth.oritech.api.energy.EnergyApi;
-import rearth.oritech.api.fluid.FluidApi;
 import rearth.oritech.block.entity.addons.CombiAddonEntity;
+import rearth.oritech.block.entity.interaction.ShrinkerBlockEntity;
 import rearth.oritech.block.entity.storage.SmallStorageBlockEntity;
 import rearth.oritech.block.entity.storage.SmallTankEntity;
 import rearth.oritech.init.ComponentContent;
 import rearth.oritech.init.LootContent;
+
+import dev.architectury.fluid.FluidStack;
 
 import java.util.List;
 
@@ -33,13 +32,11 @@ public class NbtBlockLootFunction extends LootItemConditionalFunction {
         var blockEntity = context.getParamOrNull(LootContextParams.BLOCK_ENTITY);
         
         if (blockEntity instanceof SmallTankEntity tankEntity && tankEntity.fluidStorage.getAmount() > 0) {
-            stack.set(FluidApi.ITEM.getFluidComponent(), tankEntity.fluidStorage.getStack());
-// TODO_1_20: DataComponents not available in 1.20.1 - needs NBT conversion
-            stack.set(DataComponents.MAX_STACK_SIZE, 1);
+            ComponentContent.setToNbt(stack, ComponentContent.storedFluidKey(), tankEntity.fluidStorage.getStack(), FluidStack.CODEC);
         } else if (blockEntity instanceof SmallStorageBlockEntity storageEntity && storageEntity.energyStorage.amount > 0) {
-            stack.set(EnergyApi.ITEM.getEnergyComponent(), storageEntity.energyStorage.amount);
+            stack.getOrCreateTag().putLong("oritech_energy", storageEntity.energyStorage.amount);
         } else if (blockEntity instanceof CombiAddonEntity combiAddon && combiAddon.storedData != null) {
-            stack.set(ComponentContent.ADDON_DATA.get(), combiAddon.storedData);
+            ComponentContent.setToNbt(stack, ComponentContent.addonDataKey(), combiAddon.storedData, ShrinkerBlockEntity.ShrunkAddonData.CODEC);
         }
         
         return stack;

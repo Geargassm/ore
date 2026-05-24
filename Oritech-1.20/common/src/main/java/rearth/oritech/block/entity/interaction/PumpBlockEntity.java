@@ -25,7 +25,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -66,8 +66,8 @@ public class PumpBlockEntity extends NetworkedBlockEntity implements FluidApi.Bl
     }
     
     @Override
-    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.saveAdditional(nbt, registryLookup);
+    protected void saveAdditional(CompoundTag nbt) {
+        super.saveAdditional(nbt);
         fluidStorage.writeNbt(nbt, "");
         nbt.putBoolean("initialized", initialized);
         nbt.putLong("energy", energyStorage.getAmount());
@@ -78,8 +78,8 @@ public class PumpBlockEntity extends NetworkedBlockEntity implements FluidApi.Bl
     }
     
     @Override
-    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.loadAdditional(nbt, registryLookup);
+    protected void loadAdditional(CompoundTag nbt) {
+        super.loadAdditional(nbt);
         loadColorFromNbt(nbt);
         initialized = nbt.getBoolean("initialized");
         fluidStorage.readNbt(nbt, "");

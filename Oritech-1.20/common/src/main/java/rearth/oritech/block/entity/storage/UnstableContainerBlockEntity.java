@@ -3,7 +3,7 @@ package rearth.oritech.block.entity.storage;
 import dev.architectury.registry.menu.ExtendedMenuProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
+
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -147,8 +147,8 @@ public class UnstableContainerBlockEntity extends NetworkedBlockEntity implement
     }
     
     @Override
-    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.saveAdditional(nbt, registryLookup);
+    protected void saveAdditional(CompoundTag nbt) {
+        super.saveAdditional(nbt);
         addMultiblockToNbt(nbt);
         addColorToNbt(nbt);
         var blockId = BuiltInRegistries.BLOCK.getKey(capturedBlock.getBlock());
@@ -159,8 +159,8 @@ public class UnstableContainerBlockEntity extends NetworkedBlockEntity implement
     }
     
     @Override
-    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.loadAdditional(nbt, registryLookup);
+    protected void loadAdditional(CompoundTag nbt) {
+        super.loadAdditional(nbt);
         loadMultiblockNbtData(nbt);
         loadColorFromNbt(nbt);
         energyStorage.amount = nbt.getLong("energy_stored");

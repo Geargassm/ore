@@ -4,7 +4,6 @@ import dev.architectury.registry.menu.ExtendedMenuProvider;
 import dev.architectury.registry.menu.MenuRegistry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import rearth.oritech.api.energy.EnergyApi;
 import rearth.oritech.block.base.entity.ExpandableEnergyStorageBlockEntity;
 import rearth.oritech.block.entity.storage.SmallStorageBlockEntity;
 import rearth.oritech.init.BlockContent;
@@ -145,7 +144,7 @@ public class SmallStorageBlock extends Block implements EntityBlock {
         
         var storageEntity = (SmallStorageBlockEntity) world.getBlockEntity(pos);
         if (storageEntity.getEnergyStorage(null).getAmount() > 0) {
-            stack.set(EnergyApi.ITEM.getEnergyComponent(), storageEntity.getEnergyStorage(null).getAmount());
+            stack.getOrCreateTag().putLong("oritech_energy", storageEntity.getEnergyStorage(null).getAmount());
         }
         
         return stack;
@@ -155,7 +154,7 @@ public class SmallStorageBlock extends Block implements EntityBlock {
     public void setPlacedBy(Level world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
         super.setPlacedBy(world, pos, state, placer, itemStack);
         
-        var storedEnergyInStack = itemStack.getOrDefault(EnergyApi.ITEM.getEnergyComponent(), 0L);
+        var storedEnergyInStack = itemStack.hasTag() ? itemStack.getOrCreateTag().getLong("oritech_energy") : 0L;
         
         if (storedEnergyInStack > 0) {
             var storageEntity = (ExpandableEnergyStorageBlockEntity) world.getBlockEntity(pos);

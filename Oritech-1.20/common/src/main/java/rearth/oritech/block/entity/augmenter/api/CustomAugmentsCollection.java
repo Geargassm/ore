@@ -17,8 +17,6 @@ import java.util.function.Supplier;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
-// TODO_1_20: DataComponents not available in 1.20.1 - needs NBT conversion
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -47,7 +45,7 @@ public class CustomAugmentsCollection {
         
         @Override
         public StreamCodec<ByteBuf, GlobalPos> networkCodec() {
-            return GlobalPos.STREAM_CODEC;
+            return rearth.oritech.compat.ByteBufCodecs.GLOBAL_POS;
         }
         
         @Override
@@ -101,12 +99,17 @@ public class CustomAugmentsCollection {
             var playerHungerCapacity = 20 - player.getFoodData().getFoodLevel();
             if (playerHungerCapacity < 2) return;
             
+            // In 1.20.1, food items are checked via Item.isEdible() / Item.getFoodProperties()
             var foodStackStream = player.getInventory().items.stream()
-// TODO_1_20: DataComponents not available in 1.20.1 - needs NBT conversion
-                                    .filter(item -> item.has(DataComponents.FOOD) && !item.is(TagContent.FEEDER_BLACKLIST));
+                                    .filter(item -> !item.isEmpty() && item.getItem().isEdible() && !item.is(TagContent.FEEDER_BLACKLIST));
             var selectedFood = foodStackStream
-// TODO_1_20: DataComponents not available in 1.20.1 - needs NBT conversion
-                                 .reduce((a, b) -> Math.abs(a.get(DataComponents.FOOD).nutrition() - playerHungerCapacity) <= Math.abs(b.get(DataComponents.FOOD).nutrition() - playerHungerCapacity) ? a : b);
+                                 .reduce((a, b) -> {
+                                     var fa = a.getItem().getFoodProperties();
+                                     var fb = b.getItem().getFoodProperties();
+                                     int na = fa != null ? fa.getNutrition() : 0;
+                                     int nb = fb != null ? fb.getNutrition() : 0;
+                                     return Math.abs(na - playerHungerCapacity) <= Math.abs(nb - playerHungerCapacity) ? a : b;
+                                 });
             selectedFood.ifPresent(food -> food.finishUsingItem(player.level(), player));
             
         }

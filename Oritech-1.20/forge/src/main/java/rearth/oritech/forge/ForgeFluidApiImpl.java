@@ -13,10 +13,10 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import org.jetbrains.annotations.NotNull;
@@ -55,7 +55,7 @@ public class ForgeFluidApiImpl implements BlockFluidApi, ItemFluidApi {
     }
 
     /**
-     * Called from {@link OritechModForge.ModBusEventHandler#onAttachBlockEntityCapabilities}.
+     * Called from {@link OritechModForge.ForgeGameBusEvents#onAttachBlockEntityCapabilities}.
      */
     public void onAttachBlockEntityCapabilities(AttachCapabilitiesEvent<BlockEntity> event) {
         var entity = event.getObject();
@@ -68,7 +68,7 @@ public class ForgeFluidApiImpl implements BlockFluidApi, ItemFluidApi {
                     new ICapabilityProvider() {
                         @Override
                         public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-                            if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
+                            if (cap == ForgeCapabilities.FLUID_HANDLER) {
                                 var storage = provider.getFluidStorage(side);
                                 if (storage == null) return LazyOptional.empty();
                                 IFluidHandler handler = wrapFluidStorage(storage);
@@ -85,7 +85,7 @@ public class ForgeFluidApiImpl implements BlockFluidApi, ItemFluidApi {
     }
 
     /**
-     * Called from {@link OritechModForge.ModBusEventHandler#onAttachItemStackCapabilities}.
+     * Called from {@link OritechModForge.ForgeGameBusEvents#onAttachItemStackCapabilities}.
      */
     public void onAttachItemStackCapabilities(AttachCapabilitiesEvent<ItemStack> event) {
         var stack = event.getObject();
@@ -99,7 +99,7 @@ public class ForgeFluidApiImpl implements BlockFluidApi, ItemFluidApi {
                     new ICapabilityProvider() {
                         @Override
                         public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-                            if (cap == CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY) {
+                            if (cap == ForgeCapabilities.FLUID_HANDLER_ITEM) {
                                 var storage = itemProvider.getFluidStorage(capturedStack);
                                 if (storage == null) return LazyOptional.empty();
                                 if (!(storage instanceof FluidApi.SingleSlotStorage singleSlot)) return LazyOptional.empty();
@@ -136,7 +136,7 @@ public class ForgeFluidApiImpl implements BlockFluidApi, ItemFluidApi {
                                       @Nullable Direction direction) {
         BlockEntity be = entity != null ? entity : world.getBlockEntity(pos);
         if (be == null) return null;
-        LazyOptional<IFluidHandler> opt = be.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, direction);
+        LazyOptional<IFluidHandler> opt = be.getCapability(ForgeCapabilities.FLUID_HANDLER, direction);
         return opt.map(handler -> unwrapFluidHandler(handler)).orElse(null);
     }
 
@@ -157,7 +157,7 @@ public class ForgeFluidApiImpl implements BlockFluidApi, ItemFluidApi {
     @Override
     public FluidApi.FluidStorage find(StackContext stack) {
         if (stack.getValue().getCount() > 1) return null;
-        LazyOptional<IFluidHandlerItem> opt = stack.getValue().getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY);
+        LazyOptional<IFluidHandlerItem> opt = stack.getValue().getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM);
         return opt.map(handler -> {
             if (handler instanceof SingleSlotContainerStorageWrapper wrapper) {
                 if (wrapper.container instanceof SimpleItemFluidStorage itemContainer) {

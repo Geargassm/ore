@@ -3,15 +3,12 @@ package rearth.oritech.api.fluid;
 import dev.architectury.fluid.FluidStack;
 import dev.architectury.hooks.fluid.FluidStackHooks;
 import net.minecraft.core.BlockPos;
-// TODO_1_20: DataComponents not available in 1.20.1 - needs NBT conversion
-import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import rearth.oritech.Oritech;
-import rearth.oritech.init.ComponentContent;
 import rearth.oritech.util.StackContext;
 
 import java.util.function.Supplier;
@@ -21,11 +18,6 @@ public interface ItemFluidApi {
     void registerForItem(Supplier<Item> itemSupplier);
     
     FluidApi.FluidStorage find(StackContext stack);
-    
-// TODO_1_20: DataComponents not available in 1.20.1 - needs NBT conversion
-    default DataComponentType<FluidStack> getFluidComponent() {
-        return ComponentContent.STORED_FLUID.get();
-    }
     
     static boolean tryFluidBlockItemInteraction(ItemStack stack, Level world, BlockPos pos, Player player, InteractionHand hand) {
         var blockEntity = world.getBlockEntity(pos);

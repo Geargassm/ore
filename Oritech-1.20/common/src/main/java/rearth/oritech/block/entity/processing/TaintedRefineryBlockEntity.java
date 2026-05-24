@@ -1,4 +1,5 @@
 package rearth.oritech.block.entity.processing;
+import rearth.oritech.api.networking.PacketId;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -9,7 +10,6 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -241,8 +241,8 @@ public class TaintedRefineryBlockEntity extends MultiblockMachineEntity implemen
     }
     
     @Override
-    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.saveAdditional(nbt, registryLookup);
+    protected void saveAdditional(CompoundTag nbt) {
+        super.saveAdditional(nbt);
         ownStorage.writeNbt(nbt, "main");
         nbt.putInt("output", selectedOutput);
         EnvironmentFactor.toNbt(nbt, "arcane_factor", arcaneFactor);
@@ -250,8 +250,8 @@ public class TaintedRefineryBlockEntity extends MultiblockMachineEntity implemen
     }
     
     @Override
-    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.loadAdditional(nbt, registryLookup);
+    protected void loadAdditional(CompoundTag nbt) {
+        super.loadAdditional(nbt);
         ownStorage.readNbt(nbt, "main");
         selectedOutput = nbt.getInt("output");
         arcaneFactor = EnvironmentFactor.fromNbt(nbt, "arcane_factor");
@@ -516,7 +516,7 @@ public class TaintedRefineryBlockEntity extends MultiblockMachineEntity implemen
         return List.of(ownStorage.getInputContainer(), ownStorage.getOutputContainer());
     }
     
-    public static void handleTankPacket(TaintedRefineryBlockEntity.RefineryTankSelectorPacket payload, Player user, RegistryAccess registryAccess) {
+    public static void handleTankPacket(TaintedRefineryBlockEntity.RefineryTankSelectorPacket payload, Player user, Level level) {
         var level = user.level();
         if (level == null) return;
         var refineryCandidate = level.getBlockEntity(payload.position(), BlockEntitiesContent.TAINTED_REFINERY_ENTITY);
@@ -529,14 +529,10 @@ public class TaintedRefineryBlockEntity extends MultiblockMachineEntity implemen
     }
     
     // Client -> Server (e.g. from UI interactions)
-    public record RefineryTankSelectorPacket(BlockPos position, int slot) implements CustomPacketPayload {
+    public record RefineryTankSelectorPacket(BlockPos position, int slot) {
         
-        public static final CustomPacketPayload.Type<RefineryTankSelectorPacket> PACKET_ID = new CustomPacketPayload.Type<>(Oritech.id("refinery_slot"));
+        public static final PacketId<RefineryTankSelectorPacket> PACKET_ID = new PacketId<>(Oritech.id("refinery_slot"));
         
-        @Override
-        public Type<? extends CustomPacketPayload> type() {
-            return PACKET_ID;
-        }
     }
     
     public record EnvironmentFactor(float result, int variants, List<BlockPos> sources) {

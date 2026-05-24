@@ -1,4 +1,5 @@
 package rearth.oritech.api.networking;
+import rearth.oritech.api.networking.PacketId;
 
 import com.mojang.serialization.Codec;
 import dev.architectury.fluid.FluidStack;
@@ -67,21 +68,17 @@ public class NetworkManager {
     // --- Sending helpers ---
 
     public static void sendBlockHandle(BlockEntity blockEntity, MessagePayload message) {
-        OritechPlatform.INSTANCE.sendBlockHandle(blockEntity, MessagePayload.TYPE, buf ->
-            MessagePayload.TYPE.codec().encode(buf, message));
+        OritechPlatform.INSTANCE.sendBlockHandle(blockEntity, MessagePayload.TYPE,
+            buf -> MessagePayload.CODEC.encode(buf, message));
     }
 
     public static void sendPlayerHandle(MessagePayload message, ServerPlayer player) {
-        OritechPlatform.INSTANCE.sendPlayerHandle(player, MessagePayload.TYPE, buf ->
-            MessagePayload.TYPE.codec().encode(buf, message));
+        OritechPlatform.INSTANCE.sendPlayerHandle(player, MessagePayload.TYPE,
+            buf -> MessagePayload.CODEC.encode(buf, message));
     }
 
     public static void sendToServer(PacketId<?> packetId, Consumer<FriendlyByteBuf> writer) {
         OritechPlatform.INSTANCE.sendToServer(packetId, writer);
-    }
-
-    public static <T> void sendPacketToServer(PacketId<T> packetId, T value) {
-        OritechPlatform.INSTANCE.sendToServer(packetId, buf -> packetId.codec().encode(buf, value));
     }
 
     public static void sendNearby(ServerLevel level, Vec3 pos, double radius, MessagePayload message) {
@@ -93,12 +90,17 @@ public class NetworkManager {
         }
     }
 
-    public static <T> void registerToClient(PacketId<T> id, TriConsumer<T, Level, Player> consumer) {
-        OritechPlatform.INSTANCE.registerToClient(id, consumer);
+    public static <T> void registerToClient(PacketId<T> id, StreamCodec<FriendlyByteBuf, T> codec, TriConsumer<T, Level, Player> consumer) {
+        OritechPlatform.INSTANCE.registerToClient(id, codec, consumer);
     }
 
-    public static <T> void registerToServer(PacketId<T> id, TriConsumer<T, Player, Level> consumer) {
-        OritechPlatform.INSTANCE.registerToServer(id, consumer);
+    public static <T> void registerToServer(PacketId<T> id, StreamCodec<FriendlyByteBuf, T> codec, TriConsumer<T, Player, Level> consumer) {
+        OritechPlatform.INSTANCE.registerToServer(id, codec, consumer);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> StreamCodec<FriendlyByteBuf, T> autoCodec(Class<T> type) {
+        return (StreamCodec<FriendlyByteBuf, T>) getAutoCodec(type);
     }
 
     public static void registerDefaultCodecs() {
@@ -133,30 +135,30 @@ public class NetworkManager {
     public static void init() {
         registerDefaultCodecs();
 
-        registerToServer(ItemFilterBlockEntity.ItemFilterPayload.FILTER_PACKET_ID, (p, player, level) -> ItemFilterBlockEntity.handleClientUpdate(p, player, level));
-        registerToServer(EnchanterBlockEntity.SelectEnchantingPacket.PACKET_ID, (p, player, level) -> EnchanterBlockEntity.receiveEnchantmentSelection(p, player, level));
-        registerToServer(RedstoneAddonBlockEntity.RedstoneAddonServerUpdate.PACKET_ID, (p, player, level) -> RedstoneAddonBlockEntity.receiveOnServer(p, player, level));
-        registerToServer(PortableLaserItem.LaserPlayerUsePacket.PACKET_ID, (p, player, level) -> PortableLaserItem.receiveUsePacket(p, player, level));
-        registerToServer(ServerZiplineHandler.ZiplinePlayerUsePacket.PACKET_ID, (p, player, level) -> ServerZiplineHandler.onZipLineTickUseEvent(p, player, level));
-        registerToServer(MachineBlockEntity.InventoryInputModeSelectorPacket.PACKET_ID, (p, player, level) -> MachineBlockEntity.receiveCycleModePacket(p, player, level));
-        registerToServer(InventoryProxyAddonBlockEntity.InventoryProxySlotSelectorPacket.PACKET_ID, (p, player, level) -> InventoryProxyAddonBlockEntity.receiveSlotSelection(p, player, level));
-        registerToServer(JetpackItem.JetpackUsageUpdatePacket.PACKET_ID, (p, player, level) -> JetpackItem.receiveUsagePacket(p, player, level));
-        registerToServer(PlayerAugments.AugmentInstallTriggerPacket.PACKET_ID, (p, player, level) -> PlayerAugments.receiveInstallTrigger(p, player, level));
-        registerToServer(PlayerAugments.LoadPlayerAugmentsToMachinePacket.PACKET_ID, (p, player, level) -> PlayerAugments.receivePlayerLoadMachine(p, player, level));
-        registerToServer(PlayerAugments.OpenAugmentScreenPacket.PACKET_ID, (p, player, level) -> PlayerAugments.receiveOpenAugmentScreen(p, player, level));
-        registerToServer(PlayerAugments.AugmentPlayerTogglePacket.PACKET_ID, (p, player, level) -> PlayerAugments.receiveToggleAugment(p, player, level));
-        registerToServer(ShrinkerBlockEntity.ShrinkerPlayerUsePacket.PACKET_ID, (p, player, level) -> ShrinkerBlockEntity.onPlayerUse(p, player, level));
-        registerToServer(OritechScreenHandler.FluidContainerInteractionPacket.PACKET_ID, (p, player, level) -> OritechScreenHandler.handleFluidContainerInteraction(p, player, level));
-        registerToServer(TaintedRefineryBlockEntity.RefineryTankSelectorPacket.PACKET_ID, (p, player, level) -> TaintedRefineryBlockEntity.handleTankPacket(p, player, level));
-        registerToServer(ExpandableEnergyStorageBlockEntity.StorageLimitPacket.PACKET_ID, (p, player, level) -> ExpandableEnergyStorageBlockEntity.handleLimitPacket(p, player, level));
+        registerToServer(ItemFilterBlockEntity.ItemFilterPayload.FILTER_PACKET_ID, ItemFilterBlockEntity.ItemFilterPayload.PACKET_CODEC, (p, player, level) -> ItemFilterBlockEntity.handleClientUpdate(p, player, level));
+        registerToServer(EnchanterBlockEntity.SelectEnchantingPacket.PACKET_ID, autoCodec(EnchanterBlockEntity.SelectEnchantingPacket.class), (p, player, level) -> EnchanterBlockEntity.receiveEnchantmentSelection(p, player, level));
+        registerToServer(RedstoneAddonBlockEntity.RedstoneAddonServerUpdate.PACKET_ID, autoCodec(RedstoneAddonBlockEntity.RedstoneAddonServerUpdate.class), (p, player, level) -> RedstoneAddonBlockEntity.receiveOnServer(p, player, level));
+        registerToServer(PortableLaserItem.LaserPlayerUsePacket.PACKET_ID, autoCodec(PortableLaserItem.LaserPlayerUsePacket.class), (p, player, level) -> PortableLaserItem.receiveUsePacket(p, player, level));
+        registerToServer(ServerZiplineHandler.ZiplinePlayerUsePacket.PACKET_ID, autoCodec(ServerZiplineHandler.ZiplinePlayerUsePacket.class), (p, player, level) -> ServerZiplineHandler.onZipLineTickUseEvent(p, player, level));
+        registerToServer(MachineBlockEntity.InventoryInputModeSelectorPacket.PACKET_ID, autoCodec(MachineBlockEntity.InventoryInputModeSelectorPacket.class), (p, player, level) -> MachineBlockEntity.receiveCycleModePacket(p, player, level));
+        registerToServer(InventoryProxyAddonBlockEntity.InventoryProxySlotSelectorPacket.PACKET_ID, autoCodec(InventoryProxyAddonBlockEntity.InventoryProxySlotSelectorPacket.class), (p, player, level) -> InventoryProxyAddonBlockEntity.receiveSlotSelection(p, player, level));
+        registerToServer(JetpackItem.JetpackUsageUpdatePacket.PACKET_ID, autoCodec(JetpackItem.JetpackUsageUpdatePacket.class), (p, player, level) -> JetpackItem.receiveUsagePacket(p, player, level));
+        registerToServer(PlayerAugments.AugmentInstallTriggerPacket.PACKET_ID, autoCodec(PlayerAugments.AugmentInstallTriggerPacket.class), (p, player, level) -> PlayerAugments.receiveInstallTrigger(p, player, level));
+        registerToServer(PlayerAugments.LoadPlayerAugmentsToMachinePacket.PACKET_ID, autoCodec(PlayerAugments.LoadPlayerAugmentsToMachinePacket.class), (p, player, level) -> PlayerAugments.receivePlayerLoadMachine(p, player, level));
+        registerToServer(PlayerAugments.OpenAugmentScreenPacket.PACKET_ID, autoCodec(PlayerAugments.OpenAugmentScreenPacket.class), (p, player, level) -> PlayerAugments.receiveOpenAugmentScreen(p, player, level));
+        registerToServer(PlayerAugments.AugmentPlayerTogglePacket.PACKET_ID, autoCodec(PlayerAugments.AugmentPlayerTogglePacket.class), (p, player, level) -> PlayerAugments.receiveToggleAugment(p, player, level));
+        registerToServer(ShrinkerBlockEntity.ShrinkerPlayerUsePacket.PACKET_ID, autoCodec(ShrinkerBlockEntity.ShrinkerPlayerUsePacket.class), (p, player, level) -> ShrinkerBlockEntity.onPlayerUse(p, player, level));
+        registerToServer(OritechScreenHandler.FluidContainerInteractionPacket.PACKET_ID, autoCodec(OritechScreenHandler.FluidContainerInteractionPacket.class), (p, player, level) -> OritechScreenHandler.handleFluidContainerInteraction(p, player, level));
+        registerToServer(TaintedRefineryBlockEntity.RefineryTankSelectorPacket.PACKET_ID, autoCodec(TaintedRefineryBlockEntity.RefineryTankSelectorPacket.class), (p, player, level) -> TaintedRefineryBlockEntity.handleTankPacket(p, player, level));
+        registerToServer(ExpandableEnergyStorageBlockEntity.StorageLimitPacket.PACKET_ID, autoCodec(ExpandableEnergyStorageBlockEntity.StorageLimitPacket.class), (p, player, level) -> ExpandableEnergyStorageBlockEntity.handleLimitPacket(p, player, level));
 
-        registerToClient(MessagePayload.TYPE, (msg, level, player) -> receiveMessage(msg, level));
-        registerToClient(ItemPipeInterfaceEntity.RenderStackData.PIPE_ITEMS_ID, (p, level, player) -> ItemPipeInterfaceEntity.receiveVisualItemsPacket(p, level, player));
-        registerToClient(EnchantmentCatalystBlockEntity.CatalystSyncPacket.PACKET_ID, (p, level, player) -> EnchantmentCatalystBlockEntity.receiveUpdatePacket(p, level, player));
-        registerToClient(SpawnerControllerBlockEntity.SpawnerSyncPacket.PACKET_ID, (p, level, player) -> SpawnerControllerBlockEntity.receiveUpdatePacket(p, level, player));
-        registerToClient(RedstoneAddonBlockEntity.RedstoneAddonClientUpdate.PACKET_ID, (p, level, player) -> RedstoneAddonBlockEntity.receiveOnClient(p, level, player));
-        registerToClient(AcceleratorControllerBlockEntity.ParticleRenderTrail.PACKET_ID, (p, level, player) -> AcceleratorControllerBlockEntity.receiveTrail(p, level, player));
-        registerToClient(AcceleratorControllerBlockEntity.LastEventPacket.PACKET_ID, (p, level, player) -> AcceleratorControllerBlockEntity.receiveEvent(p, level, player));
+        registerToClient(MessagePayload.TYPE, MessagePayload.CODEC, (msg, level, player) -> receiveMessage(msg, level));
+        registerToClient(ItemPipeInterfaceEntity.RenderStackData.PIPE_ITEMS_ID, autoCodec(ItemPipeInterfaceEntity.RenderStackData.class), (p, level, player) -> ItemPipeInterfaceEntity.receiveVisualItemsPacket(p, level, player));
+        registerToClient(EnchantmentCatalystBlockEntity.CatalystSyncPacket.PACKET_ID, autoCodec(EnchantmentCatalystBlockEntity.CatalystSyncPacket.class), (p, level, player) -> EnchantmentCatalystBlockEntity.receiveUpdatePacket(p, level, player));
+        registerToClient(SpawnerControllerBlockEntity.SpawnerSyncPacket.PACKET_ID, autoCodec(SpawnerControllerBlockEntity.SpawnerSyncPacket.class), (p, level, player) -> SpawnerControllerBlockEntity.receiveUpdatePacket(p, level, player));
+        registerToClient(RedstoneAddonBlockEntity.RedstoneAddonClientUpdate.PACKET_ID, autoCodec(RedstoneAddonBlockEntity.RedstoneAddonClientUpdate.class), (p, level, player) -> RedstoneAddonBlockEntity.receiveOnClient(p, level, player));
+        registerToClient(AcceleratorControllerBlockEntity.ParticleRenderTrail.PACKET_ID, autoCodec(AcceleratorControllerBlockEntity.ParticleRenderTrail.class), (p, level, player) -> AcceleratorControllerBlockEntity.receiveTrail(p, level, player));
+        registerToClient(AcceleratorControllerBlockEntity.LastEventPacket.PACKET_ID, autoCodec(AcceleratorControllerBlockEntity.LastEventPacket.class), (p, level, player) -> AcceleratorControllerBlockEntity.receiveEvent(p, level, player));
     }
 
     public static void receiveMessage(MessagePayload message, Level world) {
@@ -356,27 +358,26 @@ public class NetworkManager {
 
     public record MessagePayload(BlockPos pos, ResourceLocation targetEntityType, SyncType syncType, byte[] message) {
 
-        public static final PacketId<MessagePayload> TYPE = new PacketId<>(
-            Oritech.id("generic"),
-            new StreamCodec<>() {
-                @Override
-                public MessagePayload decode(FriendlyByteBuf buf) {
-                    var pos = buf.readBlockPos();
-                    var entityType = buf.readResourceLocation();
-                    var syncType = SyncType.PACKET_CODEC.decode(buf);
-                    var bytes = buf.readByteArray();
-                    return new MessagePayload(pos, entityType, syncType, bytes);
-                }
+        public static final PacketId<MessagePayload> TYPE = new PacketId<>(Oritech.id("generic"));
 
-                @Override
-                public void encode(FriendlyByteBuf buf, MessagePayload value) {
-                    buf.writeBlockPos(value.pos);
-                    buf.writeResourceLocation(value.targetEntityType);
-                    SyncType.PACKET_CODEC.encode(buf, value.syncType);
-                    buf.writeByteArray(value.message);
-                }
+        public static final StreamCodec<FriendlyByteBuf, MessagePayload> CODEC = new StreamCodec<>() {
+            @Override
+            public MessagePayload decode(FriendlyByteBuf buf) {
+                var pos = buf.readBlockPos();
+                var entityType = buf.readResourceLocation();
+                var syncType = SyncType.PACKET_CODEC.decode(buf);
+                var bytes = buf.readByteArray();
+                return new MessagePayload(pos, entityType, syncType, bytes);
             }
-        );
+
+            @Override
+            public void encode(FriendlyByteBuf buf, MessagePayload value) {
+                buf.writeBlockPos(value.pos);
+                buf.writeResourceLocation(value.targetEntityType);
+                SyncType.PACKET_CODEC.encode(buf, value.syncType);
+                buf.writeByteArray(value.message);
+            }
+        };
     }
 
     static <B extends ByteBuf, V> java.util.function.Function<StreamCodec<B, V>, StreamCodec<B, Set<V>>> toSet() {

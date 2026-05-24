@@ -1,11 +1,11 @@
 package rearth.oritech.block.base.entity;
+import rearth.oritech.api.networking.PacketId;
 
 import dev.architectury.registry.menu.ExtendedMenuProvider;
 import net.minecraft.core.*;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
@@ -166,22 +166,22 @@ public abstract class ExpandableEnergyStorageBlockEntity extends NetworkedBlockE
     }
     
     @Override
-    public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.saveAdditional(nbt, registryLookup);
+    public void saveAdditional(CompoundTag nbt) {
+        super.saveAdditional(nbt);
         writeAddonToNbt(nbt);
         nbt.putLong("energy_stored", energyStorage.amount);
-        ContainerHelper.saveAllItems(nbt, inventory.heldStacks, false, registryLookup);
+        ContainerHelper.saveAllItems(nbt, inventory.heldStacks, false);
         nbt.putBoolean("redstone", redstonePowered);
         nbt.putInt("rfOutputOverride", rfOutputOverride);
     }
     
     @Override
-    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.loadAdditional(nbt, registryLookup);
+    public void loadAdditional(CompoundTag nbt) {
+        super.loadAdditional(nbt);
         loadAddonNbtData(nbt);
         updateEnergyContainer();
         energyStorage.amount = nbt.getLong("energy_stored");
-        ContainerHelper.loadAllItems(nbt, inventory.heldStacks, registryLookup);
+        ContainerHelper.loadAllItems(nbt, inventory.heldStacks);
         redstonePowered = nbt.getBoolean("redstone");
         rfOutputOverride = nbt.getInt("rfOutputOverride");
     }
@@ -373,7 +373,7 @@ public abstract class ExpandableEnergyStorageBlockEntity extends NetworkedBlockE
         return new BarConfiguration(8, 24, 17, 54 + 20);
     }
     
-    public static void handleLimitPacket(StorageLimitPacket payload, Player user, RegistryAccess registryAccess) {
+    public static void handleLimitPacket(StorageLimitPacket payload, Player user, Level level) {
         var level = user.level();
         if (level == null) return;
         var storageCandidate = level.getBlockEntity(payload.position());
@@ -384,13 +384,9 @@ public abstract class ExpandableEnergyStorageBlockEntity extends NetworkedBlockE
         
     }
     
-    public record StorageLimitPacket(BlockPos position, int limit) implements CustomPacketPayload {
+    public record StorageLimitPacket(BlockPos position, int limit) {
         
-        public static final CustomPacketPayload.Type<StorageLimitPacket> PACKET_ID = new CustomPacketPayload.Type<>(Oritech.id("storage_limit"));
+        public static final PacketId<StorageLimitPacket> PACKET_ID = new PacketId<>(Oritech.id("storage_limit"));
         
-        @Override
-        public Type<? extends CustomPacketPayload> type() {
-            return PACKET_ID;
-        }
     }
 }

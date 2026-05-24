@@ -6,6 +6,7 @@ import rearth.oritech.init.OritechConfig;
 import rearth.oritech.Oritech;
 import rearth.oritech.api.fluid.FluidApi;
 import rearth.oritech.api.fluid.containers.SimpleItemFluidStorage;
+import rearth.oritech.init.ComponentContent;
 
 import java.util.List;
 import net.minecraft.ChatFormatting;
@@ -22,9 +23,14 @@ public class SmallFluidTankBlockItem extends BlockItem implements FluidApi.ItemP
         super(block, settings);
     }
     
+    private static FluidStack getStoredFluid(ItemStack stack) {
+        var stored = ComponentContent.getFromNbt(stack, ComponentContent.storedFluidKey(), FluidStack.CODEC);
+        return stored != null ? stored : FluidStack.empty();
+    }
+
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag type) {
-        var data = stack.getOrDefault(FluidApi.ITEM.getFluidComponent(), FluidStack.empty());
+        var data = getStoredFluid(stack);
         
         if (data.isEmpty()) {
             tooltip.add(Component.translatable("tooltip.oritech.fluid_empty"));
@@ -39,7 +45,7 @@ public class SmallFluidTankBlockItem extends BlockItem implements FluidApi.ItemP
     
     @Override
     public Component getName(ItemStack stack) {
-        var content = stack.getOrDefault(FluidApi.ITEM.getFluidComponent(), FluidStack.empty());
+        var content = getStoredFluid(stack);
         if (content.isEmpty()) {
             return super.getName(stack);
         } else {
@@ -54,13 +60,13 @@ public class SmallFluidTankBlockItem extends BlockItem implements FluidApi.ItemP
     
     @Override
     public boolean isBarVisible(ItemStack stack) {
-        var contentEmpty = stack.getOrDefault(FluidApi.ITEM.getFluidComponent(), FluidStack.empty()).isEmpty();
+        var contentEmpty = getStoredFluid(stack).isEmpty();
         return !contentEmpty;
     }
-    
+
     @Override
     public int getBarColor(ItemStack stack) {
-        var content = stack.getOrDefault(FluidApi.ITEM.getFluidComponent(), FluidStack.empty());
+        var content = getStoredFluid(stack);
         if (content.isEmpty())
             return 0x07bdff;
         
@@ -74,7 +80,7 @@ public class SmallFluidTankBlockItem extends BlockItem implements FluidApi.ItemP
     public int getBarWidth(ItemStack stack) {
         
         var capacity = OritechConfig.portableTankCapacityBuckets.get() * FluidStackHooks.bucketAmount();
-        var fillAmount = stack.getOrDefault(FluidApi.ITEM.getFluidComponent(), FluidStack.empty()).getAmount();
+        var fillAmount = getStoredFluid(stack).getAmount();
         
         return Math.round((fillAmount * 100f / capacity) * MAX_BAR_WIDTH) / 100;
     }

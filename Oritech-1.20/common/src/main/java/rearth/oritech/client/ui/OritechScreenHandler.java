@@ -1,9 +1,8 @@
 package rearth.oritech.client.ui;
+import rearth.oritech.api.networking.PacketId;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
@@ -262,17 +261,13 @@ public class OritechScreenHandler extends AbstractContainerMenu implements Machi
         super.broadcastChanges();
     }
     
-    public record FluidContainerInteractionPacket(BlockPos position, int tankIndex, boolean extract) implements CustomPacketPayload {
-        public static final CustomPacketPayload.Type<FluidContainerInteractionPacket> PACKET_ID =
-            new CustomPacketPayload.Type<>(Oritech.id("fluid_container_interaction"));
+    public record FluidContainerInteractionPacket(BlockPos position, int tankIndex, boolean extract) {
+        public static final PacketId<FluidContainerInteractionPacket> PACKET_ID =
+            new PacketId<>(Oritech.id("fluid_container_interaction"));
         
-        @Override
-        public Type<? extends CustomPacketPayload> type() {
-            return PACKET_ID;
-        }
     }
     
-    public static void handleFluidContainerInteraction(FluidContainerInteractionPacket packet, Player player, RegistryAccess registryAccess) {
+    public static void handleFluidContainerInteraction(FluidContainerInteractionPacket packet, Player player, Level level) {
         if (!(player.containerMenu instanceof OritechScreenHandler handler)) return;
         if (packet.tankIndex() < 0 || packet.tankIndex() >= handler.fluidStorages.size()) return;
         

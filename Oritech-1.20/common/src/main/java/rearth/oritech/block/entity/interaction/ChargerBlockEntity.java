@@ -28,7 +28,7 @@ import rearth.oritech.util.StackContext;
 import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -92,18 +92,18 @@ public class ChargerBlockEntity extends NetworkedBlockEntity implements FluidApi
     }
     
     @Override
-    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.saveAdditional(nbt, registryLookup);
+    protected void saveAdditional(CompoundTag nbt) {
+        super.saveAdditional(nbt);
         fluidStorage.writeNbt(nbt, "");
-        ContainerHelper.saveAllItems(nbt, inventory.heldStacks, false, registryLookup);
+        ContainerHelper.saveAllItems(nbt, inventory.heldStacks, false);
         nbt.putLong("energy_stored", energyStorage.amount);
     }
     
     @Override
-    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.loadAdditional(nbt, registryLookup);
+    protected void loadAdditional(CompoundTag nbt) {
+        super.loadAdditional(nbt);
         fluidStorage.readNbt(nbt, "");
-        ContainerHelper.loadAllItems(nbt, inventory.heldStacks, registryLookup);
+        ContainerHelper.loadAllItems(nbt, inventory.heldStacks);
         energyStorage.amount = nbt.getLong("energy_stored");
     }
     

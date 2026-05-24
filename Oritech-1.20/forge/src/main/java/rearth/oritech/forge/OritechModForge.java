@@ -4,7 +4,6 @@ import dev.architectury.hooks.fluid.forge.FluidStackHooksForge;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -57,13 +56,15 @@ public final class OritechModForge {
         ModLoadingContext.get().registerConfig(ModConfig.Type.STARTUP, OritechStartupConfig.STARTUP_SPEC);
 
         // Set up fluid stack codec using Architectury hooks.
-        // In Forge 1.20.1, FluidStack has OPTIONAL_CODEC from Forge's JSON ser; we map it to
-        // Architectury's FluidStack.
-        NetworkManager.FLUID_STACK_CODEC = net.minecraftforge.fluids.FluidStack.CODEC
+        // OPTIONAL_CODEC handles empty FluidStack gracefully (equivalent to NeoForge's OPTIONAL_CODEC).
+        NetworkManager.FLUID_STACK_CODEC = net.minecraftforge.fluids.FluidStack.OPTIONAL_CODEC
             .xmap(FluidStackHooksForge::fromForge, FluidStackHooksForge::toForge);
-        // TODO: FLUID_STACK_STREAM_CODEC — Forge 1.20.1 FluidStack has no built-in stream codec.
-        // The common module's NetworkManager.FLUID_STACK_STREAM_CODEC must be set before
-        // registerDefaultCodecs() is called. If required, provide a custom StreamCodec here.
+        // Forge 1.20.1 FluidStack has no built-in stream codec, so we create a simple one
+        // using FluidStack.writeToPacket / readFromPacket (Forge's network serialization methods).
+        NetworkManager.FLUID_STACK_STREAM_CODEC = rearth.oritech.compat.StreamCodec.of(
+            (buf, stack) -> FluidStackHooksForge.toForge(stack).writeToPacket(buf),
+            buf -> FluidStackHooksForge.fromForge(net.minecraftforge.fluids.FluidStack.readFromPacket(buf))
+        );
 
         Oritech.initialize();
     }
@@ -74,6 +75,9 @@ public final class OritechModForge {
 
     /**
      * Events fired on the Forge game event bus ({@code MinecraftForge.EVENT_BUS}).
+     *
+     * <p>{@link AttachCapabilitiesEvent} fires on the game bus, not the mod bus,
+     * so capability attachment is handled here along with entity events.
      */
     @Mod.EventBusSubscriber(modid = Oritech.MOD_ID)
     public static class ForgeGameBusEvents {
@@ -89,10 +93,38 @@ public final class OritechModForge {
                 PlayerAugments.refreshActiveAugments(player);
             }
         }
+
+        /**
+         * Attaches capabilities to block entities.
+         *
+         * <p>This replaces {@code RegisterCapabilitiesEvent} from NeoForge 1.21.
+         * {@link AttachCapabilitiesEvent} fires on the game bus each time a block entity is loaded,
+         * and each impl checks whether the entity matches a registered type before attaching.
+         */
+        @SubscribeEvent
+        public static void onAttachBlockEntityCapabilities(AttachCapabilitiesEvent<BlockEntity> event) {
+            if (ItemApi.BLOCK instanceof ForgeItemApiImpl forgeApi)
+                forgeApi.onAttachCapabilities(event);
+            if (FluidApi.BLOCK instanceof ForgeFluidApiImpl forgeApi)
+                forgeApi.onAttachBlockEntityCapabilities(event);
+            if (EnergyApi.BLOCK instanceof ForgeEnergyApiImpl forgeApi)
+                forgeApi.onAttachBlockEntityCapabilities(event);
+        }
+
+        /**
+         * Attaches capabilities to item stacks (energy-storing items, fluid containers).
+         */
+        @SubscribeEvent
+        public static void onAttachItemStackCapabilities(AttachCapabilitiesEvent<ItemStack> event) {
+            if (FluidApi.ITEM instanceof ForgeFluidApiImpl forgeApi)
+                forgeApi.onAttachItemStackCapabilities(event);
+            if (EnergyApi.ITEM instanceof ForgeEnergyApiImpl forgeApi)
+                forgeApi.onAttachItemStackCapabilities(event);
+        }
     }
 
     // -------------------------------------------------------------------------
-    // Mod event bus handlers
+    // Mod event bus handlers (registration-related)
     // -------------------------------------------------------------------------
 
     /**
@@ -111,34 +143,6 @@ public final class OritechModForge {
 
             // NOTE: In Forge 1.20.1 fluid attributes are part of ForgeFlowingFluid.Properties —
             // there is no separate "fluid types" registry event to handle here.
-        }
-
-        /**
-         * Attaches capabilities to block entities.
-         *
-         * <p>This replaces {@code RegisterCapabilitiesEvent} from NeoForge 1.21.
-         * The {@link AttachCapabilitiesEvent} fires on the game event bus for each block entity
-         * that is loaded, so we check whether the entity matches a registered type.
-         */
-        @SubscribeEvent
-        public void onAttachBlockEntityCapabilities(AttachCapabilitiesEvent<BlockEntity> event) {
-            if (ItemApi.BLOCK instanceof ForgeItemApiImpl forgeApi)
-                forgeApi.onAttachCapabilities(event);
-            if (FluidApi.BLOCK instanceof ForgeFluidApiImpl forgeApi)
-                forgeApi.onAttachBlockEntityCapabilities(event);
-            if (EnergyApi.BLOCK instanceof ForgeEnergyApiImpl forgeApi)
-                forgeApi.onAttachBlockEntityCapabilities(event);
-        }
-
-        /**
-         * Attaches capabilities to item stacks (e.g., energy-storing items, fluid containers).
-         */
-        @SubscribeEvent
-        public void onAttachItemStackCapabilities(AttachCapabilitiesEvent<ItemStack> event) {
-            if (FluidApi.ITEM instanceof ForgeFluidApiImpl forgeApi)
-                forgeApi.onAttachItemStackCapabilities(event);
-            if (EnergyApi.ITEM instanceof ForgeEnergyApiImpl forgeApi)
-                forgeApi.onAttachItemStackCapabilities(event);
         }
     }
 }

@@ -11,7 +11,7 @@ import rearth.oritech.block.entity.augmenter.api.ModifierAugment;
 import rearth.oritech.util.SizedIngredient;
 
 import java.util.List;
-import net.minecraft.core.HolderLookup;
+
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -106,7 +106,7 @@ public class AugmentDataRecipe implements Recipe<RecipeInput> {
     }
     
     @Override
-    public ItemStack assemble(RecipeInput input, HolderLookup.Provider lookup) {
+    public ItemStack assemble(RecipeInput input) {
         return ItemStack.EMPTY;
     }
     
@@ -116,7 +116,7 @@ public class AugmentDataRecipe implements Recipe<RecipeInput> {
     }
     
     @Override
-    public ItemStack getResultItem(HolderLookup.Provider registriesLookup) {
+    public ItemStack getResultItem(net.minecraft.core.RegistryAccess registryAccess) {
         return ItemStack.EMPTY;
     }
     

@@ -2,10 +2,14 @@ package rearth.oritech.compat;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.GlobalPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 
 import java.util.*;
 import java.util.function.IntFunction;
@@ -62,6 +66,19 @@ public final class ByteBufCodecs {
 
     public static final StreamCodec<FriendlyByteBuf, BlockPos> BLOCK_POS =
         StreamCodec.of((buf, pos) -> buf.writeBlockPos(pos), FriendlyByteBuf::readBlockPos);
+
+    public static final StreamCodec<FriendlyByteBuf, GlobalPos> GLOBAL_POS =
+        StreamCodec.of(
+            (buf, pos) -> {
+                buf.writeResourceLocation(pos.dimension().location());
+                buf.writeBlockPos(pos.pos());
+            },
+            buf -> {
+                ResourceKey<Level> dim = ResourceKey.create(Registries.DIMENSION, buf.readResourceLocation());
+                BlockPos pos = buf.readBlockPos();
+                return GlobalPos.of(dim, pos);
+            }
+        );
 
     // ---- Collection helpers ----
 

@@ -1,7 +1,7 @@
 package rearth.oritech.block.entity.decorative;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.Block;
@@ -50,19 +50,19 @@ public class HangarDoorBlockEntity extends BlockEntity implements GeoBlockEntity
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registryLookup) {
-        super.saveAdditional(tag, registryLookup);
+    protected void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
         addColorToNbt(tag);
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registryLookup) {
-        super.loadAdditional(tag, registryLookup);
+    protected void loadAdditional(CompoundTag tag) {
+        super.loadAdditional(tag);
         loadColorFromNbt(tag);
     }
 
     @Override
-    public CompoundTag getUpdateTag(HolderLookup.Provider registryLookup) {
+    public CompoundTag getUpdateTag() {
         var tag = super.getUpdateTag(registryLookup);
         addColorToNbt(tag);
         return tag;

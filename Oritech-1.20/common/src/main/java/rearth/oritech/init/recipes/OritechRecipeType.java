@@ -34,11 +34,17 @@ public class OritechRecipeType implements RecipeSerializer<OritechRecipe>, Recip
       FLUID_STACK_CODEC.listOf().optionalFieldOf("fluidOutputs", List.of()).forGetter(OritechRecipe::getFluidOutputs)
     ).apply(instance, OritechRecipe::new));
     
+    static final StreamCodec<FriendlyByteBuf, Ingredient> INGREDIENT_STREAM_CODEC =
+        StreamCodec.of((buf, ing) -> ing.toNetwork(buf), Ingredient::fromNetwork);
+
+    static final StreamCodec<FriendlyByteBuf, List<ItemStack>> ITEM_LIST_STREAM_CODEC =
+        ByteBufCodecs.ITEM_STACK.apply(ByteBufCodecs.list());
+
     public static final StreamCodec<FriendlyByteBuf, OritechRecipe> PACKET_CODEC = StreamCodec.composite(
       ByteBufCodecs.INT, OritechRecipe::getTime,
-      Ingredient.CONTENTS_STREAM_CODEC.apply(ByteBufCodecs.list()), OritechRecipe::getInputs,
-      ItemStack.OPTIONAL_LIST_STREAM_CODEC, OritechRecipe::getResults,
-      ResourceLocation.STREAM_CODEC.map(identifier1 -> (OritechRecipeType) BuiltInRegistries.RECIPE_TYPE.get(identifier1), OritechRecipeType::getIdentifier), OritechRecipe::getOriType,
+      INGREDIENT_STREAM_CODEC.apply(ByteBufCodecs.list()), OritechRecipe::getInputs,
+      ITEM_LIST_STREAM_CODEC, OritechRecipe::getResults,
+      ByteBufCodecs.RESOURCE_LOCATION.map(identifier1 -> (OritechRecipeType) BuiltInRegistries.RECIPE_TYPE.get(identifier1), OritechRecipeType::getIdentifier), OritechRecipe::getOriType,
       FluidIngredient.PACKET_CODEC, OritechRecipe::getFluidInput,
       NetworkManager.FLUID_STACK_STREAM_CODEC.apply(ByteBufCodecs.list()), OritechRecipe::getFluidOutputs,
       OritechRecipe::new

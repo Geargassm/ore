@@ -2,7 +2,7 @@ package rearth.oritech.block.base.entity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
+
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Tuple;
@@ -251,8 +251,8 @@ public abstract class FrameInteractionBlockEntity extends NetworkedBlockEntity {
     public abstract void finishBlockWork(BlockPos processed);
     
     @Override
-    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.saveAdditional(nbt, registryLookup);
+    protected void saveAdditional(CompoundTag nbt) {
+        super.saveAdditional(nbt);
         if (getBlockState().getValue(FrameInteractionBlock.HAS_FRAME) && areaMin != null) {
             
             nbt.putLong("areaMin", areaMin.asLong());
@@ -270,8 +270,8 @@ public abstract class FrameInteractionBlockEntity extends NetworkedBlockEntity {
     }
     
     @Override
-    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.loadAdditional(nbt, registryLookup);
+    protected void loadAdditional(CompoundTag nbt) {
+        super.loadAdditional(nbt);
         if (getBlockState().getValue(FrameInteractionBlock.HAS_FRAME)) {
             areaMin = BlockPos.of(nbt.getLong("areaMin"));
             areaMax = BlockPos.of(nbt.getLong("areaMax"));

@@ -1,12 +1,10 @@
 package rearth.oritech.client.init;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.FriendlyByteBuf;
 import rearth.oritech.compat.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -167,7 +165,7 @@ public class ParticleContent {
     
     // Network payload
     
-    public record Payload(int effectId, Vec3 pos, Vec3 data1, Vec3 data2, int extraInt) implements CustomPacketPayload {
+    public record Payload(int effectId, Vec3 pos, Vec3 data1, Vec3 data2, int extraInt) {
         public static final Type<Payload> PACKET_ID = new Type<>(Oritech.id("complex_particle"));
         
         Payload(EffectType type, Vec3 pos, Vec3 data1, Vec3 data2, int extraInt) {
@@ -196,10 +194,6 @@ public class ParticleContent {
             }
         };
         
-        @Override
-        public Type<? extends CustomPacketPayload> type() {
-            return PACKET_ID;
-        }
     }
     
     public static void registerParticles() {
