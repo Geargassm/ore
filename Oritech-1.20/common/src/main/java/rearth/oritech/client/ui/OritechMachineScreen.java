@@ -237,11 +237,11 @@ public class OritechMachineScreen<T extends OritechScreenHandler> extends Oritec
 
     protected ResourceLocation getEquipmentSlotTexture(int armorSlot) {
         return switch (armorSlot) {
-            case 0 -> ResourceLocation.fromNamespaceAndPath("minecraft", "textures/item/empty_armor_slot_boots.png");
-            case 1 -> ResourceLocation.fromNamespaceAndPath("minecraft", "textures/item/empty_armor_slot_leggings.png");
-            case 2 -> ResourceLocation.fromNamespaceAndPath("minecraft", "textures/item/empty_armor_slot_chestplate.png");
-            case 3 -> ResourceLocation.fromNamespaceAndPath("minecraft", "textures/item/empty_armor_slot_helmet.png");
-            case 4 -> ResourceLocation.fromNamespaceAndPath("minecraft", "textures/item/empty_slot_axe.png");
+            case 0 -> new ResourceLocation("minecraft", "textures/item/empty_armor_slot_boots.png");
+            case 1 -> new ResourceLocation("minecraft", "textures/item/empty_armor_slot_leggings.png");
+            case 2 -> new ResourceLocation("minecraft", "textures/item/empty_armor_slot_chestplate.png");
+            case 3 -> new ResourceLocation("minecraft", "textures/item/empty_armor_slot_helmet.png");
+            case 4 -> new ResourceLocation("minecraft", "textures/item/empty_slot_axe.png");
             default -> null;
         };
     }
@@ -276,7 +276,7 @@ public class OritechMachineScreen<T extends OritechScreenHandler> extends Oritec
 
     private Optional<ResourceLocation> getHelpBookLink() {
         if (menu.screenData.getWikiLink().isPresent())
-            return Optional.of(ResourceLocation.fromNamespaceAndPath(Oracle.MOD_ID, "books/oritech/" + menu.screenData.getWikiLink().get() + ".mdx"));
+            return Optional.of(new ResourceLocation(Oracle.MOD_ID, "books/oritech/" + menu.screenData.getWikiLink().get() + ".mdx"));
 
         var blockItem = menu.machineBlock.getBlock().asItem();
         var itemId = BuiltInRegistries.ITEM.getKey(blockItem);

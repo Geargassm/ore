@@ -340,7 +340,7 @@ public class SteamEngineEntity extends MultiblockGeneratorBlockEntity implements
     
     public static Fluid getUsedSteamFluid() {
         if (USED_STEAM_FLUID == null) {
-            USED_STEAM_FLUID = BuiltInRegistries.FLUID.get(ResourceLocation.parse(OritechConfig.generators.steamId.get()));
+            USED_STEAM_FLUID = BuiltInRegistries.FLUID.get(new ResourceLocation(OritechConfig.generators.steamId.get()));
         }
         
         return USED_STEAM_FLUID;

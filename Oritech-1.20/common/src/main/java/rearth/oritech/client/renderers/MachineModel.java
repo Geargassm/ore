@@ -25,7 +25,7 @@ public class MachineModel<T extends BlockEntity & GeoAnimatable> extends Default
             
             var colorFileSuffix = color.toString().toLowerCase(Locale.ROOT);
             
-            return ResourceLocation.fromNamespaceAndPath(base.getNamespace(), base.getPath().replace("models", "models/colored").replace(".png", "_" + colorFileSuffix + ".png"));
+            return new ResourceLocation(base.getNamespace(), base.getPath().replace("models", "models/colored").replace(".png", "_" + colorFileSuffix + ".png"));
         } else {
             return super.getTextureResource(animatable);
         }

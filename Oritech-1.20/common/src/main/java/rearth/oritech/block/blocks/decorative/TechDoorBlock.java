@@ -116,7 +116,7 @@ public class TechDoorBlock extends HorizontalDirectionalBlock implements EntityB
         var belowState = world.getBlockState(pos.below());
         var aboveState = world.getBlockState(pos.above());
         var belowValid = belowState.isFaceSturdy(world, pos.below(), Direction.UP);
-        var aboveValid = aboveState.is(Blocks.AIR) || aboveState.is(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("minecraft", "replaceable")));
+        var aboveValid = aboveState.is(Blocks.AIR) || aboveState.is(TagKey.create(Registries.BLOCK, new ResourceLocation("minecraft", "replaceable")));
         return belowValid && aboveValid;
     }
     

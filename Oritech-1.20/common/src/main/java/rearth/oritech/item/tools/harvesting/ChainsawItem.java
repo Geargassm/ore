@@ -23,7 +23,7 @@ public class ChainsawItem extends AxeItem implements OritechEnergyItem {
     public static final int BAR_STEP_COUNT = 13;
     
     public ChainsawItem(Tier toolMaterial, Item.Properties settings) {
-        super(toolMaterial, settings);
+        super(toolMaterial, 5f, -2.4f, settings);
         // In 1.20.1, AxeItem already handles axe-like breaking via its built-in Item subclass logic.
         // The Tool/Rule/DataComponents system doesn't exist in 1.20.1.
     }

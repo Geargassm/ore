@@ -39,7 +39,7 @@ public record FluidIngredient(Either<TagKey<Fluid>, ResourceLocation> fluidConte
       Codec.either(
         Codec.STRING.comapFlatMap(
           s -> s.startsWith("#")
-            ? DataResult.success(TagKey.create(Registries.FLUID, ResourceLocation.parse(s.substring(1))))
+            ? DataResult.success(TagKey.create(Registries.FLUID, new ResourceLocation(s.substring(1))))
             : DataResult.error(() -> "Not a tag: " + s),
           tag -> "#" + tag.location()
         ),
@@ -124,7 +124,7 @@ public record FluidIngredient(Either<TagKey<Fluid>, ResourceLocation> fluidConte
     }
     
     public boolean matchesFluid(Fluid fluid) {
-        BuiltInRegistries.FLUID.get(ResourceLocation.parse("")).isSame(fluid);
+        BuiltInRegistries.FLUID.get(new ResourceLocation("")).isSame(fluid);
         return fluidContent.map(tag -> BuiltInRegistries.FLUID.wrapAsHolder(fluid).is(tag), id -> BuiltInRegistries.FLUID.get(id).isSame(fluid));
     }
     

@@ -330,7 +330,7 @@ public class AugmentApplicationEntity extends NetworkedBlockEntity implements Mu
             if (availableStations.containsKey(i) && availableStations.get(i) != null && availableStations.get(i).type.equals(candidateState.getBlock()))
                 continue;
             
-            var newState = new ResearchState(candidateState.getBlock(), false, ResourceLocation.parse(""), -1, -1);
+            var newState = new ResearchState(candidateState.getBlock(), false, new ResourceLocation(""), -1, -1);
             
             availableStations.put(i, newState);
         }

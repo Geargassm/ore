@@ -22,7 +22,7 @@ public class DrillItem extends DiggerItem implements OritechEnergyItem {
     public static final int BAR_STEP_COUNT = 13;
     
     public DrillItem(Tier toolMaterial, TagKey<Block> effectiveBlocks, Item.Properties settings) {
-        super(toolMaterial, effectiveBlocks, settings);
+        super(1f, -2.4f, toolMaterial, effectiveBlocks, settings);
     }
     
     // this overrides the fabric specific extensions

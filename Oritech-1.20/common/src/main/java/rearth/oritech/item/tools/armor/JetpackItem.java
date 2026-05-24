@@ -170,7 +170,7 @@ public class JetpackItem extends ArmorItem implements GeoItem, BaseJetpackItem {
         
         stack.set(EnergyApi.ITEM.getEnergyComponent(), packet.energyStored);
         if (packet.fluidAmount > 0)
-            stack.set(ComponentContent.STORED_FLUID.get(), FluidStack.create(BuiltInRegistries.FLUID.get(ResourceLocation.parse(packet.fluidType)), packet.fluidAmount));
+            stack.set(ComponentContent.STORED_FLUID.get(), FluidStack.create(BuiltInRegistries.FLUID.get(new ResourceLocation(packet.fluidType)), packet.fluidAmount));
     }
     
     public record JetpackUsageUpdatePacket(long energyStored, String fluidType, long fluidAmount) {

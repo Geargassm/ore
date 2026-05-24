@@ -169,8 +169,8 @@ public class UnstableContainerBlockEntity extends NetworkedBlockEntity implement
         qualityMultiplier = nbt.getFloat("quality");
         
         var blockId = nbt.getString("captured");
-        if (!blockId.isBlank() && BuiltInRegistries.BLOCK.containsKey(ResourceLocation.parse(blockId)))
-            capturedBlock = BuiltInRegistries.BLOCK.get(ResourceLocation.parse(blockId)).defaultBlockState();
+        if (!blockId.isBlank() && BuiltInRegistries.BLOCK.containsKey(new ResourceLocation(blockId)))
+            capturedBlock = BuiltInRegistries.BLOCK.get(new ResourceLocation(blockId)).defaultBlockState();
         
     }
     

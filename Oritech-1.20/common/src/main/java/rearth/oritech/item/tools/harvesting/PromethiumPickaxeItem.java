@@ -15,16 +15,12 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DiggerItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.enchantment.Enchantments;
 import rearth.oritech.item.tools.PortableLaserItem;
 import net.minecraft.world.level.Level;
@@ -61,7 +57,7 @@ public class PromethiumPickaxeItem extends DiggerItem implements GeoItem {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     
     public PromethiumPickaxeItem(Tier toolMaterial, TagKey<Block> effectiveBlocks, Properties settings) {
-        super(toolMaterial, effectiveBlocks, settings);
+        super(3f, -2.4f, toolMaterial, effectiveBlocks, settings);
         SingletonGeoAnimatable.registerSyncedAnimatable(this);
     }
     
@@ -210,29 +206,6 @@ public class PromethiumPickaxeItem extends DiggerItem implements GeoItem {
         } finally {
             CHECKING_OFFSET_BREAK_PERMISSION.set(wasCheckingOffsetBreakPermission);
         }
-    }
-    
-    public static ItemAttributeModifiers createPromethiumAttributes(Tier tier, float attackDamage, float attackSpeed, float range) {
-        return ItemAttributeModifiers.builder()
-                 .add(
-                   Attributes.ATTACK_DAMAGE,
-                   new AttributeModifier(BASE_ATTACK_DAMAGE_ID, attackDamage + tier.getAttackDamageBonus(), AttributeModifier.Operation.ADD_VALUE),
-                   EquipmentSlotGroup.MAINHAND
-                 )
-                 .add(
-                   Attributes.ATTACK_SPEED,
-                   new AttributeModifier(BASE_ATTACK_SPEED_ID, attackSpeed, AttributeModifier.Operation.ADD_VALUE),
-                   EquipmentSlotGroup.MAINHAND
-                 )
-                 .add(
-                   Attributes.BLOCK_INTERACTION_RANGE,
-                   new AttributeModifier(Oritech.id("pick_block_range"), range, AttributeModifier.Operation.ADD_VALUE),
-                   EquipmentSlotGroup.MAINHAND)
-                 .add(
-                   Attributes.ENTITY_INTERACTION_RANGE,
-                   new AttributeModifier(Oritech.id("pick_entity_range"), range, AttributeModifier.Operation.ADD_VALUE),
-                   EquipmentSlotGroup.MAINHAND)
-                 .build();
     }
     
     @Override

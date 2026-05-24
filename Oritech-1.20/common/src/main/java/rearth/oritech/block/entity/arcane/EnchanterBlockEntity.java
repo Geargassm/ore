@@ -70,7 +70,7 @@ public class EnchanterBlockEntity extends NetworkedBlockEntity
     
     protected final AnimatableInstanceCache animatableInstanceCache = GeckoLibUtil.createInstanceCache(this);
     
-    public static final ResourceLocation NONE_SELECTED = ResourceLocation.parse("o:empty");
+    public static final ResourceLocation NONE_SELECTED = new ResourceLocation("o:empty");
     
     @SyncField({SyncType.GUI_OPEN, SyncType.TICK})
     @NotNull
@@ -168,7 +168,7 @@ public class EnchanterBlockEntity extends NetworkedBlockEntity
         energyStorage.amount = nbt.getLong("energy");
         
         if (nbt.contains("selected")) {
-            selectedEnchantment = ResourceLocation.parse(nbt.getString("selected"));
+            selectedEnchantment = new ResourceLocation(nbt.getString("selected"));
         }
     }
     

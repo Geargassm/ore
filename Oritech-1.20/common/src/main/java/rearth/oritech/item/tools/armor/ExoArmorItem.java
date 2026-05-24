@@ -23,9 +23,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Multimap;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
@@ -33,7 +35,6 @@ import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.component.ItemAttributeModifiers;
 
 public class ExoArmorItem extends ArmorItem implements GeoItem, ArmorEventHandler {
     
@@ -58,14 +59,19 @@ public class ExoArmorItem extends ArmorItem implements GeoItem, ArmorEventHandle
         return false;
     }
     
+    private static final java.util.UUID EXO_MOVE_SPEED_UUID = java.util.UUID.nameUUIDFromBytes("oritech:exo_move_speed".getBytes());
+    private static final java.util.UUID EXO_FLY_SPEED_UUID = java.util.UUID.nameUUIDFromBytes("oritech:exo_fly_speed".getBytes());
+
     @Override
-    public ItemAttributeModifiers getDefaultAttributeModifiers() {
-        var slotType = this.getEquipmentSlot();
-        if (slotType != EquipmentSlot.LEGS) return super.getDefaultAttributeModifiers();
-        
-        return super.getDefaultAttributeModifiers()
-                 .withModifierAdded(Attributes.MOVEMENT_SPEED, new AttributeModifier(Oritech.id("exo_move_speed"), 0.2, AttributeModifier.Operation.ADD_MULTIPLIED_BASE), EquipmentSlotGroup.LEGS)
-                 .withModifierAdded(Attributes.FLYING_SPEED, new AttributeModifier(Oritech.id("exo_fly_speed"), 0.2, AttributeModifier.Operation.ADD_MULTIPLIED_BASE), EquipmentSlotGroup.LEGS);
+    public Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlot slot) {
+        if (slot != this.getEquipmentSlot()) return super.getDefaultAttributeModifiers(slot);
+        if (slot != EquipmentSlot.LEGS) return super.getDefaultAttributeModifiers(slot);
+
+        ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
+        builder.putAll(super.getDefaultAttributeModifiers(slot));
+        builder.put(Attributes.MOVEMENT_SPEED, new AttributeModifier(EXO_MOVE_SPEED_UUID, "Exo move speed", 0.2, AttributeModifier.Operation.MULTIPLY_BASE));
+        builder.put(Attributes.FLYING_SPEED, new AttributeModifier(EXO_FLY_SPEED_UUID, "Exo fly speed", 0.2, AttributeModifier.Operation.MULTIPLY_BASE));
+        return builder.build();
     }
     
     @Override

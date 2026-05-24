@@ -132,7 +132,7 @@ public class EnchanterScreen extends OritechMachineScreen<EnchanterScreenHandler
     }
 
     private void onEnchantmentSelected(Holder<Enchantment> entry) {
-        var selected = ResourceLocation.parse(entry.getRegisteredName());
+        var selected = new ResourceLocation(entry.getRegisteredName());
         menu.enchanter.selectedEnchantment = selected;
         sendEnchantmentToServer(selected);
         closeSelectionOverlay();

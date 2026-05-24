@@ -114,7 +114,7 @@ public interface MultiblockMachineController {
             var checkPos = pos.offset(rotatedPos);
             var checkState = Objects.requireNonNull(world).getBlockState(checkPos);
             
-            if (checkState.is(Blocks.AIR) || checkState.is(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("minecraft", "replaceable")))) {
+            if (checkState.is(Blocks.AIR) || checkState.is(TagKey.create(Registries.BLOCK, new ResourceLocation("minecraft", "replaceable")))) {
                 return checkPos;
             }
         }

@@ -467,14 +467,14 @@ public class BlockContent implements ArchitecturyBlockRegistryContainer {
         var rarity = getItemRarity(field);
         
         if (field.isAnnotationPresent(UseGeoBlockItem.class)) {
-            Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(namespace, identifier), getGeoBlockItem(value, identifier, field.getAnnotation(UseGeoBlockItem.class).scale(), rarity));
+            Registry.register(BuiltInRegistries.ITEM, new ResourceLocation(namespace, identifier), getGeoBlockItem(value, identifier, field.getAnnotation(UseGeoBlockItem.class).scale(), rarity));
         } else if (FluidApi.ITEM != null && (value instanceof SmallFluidTank)) {
             var item = value.equals(BlockContent.SMALL_TANK_BLOCK) ? SMALL_TANK_ITEM : CREATIVE_TANK_ITEM;
-            Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(namespace, identifier), item);
+            Registry.register(BuiltInRegistries.ITEM, new ResourceLocation(namespace, identifier), item);
             FluidApi.ITEM.registerForItem(() -> item);
         } else if (value.equals(BlockContent.SMALL_STORAGE_BLOCK) && EnergyApi.ITEM != null) {
             var item = new SmallEnergyStorageBlockItem(value, new Item.Properties());
-            Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(namespace, identifier), item);
+            Registry.register(BuiltInRegistries.ITEM, new ResourceLocation(namespace, identifier), item);
             EnergyApi.ITEM.registerForItem(() -> item);
 
             var variantStack = new ItemStack(item);
@@ -482,7 +482,7 @@ public class BlockContent implements ArchitecturyBlockRegistryContainer {
             ItemGroups.add(targetGroup, variantStack);
             
         } else {
-            Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(namespace, identifier), createBlockItem(value, rarity, identifier));
+            Registry.register(BuiltInRegistries.ITEM, new ResourceLocation(namespace, identifier), createBlockItem(value, rarity, identifier));
         }
         
         if (!field.isAnnotationPresent(NoAutoDrop.class)) {

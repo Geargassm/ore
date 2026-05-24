@@ -46,7 +46,7 @@ public final class Oritech {
     public static Set<Pair<ItemLike, Float>> COMPOSTABLES_DATA = new HashSet<>();
     
     public static ResourceLocation id(String path) {
-        return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
+        return new ResourceLocation(MOD_ID, path);
     }
     
     public static void initialize() {
@@ -120,7 +120,7 @@ public final class Oritech {
         res.put(Registries.CREATIVE_MODE_TAB.location(), () -> ArchitecturyRegistryContainer.register(ItemGroups.class, MOD_ID, false));
         res.put(Registries.RECIPE_SERIALIZER.location(), ArchitecturyRecipeRegistryContainer::finishSerializerRegister);
         res.put(Registries.LOOT_FUNCTION_TYPE.location(), FluidContent::registerItemsToGroups);
-        res.put(ResourceLocation.fromNamespaceAndPath("neoforge", "attachment_types"), () -> {
+        res.put(new ResourceLocation("neoforge", "attachment_types"), () -> {
             Augment.registerAttachmentTypes();
             ServerZiplineHandler.registerAttachments();
         });   // this works just fine on fabric aswell, as they key is not really relevant there.

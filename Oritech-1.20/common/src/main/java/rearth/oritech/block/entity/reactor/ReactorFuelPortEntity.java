@@ -116,7 +116,7 @@ public class ReactorFuelPortEntity extends BlockEntity implements ExtendedMenuPr
     }
     
     public void updateNetwork() {
-        var usedBuf = new FriendlyByteBuf(Unpooled.buffer(), level.registryAccess());
+        var usedBuf = new FriendlyByteBuf(Unpooled.buffer());
         var fieldCount = NetworkManager.encodeFields(this, SyncType.GUI_TICK, usedBuf, level);
         if (fieldCount == 0) return;
         NetworkManager.sendBlockHandle(this, new NetworkManager.MessagePayload(worldPosition, BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(getType()), SyncType.GUI_TICK, usedBuf.array()));
