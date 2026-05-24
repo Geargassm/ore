@@ -39,7 +39,7 @@ public class ItemPipeBlock extends GenericPipeBlock {
     }
     
     @Override
-    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag options) {
+    public void appendHoverText(ItemStack stack, @Nullable net.minecraft.world.level.BlockGetter level, List<Component> tooltip, TooltipFlag options) {
         
         var showExtra = Screen.hasControlDown();
         if (showExtra) {
@@ -50,7 +50,7 @@ public class ItemPipeBlock extends GenericPipeBlock {
             tooltip.add(Component.translatable("tooltip.oritech.item_extra_info").withStyle(ChatFormatting.GRAY).withStyle(ChatFormatting.ITALIC));
         }
         
-        super.appendHoverText(stack, context, tooltip, options);
+        super.appendHoverText(stack, level, tooltip, options);
     }
     
     @Override

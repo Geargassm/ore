@@ -45,11 +45,6 @@ public class RefineryModuleBlock extends HorizontalDirectionalBlock implements E
     }
     
     @Override
-    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
-        return null;
-    }
-    
-    @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
         builder.add(BlockStateProperties.HORIZONTAL_FACING, ASSEMBLED);
@@ -130,8 +125,8 @@ public class RefineryModuleBlock extends HorizontalDirectionalBlock implements E
     }
     
     @Override
-    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag options) {
-        super.appendHoverText(stack, context, tooltip, options);
+    public void appendHoverText(ItemStack stack, @Nullable net.minecraft.world.level.BlockGetter level, List<Component> tooltip, TooltipFlag options) {
+        super.appendHoverText(stack, level, tooltip, options);
         tooltip.add(Component.translatable("tooltip.oritech.refinery_module").withStyle(ChatFormatting.GRAY));
         addMachineTooltip(tooltip, this, this);
     }

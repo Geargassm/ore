@@ -16,7 +16,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
@@ -107,22 +106,22 @@ public class RefineryBlockEntity extends MultiblockMachineEntity implements Flui
     }
     
     @Override
-    protected Optional<RecipeHolder<OritechRecipe>> getRecipe() {
-        
+    protected Optional<OritechRecipe> getRecipe() {
+
         if (inputEmpty()) return Optional.empty();
-        
+
         // get recipes matching input items
         var candidates = Objects.requireNonNull(level).getRecipeManager().getRecipesFor(getOwnRecipeType(), getInputInventory(), level);
         // filter out recipes based on input tank. Have the ones with input items first.
         var fluidRecipe = candidates
                             .stream()
-                            .filter(candidate -> CentrifugeBlockEntity.recipeInputMatchesTank(ownStorage.getInputContainer().getStack(), candidate.value()))
-                            .sorted(Comparator.comparingInt(a -> -a.value().getInputs().size()))
+                            .filter(candidate -> CentrifugeBlockEntity.recipeInputMatchesTank(ownStorage.getInputContainer().getStack(), candidate))
+                            .sorted(Comparator.comparingInt(a -> -a.getInputs().size()))
                             .findAny();
         if (fluidRecipe.isPresent()) {
             return fluidRecipe;
         }
-        
+
         return Optional.empty();
     }
     

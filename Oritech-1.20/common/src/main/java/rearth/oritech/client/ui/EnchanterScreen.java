@@ -49,7 +49,7 @@ public class EnchanterScreen extends OritechMachineScreen<EnchanterScreenHandler
     @Override
     protected void tickExtra() {
         var stack = menu.enchanter.inventory.getItem(0);
-        if (!ItemStack.isSameItemSameComponents(currentItem, stack)) {
+        if (!ItemStack.isSameItemSameTags(currentItem, stack)) {
             currentItem = stack.copy();
             onStackChanged();
         }

@@ -168,7 +168,7 @@ public class DeepDrillEntity extends NetworkedBlockEntity implements EnergyApi.B
         if (recipeCandidate.isEmpty())
             return;
         
-        var output = recipeCandidate.get().value().getResults().get(0);
+        var output = recipeCandidate.get().getResults().get(0);
         inventory.insert(output, false);
     }
     

@@ -1,9 +1,11 @@
+import java.util.function.Consumer;
+import net.minecraft.data.recipes.FinishedRecipe;
 package rearth.oritech.api.recipe;
 
 import com.google.common.base.Optional;
 import dev.architectury.fluid.FluidStack;
 import dev.architectury.hooks.fluid.FluidStackHooks;
-import net.minecraft.data.recipes.RecipeOutput;
+
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -155,7 +157,7 @@ public abstract class OritechRecipeBuilder {
 
     public abstract void validate(ResourceLocation id) throws IllegalStateException;
 
-    public void export(RecipeOutput exporter, String suffix, String namespace) {
+    public void export(Consumer<FinishedRecipe> exporter, String suffix, String namespace) {
         
         var id = ResourceLocation.fromNamespaceAndPath(namespace, resourcePath + "/" + suffix);
         validate(id);
@@ -173,7 +175,7 @@ public abstract class OritechRecipeBuilder {
     }
     
     
-    public void export(RecipeOutput exporter, String suffix) {
+    public void export(Consumer<FinishedRecipe> exporter, String suffix) {
         export(exporter, suffix, Oritech.MOD_ID);
     }
 }

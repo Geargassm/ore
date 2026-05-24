@@ -7,20 +7,19 @@ import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.WidgetHolder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.crafting.RecipeHolder;
 import rearth.oritech.Oritech;
 import rearth.oritech.init.recipes.OritechRecipe;
 
 public class OritechEMIParticleCollisionRecipe extends BasicEmiRecipe {
-    
+
     public static final ResourceLocation PARTICLE_RECIPE_OVERLAY = Oritech.id("textures/gui/modular/particle_recipe_overlay.png");
-    
+
     private final OritechRecipe recipe;
-    
-    public OritechEMIParticleCollisionRecipe(RecipeHolder<OritechRecipe> entry, EmiRecipeCategory category) {
-        super(category, entry.id(), 160, 60);
-        
-        recipe = entry.value();
+
+    public OritechEMIParticleCollisionRecipe(OritechRecipe entry, EmiRecipeCategory category) {
+        super(category, entry.getId(), 160, 60);
+
+        recipe = entry;
         recipe.getInputs().forEach(ingredient -> this.inputs.add(EmiIngredient.of(ingredient)));
         recipe.getResults().forEach(stack -> this.outputs.add(EmiStack.of(stack)));
     }

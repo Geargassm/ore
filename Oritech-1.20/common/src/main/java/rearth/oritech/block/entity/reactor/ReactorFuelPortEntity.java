@@ -101,7 +101,7 @@ public class ReactorFuelPortEntity extends BlockEntity implements ExtendedMenuPr
         
         if (recipeCandidate.isEmpty()) return false;
         
-        var capacity = recipeCandidate.get().value().getTime();
+        var capacity = recipeCandidate.get().getTime();
         currentFuelOriginalCapacity = capacity;
         availableFuel = capacity - amount;
         inputStack.shrink(1);

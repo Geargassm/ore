@@ -1,6 +1,8 @@
+import java.util.function.Consumer;
+import net.minecraft.data.recipes.FinishedRecipe;
 package rearth.oritech.api.recipe;
 
-import net.minecraft.data.recipes.RecipeOutput;
+
 import net.minecraft.resources.ResourceLocation;
 import rearth.oritech.init.recipes.RecipeContent;
 
@@ -22,7 +24,7 @@ public class PulverizerRecipeBuilder extends OritechRecipeBuilder {
     }
 
     @Override
-    public void export(RecipeOutput exporter, String suffix) {
+    public void export(Consumer<FinishedRecipe> exporter, String suffix) {
         super.export(exporter, suffix);
 
         if (addToGrinder)

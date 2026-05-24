@@ -22,7 +22,7 @@ public class PlayerAugments {
     // this is called after recipe manager init / recipe reload
     public static void loadAllAugments(RecipeManager manager) {
         allAugments.clear();
-        manager.getAllRecipesFor(RecipeContent.AUGMENT_DATA).forEach(recipe -> allAugments.put(recipe.id(), recipe.value().createAugment(recipe.id())));
+        manager.getAllRecipesFor(RecipeContent.AUGMENT_DATA).forEach(recipe -> allAugments.put(recipe.getId(), recipe.createAugment(recipe.getId())));
     }
     
     public static void serverTickAugments(ServerPlayer player) {

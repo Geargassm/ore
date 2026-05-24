@@ -29,7 +29,7 @@ public class SmallFluidTankBlockItem extends BlockItem implements FluidApi.ItemP
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag type) {
+    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag type) {
         var data = getStoredFluid(stack);
         
         if (data.isEmpty()) {
@@ -39,7 +39,7 @@ public class SmallFluidTankBlockItem extends BlockItem implements FluidApi.ItemP
             tooltip.add(Component.translatable("tooltip.oritech.fluid_content_tank_tooltip", amount, FluidStackHooks.getName(data).getString()).withStyle(ChatFormatting.GRAY));
         }
         
-        super.appendHoverText(stack, context, tooltip, type);
+        super.appendHoverText(stack, level, tooltip, type);
         
     }
     

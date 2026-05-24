@@ -58,11 +58,6 @@ public abstract class FrameInteractionBlock extends HorizontalDirectionalBlock i
     }
     
     @Override
-    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
-        return null;
-    }
-    
-    @Override
     public InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit) {
         
         if (!world.isClientSide) {
@@ -129,7 +124,7 @@ public abstract class FrameInteractionBlock extends HorizontalDirectionalBlock i
     }
     
     @Override
-    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag options) {
+    public void appendHoverText(ItemStack stack, @Nullable net.minecraft.world.level.BlockGetter level, List<Component> tooltip, TooltipFlag options) {
         addMachineTooltip(tooltip, this, this);
     }
 }

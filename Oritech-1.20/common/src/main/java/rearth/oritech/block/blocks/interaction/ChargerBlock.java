@@ -57,11 +57,6 @@ public class ChargerBlock extends HorizontalDirectionalBlock implements EntityBl
         return Block.box(0, 0, 0, 16, 8, 16);
     }
     
-    @Override
-    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
-        return null;
-    }
-    
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
@@ -109,7 +104,7 @@ public class ChargerBlock extends HorizontalDirectionalBlock implements EntityBl
     }
     
     @Override
-    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag options) {
+    public void appendHoverText(ItemStack stack, @Nullable net.minecraft.world.level.BlockGetter level, List<Component> tooltip, TooltipFlag options) {
         var showExtra = Screen.hasControlDown();
         if (!showExtra) {
             tooltip.add(Component.translatable("tooltip.oritech.item_extra_info").withStyle(ChatFormatting.GRAY).withStyle(ChatFormatting.ITALIC));

@@ -136,8 +136,8 @@ public class PowerPoleBlock extends Block implements EntityBlock {
     }
     
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, Item.@NotNull TooltipContext context, @NotNull List<Component> tooltip, @NotNull TooltipFlag options) {
-        super.appendHoverText(stack, context, tooltip, options);
+    public void appendHoverText(@NotNull ItemStack stack, @Nullable net.minecraft.world.level.BlockGetter level, @NotNull List<Component> tooltip, @NotNull TooltipFlag options) {
+        super.appendHoverText(stack, level, tooltip, options);
         var showExtra = Screen.hasControlDown();
         
         if (!showExtra)

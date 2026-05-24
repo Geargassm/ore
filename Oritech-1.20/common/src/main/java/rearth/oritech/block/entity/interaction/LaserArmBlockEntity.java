@@ -28,7 +28,6 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -238,7 +237,7 @@ public class LaserArmBlockEntity extends NetworkedBlockEntity implements
         
         var blockRecipe = tryGetRecipeOfBlock(targetBlockState, level);
         if (blockRecipe != null) {
-            var recipe = blockRecipe.value();
+            var recipe = blockRecipe;
             var farmedCount = 1 + yieldAddons;
             dropped = List.of(new ItemStack(recipe.getResults().get(0).getItem(), farmedCount));
             if (level instanceof ServerLevel sl) sl.sendParticles(ParticleTypes.SONIC_BOOM, targetPos.getX() + 0.5, targetPos.getY() + 0.5, targetPos.getZ() + 0.5, 1, 0.6, 0.6, 0.6, 0);
@@ -261,7 +260,7 @@ public class LaserArmBlockEntity extends NetworkedBlockEntity implements
         findNextBlockBreakTarget();
     }
     
-    public static RecipeHolder<OritechRecipe> tryGetRecipeOfBlock(BlockState destroyed, Level world) {
+    public static OritechRecipe tryGetRecipeOfBlock(BlockState destroyed, Level world) {
         var inputItem = destroyed.getBlock().asItem();
         var inputInv = new SimpleCraftingInventory(new ItemStack(inputItem));
         var candidate = world.getRecipeManager().getRecipeFor(RecipeContent.LASER, inputInv, world);

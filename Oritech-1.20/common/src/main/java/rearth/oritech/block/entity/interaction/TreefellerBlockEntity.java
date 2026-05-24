@@ -128,7 +128,7 @@ public class TreefellerBlockEntity extends NetworkedBlockEntity implements
 
     private boolean canInsert(ItemStack stack) {
         return inventory.heldStacks.stream().anyMatch((itemStack) -> 
-            itemStack.isEmpty() || (ItemStack.isSameItemSameComponents(itemStack, stack) && itemStack.getCount() + stack.getCount() <= itemStack.getMaxStackSize())
+            itemStack.isEmpty() || (ItemStack.isSameItemSameTags(itemStack, stack) && itemStack.getCount() + stack.getCount() <= itemStack.getMaxStackSize())
         );
      }
     

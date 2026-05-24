@@ -6,18 +6,17 @@ import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.WidgetHolder;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.crafting.RecipeHolder;
 import rearth.oritech.Oritech;
 import rearth.oritech.init.recipes.OritechRecipe;
 
 public class OritechEmiLaserRecipe extends BasicEmiRecipe {
-    
+
     public static final ResourceLocation LASER_RECIPE_OVERLAY = Oritech.id("textures/gui/modular/laser_recipe_background.png");
-    
-    public OritechEmiLaserRecipe(RecipeHolder<OritechRecipe> entry, EmiRecipeCategory category) {
-        super(category, entry.id(), 160, 80);
-        
-        var recipe = entry.value();
+
+    public OritechEmiLaserRecipe(OritechRecipe entry, EmiRecipeCategory category) {
+        super(category, entry.getId(), 160, 80);
+
+        var recipe = entry;
         recipe.getInputs().forEach(ingredient -> this.inputs.add(EmiIngredient.of(ingredient)));
         recipe.getResults().forEach(stack -> this.outputs.add(EmiStack.of(stack)));
     }

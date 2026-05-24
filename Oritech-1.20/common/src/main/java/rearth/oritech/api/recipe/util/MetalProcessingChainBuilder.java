@@ -1,10 +1,12 @@
+import java.util.function.Consumer;
+import net.minecraft.data.recipes.FinishedRecipe;
 package rearth.oritech.api.recipe.util;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Iterables;
 import net.minecraft.data.recipes.RecipeCategory;
-import net.minecraft.data.recipes.RecipeOutput;
+
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.tags.TagKey;
@@ -236,7 +238,7 @@ public class MetalProcessingChainBuilder {
             throw new IllegalStateException("either centrifugeResult or gemItem is required if clump is provided for metal processing chain " + path);
     }
     
-    public void export(RecipeOutput exporter) {
+    public void export(Consumer<FinishedRecipe> exporter) {
         validate(resourcePath + "ore/" + metalName);
         
         // ore block -> raw ores

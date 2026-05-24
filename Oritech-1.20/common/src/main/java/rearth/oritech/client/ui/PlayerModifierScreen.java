@@ -122,7 +122,7 @@ public class PlayerModifierScreen extends OritechWidgetScreen<PlayerModifierScre
         
         for (var augmentId : PlayerAugments.allAugments.keySet()) {
             var recipeEntry = menu.player.level().getRecipeManager().byKey(augmentId);
-            if (recipeEntry.isEmpty() || !(recipeEntry.get().value() instanceof AugmentDataRecipe recipe)) continue;
+            if (recipeEntry.isEmpty() || !(recipeEntry.get() instanceof AugmentDataRecipe recipe)) continue;
             
             int x = GRAPH_LEFT_OFFSET + recipe.getUiX() * 4 - NODE_SIZE / 2;
             int y = (int) (recipe.getUiY() / 100f * graphHeight) - NODE_SIZE / 2;
@@ -136,7 +136,7 @@ public class PlayerModifierScreen extends OritechWidgetScreen<PlayerModifierScre
         
         for (var augmentId : augmentNodes.keySet()) {
             var recipeEntry = menu.player.level().getRecipeManager().byKey(augmentId);
-            if (recipeEntry.isEmpty() || !(recipeEntry.get().value() instanceof AugmentDataRecipe recipe)) continue;
+            if (recipeEntry.isEmpty() || !(recipeEntry.get() instanceof AugmentDataRecipe recipe)) continue;
             
             var fromNode = augmentNodes.get(augmentId);
             for (var dependencyId : recipe.getRequirements()) {
@@ -247,7 +247,7 @@ public class PlayerModifierScreen extends OritechWidgetScreen<PlayerModifierScre
             var augmentId = entry.getKey();
             var node = entry.getValue();
             var recipeEntry = this.menu.player.level().getRecipeManager().byKey(augmentId);
-            if (recipeEntry.isEmpty() || !(recipeEntry.get().value() instanceof AugmentDataRecipe augmentRecipe))
+            if (recipeEntry.isEmpty() || !(recipeEntry.get() instanceof AugmentDataRecipe augmentRecipe))
                 continue;
             
             var isResearched = this.menu.blockEntity.researchedAugments.contains(augmentId);
@@ -356,7 +356,7 @@ public class PlayerModifierScreen extends OritechWidgetScreen<PlayerModifierScre
         removeDialogOverlay();
         
         var recipeEntry = this.menu.blockEntity.getLevel().getRecipeManager().byKey(id);
-        if (recipeEntry.isEmpty() || !(recipeEntry.get().value() instanceof AugmentDataRecipe recipe)) return;
+        if (recipeEntry.isEmpty() || !(recipeEntry.get() instanceof AugmentDataRecipe recipe)) return;
         
         boolean isCreative = this.menu.player.isCreative();
         boolean hasResources = true;

@@ -12,13 +12,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.crafting.RecipeInput;
+
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluid;
 
-public class OritechRecipe implements Recipe<RecipeInput> {
+public class OritechRecipe implements Recipe<net.minecraft.world.Container> {
     
     protected final OritechRecipeType type;
     protected final List<Ingredient> inputs;
@@ -52,7 +52,7 @@ public class OritechRecipe implements Recipe<RecipeInput> {
     
     
     @Override
-    public boolean matches(RecipeInput input, Level world) {
+    public boolean matches(net.minecraft.world.Container input, Level world) {
         
         if (world.isClientSide) return false;
         
@@ -73,7 +73,7 @@ public class OritechRecipe implements Recipe<RecipeInput> {
         return true;
     }
     
-    private boolean complexMatch(RecipeInput input) {
+    private boolean complexMatch(net.minecraft.world.Container input) {
         
         if (!(input instanceof SimpleCraftingInventory simpleInventory)) return false;
         
@@ -100,7 +100,7 @@ public class OritechRecipe implements Recipe<RecipeInput> {
     }
     
     @Override
-    public ItemStack assemble(RecipeInput input) {
+    public ItemStack assemble(net.minecraft.world.Container input, net.minecraft.core.RegistryAccess registryAccess) {
         return null;
     }
     

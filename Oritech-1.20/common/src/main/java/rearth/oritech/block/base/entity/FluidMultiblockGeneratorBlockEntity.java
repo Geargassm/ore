@@ -8,7 +8,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -89,7 +88,7 @@ public abstract class FluidMultiblockGeneratorBlockEntity extends MultiblockGene
         
         if (recipeCandidate.isPresent()) {
             // this is separate so that progress is not reset when out of energy
-            var activeRecipe = recipeCandidate.get().value();
+            var activeRecipe = recipeCandidate.get();
             currentRecipe = activeRecipe;
             consumeFluidRecipeInput(activeRecipe);
             
@@ -109,33 +108,32 @@ public abstract class FluidMultiblockGeneratorBlockEntity extends MultiblockGene
     
     // gets all recipe of target type, and only checks for matching liquids
     @Override
-    protected Optional<RecipeHolder<OritechRecipe>> getRecipe() {
+    protected Optional<OritechRecipe> getRecipe() {
         if (inputEmpty()) return Optional.empty();
         return getRecipe(fluidStorage);
     }
-    
+
     @Override
     protected boolean inputEmpty() {
         var fluidEmpty = fluidStorage.getStack().isEmpty();
         return fluidEmpty && super.inputEmpty();
     }
-    
-    protected Optional<RecipeHolder<OritechRecipe>> getRecipe(SimpleFluidStorage checkedTank) {
+
+    protected Optional<OritechRecipe> getRecipe(SimpleFluidStorage checkedTank) {
         return getRecipe(checkedTank, level, getOwnRecipeType());
     }
-    
-    public static Optional<RecipeHolder<OritechRecipe>> getRecipe(FluidApi.SingleSlotStorage checkedTank, Level world, OritechRecipeType ownType) {
-        
+
+    public static Optional<OritechRecipe> getRecipe(FluidApi.SingleSlotStorage checkedTank, Level world, OritechRecipeType ownType) {
+
         if (checkedTank.getStack().isEmpty()) return Optional.empty();
-        
+
         var availableRecipes = world.getRecipeManager().getAllRecipesFor(ownType);
-        for (var recipeEntry : availableRecipes) {
-            var recipe = recipeEntry.value();
+        for (var recipe : availableRecipes) {
             var recipeFluid = recipe.getFluidInput();
             if (recipeFluid.matchesFluid(checkedTank.getStack()) && checkedTank.getStack().getAmount() >= recipeFluid.amount())
-                return Optional.of(recipeEntry);
+                return Optional.of(recipe);
         }
-        
+
         return Optional.empty();
     }
     

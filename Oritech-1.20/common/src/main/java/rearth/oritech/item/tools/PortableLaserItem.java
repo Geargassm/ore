@@ -7,7 +7,6 @@ import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -314,7 +313,7 @@ public class PortableLaserItem extends Item implements OritechEnergyItem, GeoIte
         
         var blockRecipe = LaserArmBlockEntity.tryGetRecipeOfBlock(targetBlockState, world);
         if (blockRecipe != null) {
-            var recipe = blockRecipe.value();
+            var recipe = blockRecipe;
             var farmedCount = 1;
             dropped = List.of(new ItemStack(recipe.getResults().get(0).getItem(), farmedCount));
             if (world instanceof ServerLevel sl) sl.sendParticles(ParticleTypes.SONIC_BOOM, targetPos.getX() + 0.5, targetPos.getY() + 0.5, targetPos.getZ() + 0.5, 1, 0.6, 0.6, 0.6, 0);
@@ -353,19 +352,8 @@ public class PortableLaserItem extends Item implements OritechEnergyItem, GeoIte
         
     }
     
-    // Get enchantment level from NBT in 1.20.1
-    public static int getEnchantmentLevel(ItemStack stack, ResourceKey<Enchantment> enchantment) {
-        var tag = stack.getTag();
-        if (tag == null || !tag.contains("Enchantments", net.minecraft.nbt.Tag.TAG_LIST)) return 0;
-        var enchList = tag.getList("Enchantments", net.minecraft.nbt.Tag.TAG_COMPOUND);
-        var targetId = enchantment.location().toString();
-        for (int i = 0; i < enchList.size(); i++) {
-            var entry = enchList.getCompound(i);
-            if (targetId.equals(entry.getString("id"))) {
-                return entry.getShort("lvl");
-            }
-        }
-        return 0;
+    public static int getEnchantmentLevel(ItemStack stack, Enchantment enchantment) {
+        return net.minecraft.world.item.enchantment.EnchantmentHelper.getItemEnchantmentLevel(enchantment, stack);
     }
     
     // this overrides the fabric specific extensions
@@ -387,7 +375,7 @@ public class PortableLaserItem extends Item implements OritechEnergyItem, GeoIte
     }
     
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag type) {
+    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag type) {
         var storedEnergy = TooltipHelper.getEnergyText(this.getStoredEnergy(stack));
         var capacity = TooltipHelper.getEnergyText(this.getEnergyCapacity(stack));
         var text = Component.translatable("tooltip.oritech.energy_indicator", storedEnergy, capacity);

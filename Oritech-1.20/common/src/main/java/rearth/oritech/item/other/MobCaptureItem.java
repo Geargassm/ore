@@ -51,8 +51,8 @@ public class MobCaptureItem extends Item {
     }
     
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag type) {
-        super.appendHoverText(stack, context, tooltip, type);
+    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag type) {
+        super.appendHoverText(stack, level, tooltip, type);
         
         var showExtra = Screen.hasControlDown();
         

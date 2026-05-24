@@ -5,7 +5,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.state.BlockState;
 import rearth.oritech.api.energy.EnergyApi;
 import rearth.oritech.block.base.entity.MultiblockMachineEntity;
@@ -48,12 +47,12 @@ public class AtomicForgeBlockEntity extends MultiblockMachineEntity {
     }
     
     @Override
-    protected Optional<RecipeHolder<OritechRecipe>> getRecipe() {
+    protected Optional<OritechRecipe> getRecipe() {
         var result = super.getRecipe();
-        
+
         // also adjust energy storage when getting recipe
         if (result.isPresent()) {
-            energyStorage.setCapacity((long) OritechConfig.processingMachines.atomicForgeData.energyPerTick.get() * result.get().value().getTime());
+            energyStorage.setCapacity((long) OritechConfig.processingMachines.atomicForgeData.energyPerTick.get() * result.get().getTime());
         } else {
             energyStorage.setCapacity(1);
             energyStorage.setAmount(0);

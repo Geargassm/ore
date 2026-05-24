@@ -103,8 +103,8 @@ public class NukeBlock extends Block {
     }
     
     @Override
-    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag options) {
-        super.appendHoverText(stack, context, tooltip, options);
+    public void appendHoverText(ItemStack stack, @Nullable net.minecraft.world.level.BlockGetter level, List<Component> tooltip, TooltipFlag options) {
+        super.appendHoverText(stack, level, tooltip, options);
         var key = small ? "block.oritech.low_yield_nuke.tooltip" : "block.oritech.nuke.tooltip";
         tooltip.add(Component.translatable(key).withStyle(ChatFormatting.GOLD, ChatFormatting.ITALIC));
         tooltip.add(Component.translatable(key + ".2").withStyle(ChatFormatting.GOLD, ChatFormatting.ITALIC));

@@ -3,7 +3,6 @@ package rearth.oritech.init;
 import dev.architectury.registry.registries.RegistrySupplier;
 import net.minecraft.core.Registry;
 // TODO_1_20: DataComponents not available in 1.20.1 - needs NBT conversion
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
@@ -44,7 +43,7 @@ public class ItemContent implements ArchitecturyRegistryContainer<Item> {
     public static final Item WEED_KILLER = new WeedKiller(new Item.Properties().stacksTo(1));
     @ItemGroupTarget(Groups.equipment)
 // TODO_1_20: DataComponents not available in 1.20.1 - needs NBT conversion
-    public static final Item WRENCH = new Wrench(new Item.Properties().stacksTo(1).component(DataComponents.TOOL, Wrench.createToolComponent()));
+    public static final Item WRENCH = new Wrench(new Item.Properties().stacksTo(1));
 
     // region metals
     // nickel

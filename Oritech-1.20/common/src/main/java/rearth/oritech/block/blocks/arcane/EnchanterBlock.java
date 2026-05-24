@@ -52,11 +52,6 @@ public class EnchanterBlock extends HorizontalDirectionalBlock implements Entity
     }
     
     @Override
-    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
-        return null;
-    }
-    
-    @Override
     public RenderShape getRenderShape(BlockState state) {
         return RenderShape.ENTITYBLOCK_ANIMATED;
     }
@@ -110,8 +105,8 @@ public class EnchanterBlock extends HorizontalDirectionalBlock implements Entity
     }
     
     @Override
-    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag options) {
-        super.appendHoverText(stack, context, tooltip, options);
+    public void appendHoverText(ItemStack stack, @Nullable net.minecraft.world.level.BlockGetter level, List<Component> tooltip, TooltipFlag options) {
+        super.appendHoverText(stack, level, tooltip, options);
         tooltip.add(Component.translatable("tooltip.oritech.enchanter").withStyle(ChatFormatting.GRAY));
     }
 }

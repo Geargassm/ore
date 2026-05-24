@@ -18,7 +18,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -84,18 +83,18 @@ public class TaintedRefineryBlockEntity extends MultiblockMachineEntity implemen
             currentRecipe = OritechRecipe.DUMMY;     // reset recipe when invalid or no input is given
         
         
-        if (recipeCandidate.isPresent() && canOutputRecipe(recipeCandidate.get().value()) && canProceed(recipeCandidate.get().value())) {
-            
+        if (recipeCandidate.isPresent() && canOutputRecipe(recipeCandidate.get()) && canProceed(recipeCandidate.get())) {
+
             // allow more energy in when working
             energyStorage.setMaxInsert(getDefaultInsertRate());
             lastTickRFUsed = energyStorage.getAmount();
-            
+
             // reset when recipe was switched while running
-            if (currentRecipe != recipeCandidate.get().value()) resetProgress();
-            
+            if (currentRecipe != recipeCandidate.get()) resetProgress();
+
             // this is separate so that progress is not reset when out of energy
             if (energyStorage.getAmount() > OritechConfig.processingMachines.refineryData.energyPerTick.get()) {   // needs a min energy amount to work at all
-                var activeRecipe = recipeCandidate.get().value();
+                var activeRecipe = recipeCandidate.get();
                 currentRecipe = activeRecipe;
                 lastWorkedAt = world.getGameTime();
                 
@@ -110,7 +109,7 @@ public class TaintedRefineryBlockEntity extends MultiblockMachineEntity implemen
                 var craftCount = 0;
                 
                 var recipeTime = activeRecipe.getTime() * 2;
-                while (progress > recipeTime && canOutputRecipe(activeRecipe) && getRecipe().isPresent() && getRecipe().get().value().equals(activeRecipe)) {
+                while (progress > recipeTime && canOutputRecipe(activeRecipe) && getRecipe().isPresent() && getRecipe().get().equals(activeRecipe)) {
                     craftItem(activeRecipe, getOutputView(), getInputView());
                     progress -= recipeTime;
                     craftCount++;
@@ -259,19 +258,19 @@ public class TaintedRefineryBlockEntity extends MultiblockMachineEntity implemen
     }
     
     @Override
-    protected Optional<RecipeHolder<OritechRecipe>> getRecipe() {
-        
+    protected Optional<OritechRecipe> getRecipe() {
+
         if (inputEmpty()) return Optional.empty();
-        
+
         // get recipes matching input items
         var candidates = Objects.requireNonNull(level).getRecipeManager().getRecipesFor(getOwnRecipeType(), getInputInventory(), level);
-        
+
         // filter out recipes based on input tank. Have the ones with input items first.
         return candidates
                  .stream()
-                 .filter(candidate -> CentrifugeBlockEntity.recipeInputMatchesTank(ownStorage.getInputContainer().getStack(), candidate.value()))
+                 .filter(candidate -> CentrifugeBlockEntity.recipeInputMatchesTank(ownStorage.getInputContainer().getStack(), candidate))
                  .findAny();
-        
+
     }
     
     @Override

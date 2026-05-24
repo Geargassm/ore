@@ -109,9 +109,9 @@ public class SteamEngineEntity extends MultiblockGeneratorBlockEntity implements
         // if not recipe is currently set, or it does not match the steam tank, search for a recipe
         if (currentRecipe == OritechRecipe.DUMMY || !currentRecipe.getFluidInput().matchesFluid(steamTank.getStack())) {
             var candidate = FluidMultiblockGeneratorBlockEntity.getRecipe(steamTank, level, getOwnRecipeType());
-            candidate.ifPresent(recipe -> currentRecipe = recipe.value());
+            candidate.ifPresent(recipe -> currentRecipe = recipe);
             if (candidate.isEmpty()) return;
-            currentRecipe = candidate.get().value();
+            currentRecipe = candidate.get();
         }
         
         var speed = getSteamProcessingSpeed(steamTank);

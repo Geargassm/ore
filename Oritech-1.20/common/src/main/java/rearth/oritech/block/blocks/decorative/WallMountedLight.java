@@ -71,9 +71,4 @@ public class WallMountedLight extends FaceAttachedHorizontalDirectionalBlock {
         builder.add(FACING);
         builder.add(FACE);
     }
-    
-    @Override
-    protected MapCodec<? extends FaceAttachedHorizontalDirectionalBlock> codec() {
-        return null;
-    }
 }

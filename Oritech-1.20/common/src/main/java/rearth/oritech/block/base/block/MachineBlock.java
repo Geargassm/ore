@@ -62,11 +62,6 @@ public abstract class MachineBlock extends HorizontalDirectionalBlock implements
     }
     
     @Override
-    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
-        return null;
-    }
-    
-    @Override
     public RenderShape getRenderShape(BlockState state) {
         return RenderShape.ENTITYBLOCK_ANIMATED;
     }
@@ -142,7 +137,7 @@ public abstract class MachineBlock extends HorizontalDirectionalBlock implements
     }
     
     @Override
-    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag options) {
+    public void appendHoverText(ItemStack stack, @Nullable net.minecraft.world.level.BlockGetter level, List<Component> tooltip, TooltipFlag options) {
         addMachineTooltip(tooltip, this, this);
     }
 }

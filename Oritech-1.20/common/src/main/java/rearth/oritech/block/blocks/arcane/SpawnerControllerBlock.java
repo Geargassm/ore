@@ -70,11 +70,6 @@ public class SpawnerControllerBlock extends HorizontalDirectionalBlock implement
     }
     
     @Override
-    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
-        return null;
-    }
-    
-    @Override
     public RenderShape getRenderShape(BlockState state) {
         return RenderShape.MODEL;
     }
@@ -106,8 +101,8 @@ public class SpawnerControllerBlock extends HorizontalDirectionalBlock implement
     }
     
     @Override
-    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag options) {
-        super.appendHoverText(stack, context, tooltip, options);
+    public void appendHoverText(ItemStack stack, @Nullable net.minecraft.world.level.BlockGetter level, List<Component> tooltip, TooltipFlag options) {
+        super.appendHoverText(stack, level, tooltip, options);
         tooltip.add(Component.translatable("tooltip.oritech.spawner").withStyle(ChatFormatting.GRAY));
         tooltip.add(Component.translatable("tooltip.oritech.spawner2").withStyle(ChatFormatting.GRAY));
     }

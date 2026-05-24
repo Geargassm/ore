@@ -236,7 +236,7 @@ public class AcceleratorControllerBlockEntity extends BlockEntity implements Blo
         
         if (candidate.isEmpty()) return false;
         
-        var recipe = candidate.get().value();
+        var recipe = candidate.get();
         
         var requiredSpeed = recipe.getTime();
         if (speed < requiredSpeed) return false;

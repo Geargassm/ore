@@ -57,11 +57,6 @@ public class AugmentResearchStationBlock extends DirectionalBlock implements Ent
     }
     
     @Override
-    protected MapCodec<? extends DirectionalBlock> codec() {
-        return null;
-    }
-    
-    @Override
     public InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit) {
         
         if (!world.isClientSide) {
@@ -116,8 +111,8 @@ public class AugmentResearchStationBlock extends DirectionalBlock implements Ent
     }
     
     @Override
-    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag options) {
-        super.appendHoverText(stack, context, tooltip, options);
+    public void appendHoverText(ItemStack stack, @Nullable net.minecraft.world.level.BlockGetter level, List<Component> tooltip, TooltipFlag options) {
+        super.appendHoverText(stack, level, tooltip, options);
         tooltip.add(Component.translatable("tooltip.oritech.augment_research_station").withStyle(ChatFormatting.GRAY));
         addMachineTooltip(tooltip, this, this);
     }

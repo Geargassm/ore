@@ -20,7 +20,7 @@ public class SmallEnergyStorageBlockItem extends BlockItem implements EnergyApi.
     }
     
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag type) {
+    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag type) {
         var storedEnergy = stack.hasTag() ? stack.getOrCreateTag().getLong("oritech_energy") : 0L;
         
         if (storedEnergy != 0) {
@@ -28,7 +28,7 @@ public class SmallEnergyStorageBlockItem extends BlockItem implements EnergyApi.
             tooltip.add(text.withStyle(ChatFormatting.GOLD));
         }
         
-        super.appendHoverText(stack, context, tooltip, type);
+        super.appendHoverText(stack, level, tooltip, type);
         
     }
     

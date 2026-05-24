@@ -47,7 +47,7 @@ public class SimpleInventoryStorage implements Container, ItemApi.InventoryStora
             return toInsert;
         }
         
-        if (ItemStack.isSameItemSameComponents(slotStack, addedStack)) {
+        if (ItemStack.isSameItemSameTags(slotStack, addedStack)) {
             var available = slotLimit - slotStack.getCount();
             var toInsert = Math.min(available, addedStack.getCount());
             if (toInsert > 0) {
@@ -74,7 +74,7 @@ public class SimpleInventoryStorage implements Container, ItemApi.InventoryStora
     @Override
     public int extractFromSlot(ItemStack extracted, int slot, boolean simulate) {
         var slotStack = getItem(slot);
-        if (slotStack.isEmpty() || !ItemStack.isSameItemSameComponents(slotStack, extracted))
+        if (slotStack.isEmpty() || !ItemStack.isSameItemSameTags(slotStack, extracted))
             return 0;
         
         var toExtract = Math.min(slotStack.getCount(), extracted.getCount());

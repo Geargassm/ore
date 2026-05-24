@@ -159,8 +159,8 @@ public class AugmentApplicationEntity extends NetworkedBlockEntity implements Mu
             return;
         }
         
-        var recipe = (AugmentDataRecipe) level.getRecipeManager().byKey(augment).get().value();
-        
+        var recipe = (AugmentDataRecipe) level.getRecipeManager().byKey(augment).get();
+
         var extracted = energyStorage.extract(recipe.getRfCost(), false);
         
         // remove available resources
@@ -220,8 +220,8 @@ public class AugmentApplicationEntity extends NetworkedBlockEntity implements Mu
             return;
         }
         
-        var recipe = (AugmentDataRecipe) level.getRecipeManager().byKey(augment).get().value();
-        
+        var recipe = (AugmentDataRecipe) level.getRecipeManager().byKey(augment).get();
+
         // remove available resources
         for (var wantedInput : recipe.getApplyCost()) {
             var type = wantedInput.ingredient();

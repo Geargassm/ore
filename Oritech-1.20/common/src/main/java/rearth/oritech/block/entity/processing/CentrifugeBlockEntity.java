@@ -13,7 +13,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 import rearth.oritech.OritechPlatform;
@@ -82,21 +81,21 @@ public class CentrifugeBlockEntity extends MultiblockMachineEntity implements Fl
     }
     
     @Override
-    protected Optional<RecipeHolder<OritechRecipe>> getRecipe() {
-        
+    protected Optional<OritechRecipe> getRecipe() {
+
         if (inputEmpty()) return Optional.empty();
-        
+
         if (!hasFluidAddon)
             return super.getRecipe();
-        
+
         // get recipes matching input items
         var candidates = Objects.requireNonNull(level).getRecipeManager().getRecipesFor(getOwnRecipeType(), getInputInventory(), level);
         // filter out recipes based on input tank
-        var fluidRecipe = candidates.stream().filter(candidate -> recipeInputMatchesTank(fluidContainer.getInStack(), candidate.value())).findAny();
+        var fluidRecipe = candidates.stream().filter(candidate -> recipeInputMatchesTank(fluidContainer.getInStack(), candidate)).findAny();
         if (fluidRecipe.isPresent()) {
             return fluidRecipe;
         }
-        
+
         return getNormalRecipe();
     }
     
@@ -107,7 +106,7 @@ public class CentrifugeBlockEntity extends MultiblockMachineEntity implements Fl
     }
     
     // this is provided as fallback for fluid centrifuges that may still process normal stuff
-    private Optional<RecipeHolder<OritechRecipe>> getNormalRecipe() {
+    private Optional<OritechRecipe> getNormalRecipe() {
         return level.getRecipeManager().getRecipeFor(RecipeContent.CENTRIFUGE, getInputInventory(), level);
     }
     
@@ -130,7 +129,7 @@ public class CentrifugeBlockEntity extends MultiblockMachineEntity implements Fl
         
         for (int i = 0; i < chamberCount; i++) {
             var newRecipe = getRecipe();
-            if (newRecipe.isEmpty() || !newRecipe.get().value().equals(currentRecipe) || !canOutputRecipe(activeRecipe) || !canProceed(activeRecipe)) break;
+            if (newRecipe.isEmpty() || !newRecipe.get().equals(currentRecipe) || !canOutputRecipe(activeRecipe) || !canProceed(activeRecipe)) break;
             super.craftItem(activeRecipe, outputInventory, inputInventory);
             
             if (hasFluidAddon) {

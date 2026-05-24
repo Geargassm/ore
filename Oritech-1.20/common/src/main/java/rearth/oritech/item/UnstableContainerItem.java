@@ -68,7 +68,7 @@ public class UnstableContainerItem extends Item implements GeoItem {
     }
     
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag type) {
+    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag type) {
         
         var shiftPressed = Screen.hasShiftDown();
         var ctrlPressed = Screen.hasControlDown();
@@ -93,7 +93,7 @@ public class UnstableContainerItem extends Item implements GeoItem {
         } else {
             tooltip.add(Component.translatable("tooltip.oritech.item_extra_info").withStyle(ChatFormatting.GRAY).withStyle(ChatFormatting.ITALIC));
         }
-        super.appendHoverText(stack, context, tooltip, type);
+        super.appendHoverText(stack, level, tooltip, type);
         
     }
     

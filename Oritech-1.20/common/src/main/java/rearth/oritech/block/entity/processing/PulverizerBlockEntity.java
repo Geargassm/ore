@@ -55,7 +55,7 @@ public class PulverizerBlockEntity extends UpgradableMachineBlockEntity {
         // gets the result stack of each entry, then filters if the type matches, and then checks if there is a result
         var foundResult = !matches
                              .stream()
-                             .map(elem -> elem.value().getResultItem(null))
+                             .map(elem -> elem.getResultItem(null))
                              .filter(elem -> baseResult.getItem().equals(elem.getItem()))
                              .toList().isEmpty();
         

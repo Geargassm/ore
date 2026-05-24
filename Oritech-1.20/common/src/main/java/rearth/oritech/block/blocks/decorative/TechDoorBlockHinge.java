@@ -76,9 +76,4 @@ public class TechDoorBlockHinge extends HorizontalDirectionalBlock {
     public RenderShape getRenderShape(BlockState state) {
         return RenderShape.INVISIBLE;
     }
-    
-    @Override
-    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
-        return null;
-    }
 }

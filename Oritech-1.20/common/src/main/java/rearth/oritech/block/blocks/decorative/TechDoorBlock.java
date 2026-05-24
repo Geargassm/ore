@@ -134,11 +134,6 @@ public class TechDoorBlock extends HorizontalDirectionalBlock implements EntityB
         return super.playerWillDestroy(world, pos, state, player);
     }
     
-    @Override
-    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
-        return null;
-    }
-    
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {

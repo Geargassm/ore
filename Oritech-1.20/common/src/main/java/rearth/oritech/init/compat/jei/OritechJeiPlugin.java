@@ -11,7 +11,6 @@ import mezz.jei.api.registration.IRecipeRegistration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.NotNull;
 import rearth.oritech.Oritech;
@@ -119,7 +118,7 @@ public class OritechJeiPlugin implements IModPlugin {
     public void registerRecipe(IRecipeRegistration registration, OritechRecipeType type) {
         // this feels incredibly hacky, but seems to be the way to go?
         var world = Minecraft.getInstance().level;
-        var data = world.getRecipeManager().getAllRecipesFor(type).stream().map(RecipeHolder::value).toList();
+        var data = world.getRecipeManager().getAllRecipesFor(type);
         registration.addRecipes(RecipeType.create(type.getIdentifier().getNamespace(), type.getIdentifier().getPath(), OritechRecipe.class), data);
     }
     

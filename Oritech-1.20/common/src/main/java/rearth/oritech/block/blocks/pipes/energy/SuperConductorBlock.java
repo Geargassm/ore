@@ -75,12 +75,12 @@ public class SuperConductorBlock extends GenericPipeBlock {
     }
     
     @Override
-    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag options) {
+    public void appendHoverText(ItemStack stack, @Nullable net.minecraft.world.level.BlockGetter level, List<Component> tooltip, TooltipFlag options) {
         var text = Component.translatable("tooltip.oritech.energy_max_transfer").withStyle(ChatFormatting.GRAY)
             .append(Component.translatable("tooltip.oritech.energy_transfer_rate", OritechConfig.superConductorTransferRate.get()).withStyle(ChatFormatting.GOLD));
         tooltip.add(text);
         tooltip.add(Component.translatable("tooltip.oritech.superconductor").withStyle(ChatFormatting.GRAY));
-        super.appendHoverText(stack, context, tooltip, options);
+        super.appendHoverText(stack, level, tooltip, options);
     }
 
 	public static class FramedSuperConductorBlock extends SuperConductorBlock {

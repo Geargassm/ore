@@ -125,11 +125,6 @@ public class HangarDoorBlock extends Block implements EntityBlock {
         super.onRemove(state, world, pos, newState, movedByPiston);
     }
 
-    @Override
-    protected MapCodec<? extends Block> codec() {
-        return null;
-    }
-
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
@@ -142,7 +137,7 @@ public class HangarDoorBlock extends Block implements EntityBlock {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag options) {
+    public void appendHoverText(ItemStack stack, @Nullable net.minecraft.world.level.BlockGetter level, List<Component> tooltip, TooltipFlag options) {
         tooltip.add(Component.translatable("tooltip.oritech.hangar_door.1").withStyle(ChatFormatting.GRAY));
         tooltip.add(Component.translatable("tooltip.oritech.hangar_door.2").withStyle(ChatFormatting.GRAY));
     }

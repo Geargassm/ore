@@ -25,7 +25,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
@@ -129,7 +129,7 @@ public class SmallFluidTank extends Block implements EntityBlock {
     }
     
     @Override
-    protected @NotNull List<ItemStack> getDrops(BlockState state, LootParams.Builder builder) {
+    protected @NotNull List<ItemStack> getDrops(BlockState state, LootContext.Builder builder) {
         var droppedStacks = super.getDrops(state, builder);
         
         var blockEntity = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);

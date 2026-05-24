@@ -67,9 +67,4 @@ public class HangarDoorHelperBlock extends Block {
     public RenderShape getRenderShape(BlockState state) {
         return RenderShape.INVISIBLE;
     }
-
-    @Override
-    protected MapCodec<? extends Block> codec() {
-        return null;
-    }
 }

@@ -46,13 +46,13 @@ public class JetpackExoArmorItem extends BackstorageExoArmorItem implements Base
     }
     
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag type) {
+    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag type) {
         var hint = Component.translatable("tooltip.oritech.jetpack_usage").withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC);
         tooltip.add(hint);
         hint = Component.translatable("tooltip.oritech.jetpack_usage2").withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC);
         tooltip.add(hint);
         
-        super.appendHoverText(stack, context, tooltip, type);
+        super.appendHoverText(stack, level, tooltip, type);
         addJetpackTooltip(stack, tooltip, false);
     }
     

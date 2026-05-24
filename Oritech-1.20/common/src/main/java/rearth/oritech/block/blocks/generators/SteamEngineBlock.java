@@ -44,7 +44,7 @@ public class SteamEngineBlock extends MultiblockMachine {
     }
     
     @Override
-    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag options) {
+    public void appendHoverText(ItemStack stack, @Nullable net.minecraft.world.level.BlockGetter level, List<Component> tooltip, TooltipFlag options) {
         
         if (Screen.hasControlDown()) {
             tooltip.add(Component.translatable("tooltip.oritech.steam_engine").withStyle(ChatFormatting.GRAY));
@@ -52,7 +52,7 @@ public class SteamEngineBlock extends MultiblockMachine {
             tooltip.add(Component.translatable("tooltip.oritech.steam_engine.2").withStyle(ChatFormatting.GRAY));
         }
         
-        super.appendHoverText(stack, context, tooltip, options);
+        super.appendHoverText(stack, level, tooltip, options);
     }
     
     @Override

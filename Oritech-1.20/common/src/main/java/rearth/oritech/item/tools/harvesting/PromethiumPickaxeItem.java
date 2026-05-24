@@ -236,8 +236,8 @@ public class PromethiumPickaxeItem extends DiggerItem implements GeoItem {
     }
     
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag type) {
-        super.appendHoverText(stack, context, tooltip, type);
+    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag type) {
+        super.appendHoverText(stack, level, tooltip, type);
         
         var area = isAreaEnabled(stack);
         

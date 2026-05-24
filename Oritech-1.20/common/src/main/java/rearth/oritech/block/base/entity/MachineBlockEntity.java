@@ -15,8 +15,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraft.world.item.crafting.RecipeInput;
+
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -95,15 +94,15 @@ public abstract class MachineBlockEntity extends NetworkedBlockEntity
         var recipeCandidate = getRecipe();
         if (recipeCandidate.isEmpty())
             currentRecipe = OritechRecipe.DUMMY;     // reset recipe when invalid or no input is given
-        
-        if (recipeCandidate.isPresent() && canOutputRecipe(recipeCandidate.get().value()) && canProceed(recipeCandidate.get().value())) {
-            
+
+        if (recipeCandidate.isPresent() && canOutputRecipe(recipeCandidate.get()) && canProceed(recipeCandidate.get())) {
+
             // reset when recipe was switched while running
-            if (currentRecipe != recipeCandidate.get().value()) resetProgress();
-            
+            if (currentRecipe != recipeCandidate.get()) resetProgress();
+
             // this is separate so that progress is not reset when out of energy
             if (hasEnoughEnergy()) {
-                var activeRecipe = recipeCandidate.get().value();
+                var activeRecipe = recipeCandidate.get();
                 currentRecipe = activeRecipe;
                 lastWorkedAt = world.getGameTime();
                 
@@ -219,16 +218,16 @@ public abstract class MachineBlockEntity extends NetworkedBlockEntity
         return slot.getCount() + input.getCount() <= slot.getMaxStackSize();  // count too high
     }
     
-    protected Optional<RecipeHolder<OritechRecipe>> getRecipe() {
-        
+    protected Optional<OritechRecipe> getRecipe() {
+
         if (inputEmpty())
             return Optional.empty();
-        
+
         // check if old recipe fits
         if (currentRecipe != null && currentRecipe != OritechRecipe.DUMMY) {
-            if (currentRecipe.matches(getInputInventory(), level)) return Optional.of(new RecipeHolder<>(currentRecipe.getOriType().getIdentifier(), currentRecipe));
+            if (currentRecipe.matches(getInputInventory(), level)) return Optional.of(currentRecipe);
         }
-        
+
         return level.getRecipeManager().getRecipeFor(getOwnRecipeType(), getInputInventory(), level);
     }
     
@@ -250,7 +249,7 @@ public abstract class MachineBlockEntity extends NetworkedBlockEntity
         return this.inventory.heldStacks.subList(slots.outputStart(), slots.outputStart() + slots.outputCount());
     }
     
-    protected RecipeInput getInputInventory() {
+    protected net.minecraft.world.Container getInputInventory() {
         return new SimpleCraftingInventory(getInputView().toArray(ItemStack[]::new));
     }
     

@@ -190,11 +190,6 @@ public class MachineAddonBlock extends FaceAttachedHorizontalDirectionalBlock im
     }
     
     @Override
-    protected MapCodec<? extends FaceAttachedHorizontalDirectionalBlock> codec() {
-        return null;
-    }
-    
-    @Override
     public RenderShape getRenderShape(BlockState state) {
         return RenderShape.MODEL;
     }
@@ -251,8 +246,8 @@ public class MachineAddonBlock extends FaceAttachedHorizontalDirectionalBlock im
     }
     
     @Override
-    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag options) {
-        super.appendHoverText(stack, context, tooltip, options);
+    public void appendHoverText(ItemStack stack, @Nullable net.minecraft.world.level.BlockGetter level, List<Component> tooltip, TooltipFlag options) {
+        super.appendHoverText(stack, level, tooltip, options);
         
         var showExtra = Screen.hasControlDown();
         

@@ -1,8 +1,10 @@
+import java.util.function.Consumer;
+import net.minecraft.data.recipes.FinishedRecipe;
 package rearth.oritech.api.recipe.util;
 
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeCategory;
-import net.minecraft.data.recipes.RecipeOutput;
+
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -18,11 +20,11 @@ import java.util.List;
 
 public class RecipeHelpers {
     
-    public static void addDustRecipe(RecipeOutput exporter, Ingredient ingot, Item dust, String suffix) {
+    public static void addDustRecipe(Consumer<FinishedRecipe> exporter, Ingredient ingot, Item dust, String suffix) {
         addDustRecipe(exporter, ingot, dust, null, suffix);
     }
     
-    public static void addDustRecipe(RecipeOutput exporter, Ingredient ingot, Item dust, @Nullable Item ingotSmelted, String suffix) {
+    public static void addDustRecipe(Consumer<FinishedRecipe> exporter, Ingredient ingot, Item dust, @Nullable Item ingotSmelted, String suffix) {
         PulverizerRecipeBuilder.build().input(ingot).result(dust).export(exporter, suffix);
         GrinderRecipeBuilder.build().input(ingot).result(dust).export(exporter, suffix);
         if (ingotSmelted != null) {

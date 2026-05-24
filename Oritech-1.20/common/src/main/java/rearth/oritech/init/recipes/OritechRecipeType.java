@@ -13,6 +13,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import rearth.oritech.compat.ByteBufCodecs;
 import rearth.oritech.compat.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
+import com.google.gson.JsonObject;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -61,13 +62,19 @@ public class OritechRecipeType implements RecipeSerializer<OritechRecipe>, Recip
     }
     
     @Override
-    public MapCodec<OritechRecipe> codec() {
-        return ORI_RECIPE_CODEC;
+    public OritechRecipe fromJson(ResourceLocation id, com.google.gson.JsonObject json) {
+        return ORI_RECIPE_CODEC.codec().parse(com.mojang.serialization.JsonOps.INSTANCE, json)
+            .getOrThrow(false, err -> {});
     }
-    
+
     @Override
-    public StreamCodec<FriendlyByteBuf, OritechRecipe> streamCodec() {
-        return PACKET_CODEC;
+    public OritechRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf buf) {
+        return PACKET_CODEC.decode(buf);
+    }
+
+    @Override
+    public void toNetwork(FriendlyByteBuf buf, OritechRecipe recipe) {
+        PACKET_CODEC.encode(buf, recipe);
     }
     
     @Override

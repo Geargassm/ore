@@ -10,7 +10,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
@@ -86,18 +85,18 @@ public class CoolerBlockEntity extends MultiblockMachineEntity implements FluidA
     }
     
     @Override
-    protected Optional<RecipeHolder<OritechRecipe>> getRecipe() {
-        
+    protected Optional<OritechRecipe> getRecipe() {
+
         if (inputEmpty()) return Optional.empty();
-        
+
         // get recipes matching input items
         var candidates = Objects.requireNonNull(level).getRecipeManager().getRecipesFor(getOwnRecipeType(), getInputInventory(), level);
         // filter out recipes based on input tank
-        var fluidRecipe = candidates.stream().filter(candidate -> CentrifugeBlockEntity.recipeInputMatchesTank(fluidStorage.getStack(), candidate.value())).findAny();
+        var fluidRecipe = candidates.stream().filter(candidate -> CentrifugeBlockEntity.recipeInputMatchesTank(fluidStorage.getStack(), candidate)).findAny();
         if (fluidRecipe.isPresent()) {
             return fluidRecipe;
         }
-        
+
         return super.getRecipe();
     }
     

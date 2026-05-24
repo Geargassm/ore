@@ -110,11 +110,6 @@ public class AugmentApplicationBlock extends HorizontalDirectionalBlock implemen
     }
     
     @Override
-    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
-        return null;
-    }
-    
-    @Override
     protected void entityInside(BlockState state, Level world, BlockPos pos, Entity entity) {
         
         if (world.isClientSide || !state.getValue(ASSEMBLED)) return;
@@ -257,8 +252,8 @@ public class AugmentApplicationBlock extends HorizontalDirectionalBlock implemen
     }
     
     @Override
-    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag options) {
-        super.appendHoverText(stack, context, tooltip, options);
+    public void appendHoverText(ItemStack stack, @Nullable net.minecraft.world.level.BlockGetter level, List<Component> tooltip, TooltipFlag options) {
+        super.appendHoverText(stack, level, tooltip, options);
         var hotkey = OritechClient.AUGMENT_SELECTOR.key.getDisplayName();
         tooltip.add(Component.translatable("tooltip.oritech.augmenter.1").withStyle(ChatFormatting.GRAY));
         

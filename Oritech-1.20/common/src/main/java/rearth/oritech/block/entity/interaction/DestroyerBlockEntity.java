@@ -21,7 +21,7 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
@@ -253,7 +253,7 @@ public class DestroyerBlockEntity extends MultiblockFrameInteractionEntity {
         var fortuneEntry = world.registryAccess().registryOrThrow(Registries.ENCHANTMENT).getHolder(Enchantments.FORTUNE).get();
         sampleTool.enchant(fortuneEntry, Math.min(yieldAddons, 3));
         
-        var builder = new LootParams.Builder(world).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(pos))
+        var builder = new LootContext.Builder(world).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(pos))
                         .withParameter(LootContextParams.TOOL, sampleTool)
                         .withOptionalParameter(LootContextParams.BLOCK_ENTITY, blockEntity);
         if (entity != null)
@@ -267,7 +267,7 @@ public class DestroyerBlockEntity extends MultiblockFrameInteractionEntity {
         var silkTouchEntry = world.registryAccess().registryOrThrow(Registries.ENCHANTMENT).getHolder(Enchantments.SILK_TOUCH).get();
         sampleTool.enchant(silkTouchEntry, 1);
         
-        var builder = new LootParams.Builder(world).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(pos))
+        var builder = new LootContext.Builder(world).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(pos))
                         .withParameter(LootContextParams.TOOL, sampleTool)
                         .withOptionalParameter(LootContextParams.BLOCK_ENTITY, blockEntity);
         if (entity != null)

@@ -17,12 +17,12 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.crafting.RecipeInput;
+
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 
-public class AugmentDataRecipe implements Recipe<RecipeInput> {
+public class AugmentDataRecipe implements Recipe<net.minecraft.world.Container> {
     
     private final boolean toggleable;
     private final AugmentDataRecipeType type;
@@ -101,12 +101,12 @@ public class AugmentDataRecipe implements Recipe<RecipeInput> {
     }
     
     @Override
-    public boolean matches(RecipeInput input, Level world) {
+    public boolean matches(net.minecraft.world.Container input, Level world) {
         throw new UnsupportedOperationException();
     }
     
     @Override
-    public ItemStack assemble(RecipeInput input) {
+    public ItemStack assemble(net.minecraft.world.Container input, net.minecraft.core.RegistryAccess registryAccess) {
         return ItemStack.EMPTY;
     }
     

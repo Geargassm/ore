@@ -91,9 +91,4 @@ public class MetalGirderBlock extends HorizontalDirectionalBlock {
         
         return defaultBlockState().setValue(BlockStateProperties.HORIZONTAL_FACING, facing).setValue(HEADING, !straight);
     }
-    
-    @Override
-    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
-        return null;
-    }
 }

@@ -12,7 +12,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.component.Tool;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -23,7 +22,6 @@ import rearth.oritech.client.cablesurfer.ClientZiplineHandler;
 import rearth.oritech.init.BlockContent;
 import rearth.oritech.init.SoundContent;
 
-import java.util.List;
 
 public class Wrench extends Item {
     
@@ -33,35 +31,6 @@ public class Wrench extends Item {
         super(settings);
     }
     
-    public static Tool createToolComponent() {
-        return new Tool(List.of(
-          Tool.Rule.minesAndDrops(List.of(
-            BlockContent.ENERGY_PIPE,
-            BlockContent.SUPERCONDUCTOR,
-            BlockContent.FLUID_PIPE,
-            BlockContent.ITEM_PIPE,
-            BlockContent.TRANSPARENT_ITEM_PIPE,
-            BlockContent.ENERGY_PIPE_CONNECTION,
-            BlockContent.SUPERCONDUCTOR_CONNECTION,
-            BlockContent.FLUID_PIPE_CONNECTION,
-            BlockContent.ITEM_PIPE_CONNECTION,
-            BlockContent.TRANSPARENT_ITEM_PIPE_CONNECTION,
-            BlockContent.ENERGY_PIPE_DUCT_BLOCK,
-            BlockContent.SUPERCONDUCTOR_DUCT_BLOCK,
-            BlockContent.FLUID_PIPE_DUCT_BLOCK,
-            BlockContent.ITEM_PIPE_DUCT_BLOCK,
-            BlockContent.FRAMED_ENERGY_PIPE,
-            BlockContent.FRAMED_SUPERCONDUCTOR,
-            BlockContent.FRAMED_FLUID_PIPE,
-            BlockContent.FRAMED_ITEM_PIPE,
-            BlockContent.FRAMED_ENERGY_PIPE_CONNECTION,
-            BlockContent.FRAMED_SUPERCONDUCTOR_CONNECTION,
-            BlockContent.FRAMED_FLUID_PIPE_CONNECTION,
-            BlockContent.FRAMED_ITEM_PIPE_CONNECTION,
-            BlockContent.MACHINE_FRAME_BLOCK
-          ), 25f)
-        ), 1.f, 1);
-    }
     
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
@@ -124,8 +93,8 @@ public class Wrench extends Item {
     }
     
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
+    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        super.appendHoverText(stack, level, tooltipComponents, tooltipFlag);
         tooltipComponents.add(Component.translatable("tooltip.oritech.wrench"));
     }
     

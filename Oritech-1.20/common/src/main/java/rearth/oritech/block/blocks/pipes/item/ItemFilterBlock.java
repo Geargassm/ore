@@ -97,7 +97,7 @@ public class ItemFilterBlock extends Block implements EntityBlock {
     }
     
     @Override
-    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag options) {
+    public void appendHoverText(ItemStack stack, @Nullable net.minecraft.world.level.BlockGetter level, List<Component> tooltip, TooltipFlag options) {
         tooltip.add(Component.translatable("tooltip.oritech.item_filter").withStyle(ChatFormatting.GRAY));
         
         
@@ -105,7 +105,7 @@ public class ItemFilterBlock extends Block implements EntityBlock {
             tooltip.add(Component.translatable("tooltip.oritech.item_filter_ftb").withStyle(ChatFormatting.GRAY));
         }
         
-        super.appendHoverText(stack, context, tooltip, options);
+        super.appendHoverText(stack, level, tooltip, options);
     }
 
         @Override

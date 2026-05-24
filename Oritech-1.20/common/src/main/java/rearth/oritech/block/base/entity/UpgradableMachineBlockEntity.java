@@ -84,7 +84,7 @@ public abstract class UpgradableMachineBlockEntity extends MachineBlockEntity im
             // craft N extra items if we have extra chambers
             for (int i = 0; i < chamberCount; i++) {
                 var newRecipe = getRecipe();
-                if (newRecipe.isEmpty() || !newRecipe.get().value().equals(currentRecipe) || !canOutputRecipe(activeRecipe) || !canProceed(activeRecipe))
+                if (newRecipe.isEmpty() || !newRecipe.get().equals(currentRecipe) || !canOutputRecipe(activeRecipe) || !canProceed(activeRecipe))
                     break;
                 super.craftItem(activeRecipe, outputInventory, inputInventory);
             }

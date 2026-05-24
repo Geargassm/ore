@@ -9,7 +9,6 @@ import dev.emi.emi.api.stack.TagEmiIngredient;
 import dev.emi.emi.api.widget.WidgetHolder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import rearth.oritech.Oritech;
@@ -32,10 +31,10 @@ public class OritechEMIRecipe extends BasicEmiRecipe {
     private final OritechRecipe recipe;
     private final ScreenProvider.ArrowConfiguration indicatorConfig;
     
-    public OritechEMIRecipe(RecipeHolder<OritechRecipe> entry, EmiRecipeCategory category, Class<? extends MachineBlockEntity> screenProviderSource, BlockState machineState) {
-        super(category, entry.id(),  150, 69);
-        
-        recipe = entry.value();
+    public OritechEMIRecipe(OritechRecipe entry, EmiRecipeCategory category, Class<? extends MachineBlockEntity> screenProviderSource, BlockState machineState) {
+        super(category, entry.getId(),  150, 69);
+
+        recipe = entry;
         recipe.getInputs().forEach(ingredient -> this.inputs.add(EmiIngredient.of(ingredient)));
         recipe.getResults().forEach(stack -> this.outputs.add(EmiStack.of(stack)));
         
@@ -63,9 +62,9 @@ public class OritechEMIRecipe extends BasicEmiRecipe {
         
     }
     
-    public OritechEMIRecipe(RecipeHolder<OritechRecipe> entry, EmiRecipeCategory category, Boolean isGenerator, List<ScreenProvider.GuiSlot> slots, InventorySlotAssignment slotOffsets) {
-        super(category, entry.id(), 150, 69);
-        
+    public OritechEMIRecipe(OritechRecipe entry, EmiRecipeCategory category, Boolean isGenerator, List<ScreenProvider.GuiSlot> slots, InventorySlotAssignment slotOffsets) {
+        super(category, entry.getId(), 150, 69);
+
         this.isGenerator = isGenerator;
         this.slots = slots;
         this.slotOffsets = slotOffsets;
@@ -73,8 +72,8 @@ public class OritechEMIRecipe extends BasicEmiRecipe {
           Oritech.id("textures/gui/modular/arrow_empty.png"),
           Oritech.id("textures/gui/modular/arrow_full.png"),
           80, 35, 29, 16, true);
-        
-        recipe = entry.value();
+
+        recipe = entry;
         recipe.getInputs().forEach(ingredient -> this.inputs.add(EmiIngredient.of(ingredient)));
         recipe.getResults().forEach(stack -> this.outputs.add(EmiStack.of(stack)));
         

@@ -93,12 +93,18 @@ public class AugmentDataRecipeType implements RecipeSerializer<AugmentDataRecipe
     }
     
     @Override
-    public MapCodec<AugmentDataRecipe> codec() {
-        return AUGMENT_DATA_RECIPE_CODEC;
+    public AugmentDataRecipe fromJson(ResourceLocation id, com.google.gson.JsonObject json) {
+        return AUGMENT_DATA_RECIPE_CODEC.codec().parse(com.mojang.serialization.JsonOps.INSTANCE, json)
+            .getOrThrow(false, err -> {});
     }
-    
+
     @Override
-    public StreamCodec<FriendlyByteBuf, AugmentDataRecipe> streamCodec() {
-        return PACKET_CODEC;
+    public AugmentDataRecipe fromNetwork(ResourceLocation id, net.minecraft.network.FriendlyByteBuf buf) {
+        return PACKET_CODEC.decode(buf);
+    }
+
+    @Override
+    public void toNetwork(net.minecraft.network.FriendlyByteBuf buf, AugmentDataRecipe recipe) {
+        PACKET_CODEC.encode(buf, recipe);
     }
 }

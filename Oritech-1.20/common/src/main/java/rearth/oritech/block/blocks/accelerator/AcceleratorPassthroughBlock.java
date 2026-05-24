@@ -64,9 +64,4 @@ public class AcceleratorPassthroughBlock extends HorizontalDirectionalBlock {
     protected RenderShape getRenderShape(BlockState state) {
         return RenderShape.MODEL;
     }
-    
-    @Override
-    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
-        return null;
-    }
 }

@@ -44,11 +44,6 @@ public class ParticleCollectorBlock extends DirectionalBlock implements EntityBl
         return Objects.requireNonNull(super.getStateForPlacement(ctx)).setValue(DirectionalBlock.FACING, ctx.getNearestLookingDirection().getOpposite());
     }
     
-    @Override
-    protected MapCodec<? extends DirectionalBlock> codec() {
-        return null;
-    }
-    
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
@@ -66,7 +61,7 @@ public class ParticleCollectorBlock extends DirectionalBlock implements EntityBl
     }
     
     @Override
-    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag options) {
+    public void appendHoverText(ItemStack stack, @Nullable net.minecraft.world.level.BlockGetter level, List<Component> tooltip, TooltipFlag options) {
         var showExtra = Screen.hasControlDown();
         if (showExtra) {
             tooltip.add(Component.translatable("tooltip.oritech.particle_collector").withStyle(ChatFormatting.GRAY));

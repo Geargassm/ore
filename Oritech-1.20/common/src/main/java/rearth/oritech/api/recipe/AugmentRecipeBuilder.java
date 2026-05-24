@@ -1,3 +1,5 @@
+import java.util.function.Consumer;
+import net.minecraft.data.recipes.FinishedRecipe;
 package rearth.oritech.api.recipe;
 
 import org.jetbrains.annotations.Nullable;
@@ -11,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.data.recipes.RecipeOutput;
+
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffect;
@@ -204,7 +206,7 @@ public class AugmentRecipeBuilder {
         }
     }
     
-    public void export(RecipeOutput exporter, String suffix) {
+    public void export(Consumer<FinishedRecipe> exporter, String suffix) {
         var id = Oritech.id(resourcePath + "/" + suffix);
         validate(id);
         

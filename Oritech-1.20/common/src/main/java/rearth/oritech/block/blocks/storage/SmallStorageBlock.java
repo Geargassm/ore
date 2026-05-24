@@ -34,7 +34,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
-import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
 
@@ -121,7 +121,7 @@ public class SmallStorageBlock extends Block implements EntityBlock {
     }
     
     @Override
-    protected List<ItemStack> getDrops(BlockState state, LootParams.Builder builder) {
+    protected List<ItemStack> getDrops(BlockState state, LootContext.Builder builder) {
         var droppedStacks = super.getDrops(state, builder);
 
         var blockEntity = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
@@ -187,8 +187,8 @@ public class SmallStorageBlock extends Block implements EntityBlock {
     }
     
     @Override
-    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag options) {
-        super.appendHoverText(stack, context, tooltip, options);
+    public void appendHoverText(ItemStack stack, @Nullable net.minecraft.world.level.BlockGetter level, List<Component> tooltip, TooltipFlag options) {
+        super.appendHoverText(stack, level, tooltip, options);
         
         addMachineTooltip(tooltip, this, this);
     }
