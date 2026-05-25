@@ -4,6 +4,8 @@ plugins {
     id "me.modmuss50.mod-publish-plugin" version "0.8.0" apply false
 }
 
+apply plugin: "architectury-plugin"
+
 architectury {
     minecraft = project.minecraft_version
 }
