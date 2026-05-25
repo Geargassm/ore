@@ -60,7 +60,7 @@ public class ItemFilterScreenHandler extends AbstractContainerMenu {
         if (slotStack.isEmpty()) return ItemStack.EMPTY;
 
         var displayStack = new ItemStack(slotStack.getItem(), 1);
-        displayStack.applyComponents(slotStack.getComponents());
+        if (slotStack.hasTag()) displayStack.setTag(slotStack.getTag().copy());
 
         var data = blockEntity.getFilterSettings();
         for (var item : data.items().values()) {

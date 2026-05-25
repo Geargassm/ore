@@ -20,7 +20,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.chunk.status.ChunkStatus;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.level.chunk.ChunkStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import rearth.oritech.Oritech;
@@ -110,7 +111,7 @@ public class EnchanterBlockEntity extends NetworkedBlockEntity
             return;
         }
         
-        var existingLevel = content.getEnchantments().getLevel(getSelectedEnchantment());
+        var existingLevel = EnchantmentHelper.getItemEnchantmentLevel(getSelectedEnchantment().value(), content);
         var maxLevel = getSelectedEnchantment().value().getMaxLevel();
         
         if (existingLevel >= maxLevel) return;
@@ -174,8 +175,8 @@ public class EnchanterBlockEntity extends NetworkedBlockEntity
     
     private void finishEnchanting() {
         var content = inventory.heldStacks.get(0);
-        var existingLevel = content.getEnchantments().getLevel(getSelectedEnchantment());
-        content.enchant(getSelectedEnchantment(), existingLevel + 1);
+        var existingLevel = EnchantmentHelper.getItemEnchantmentLevel(getSelectedEnchantment().value(), content);
+        content.enchant(getSelectedEnchantment().value(), existingLevel + 1);
         
         inventory.heldStacks.set(0, ItemStack.EMPTY);
         inventory.heldStacks.set(1, content);

@@ -123,7 +123,7 @@ public class ShrinkerBlockEntity extends NetworkedBlockEntity implements ItemApi
         energyStorage.update();
         
         var createdStack = new ItemStack(BlockContent.MACHINE_COMBI_ADDON.asItem());
-        createdStack.set(ComponentContent.ADDON_DATA.get(), currentCandidate);
+        ComponentContent.setToNbt(createdStack, ComponentContent.addonDataKey(), currentCandidate, ShrunkAddonData.CODEC);
         
         inventory.setStackInSlot(0, createdStack);
         

@@ -186,12 +186,13 @@ public interface BaseJetpackItem extends OritechEnergyItem, FluidApi.ItemProvide
         if (fluidStack.getAmount() < getFuelUsage() || !isValidFuel(fluidStack.getFluid()))
             return false;
         var res = FluidStack.create(fluidStack.getFluid(), fluidStack.getAmount() - getFuelUsage());
-        stack.set(ComponentContent.STORED_FLUID.get(), res);
+        ComponentContent.setToNbt(stack, ComponentContent.storedFluidKey(), res, dev.architectury.fluid.FluidStack.CODEC);
         return true;
     }
     
     default FluidStack getStoredFluid(ItemStack stack) {
-        return stack.getOrDefault(ComponentContent.STORED_FLUID.get(), FluidStack.empty());
+        var stored = ComponentContent.getFromNbt(stack, ComponentContent.storedFluidKey(), dev.architectury.fluid.FluidStack.CODEC);
+        return stored != null ? stored : FluidStack.empty();
     }
     
     default void addJetpackTooltip(ItemStack stack, List<Component> tooltip, boolean includeEnergy) {

@@ -189,7 +189,7 @@ public class ItemFilterScreen extends OritechWidgetScreen<ItemFilterScreenHandle
         }
         
         var displayStack = new ItemStack(itemStack.getItem(), 1);
-        displayStack.applyComponents(itemStack.getComponents());
+        if (itemStack.hasTag()) displayStack.setTag(itemStack.getTag().copy());
         itemFilters.put(index, displayStack);
         updateFilterSettings(new ItemFilterBlockEntity.FilterData(oldData.useNbt(), oldData.useWhitelist(), oldData.useComponents(), itemFilters));
         sendUpdateToServer();

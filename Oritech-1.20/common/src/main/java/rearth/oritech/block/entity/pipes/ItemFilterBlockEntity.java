@@ -10,7 +10,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import rearth.oritech.compat.ByteBufCodecs;
 import rearth.oritech.compat.StreamCodec;
@@ -163,7 +162,7 @@ public class ItemFilterBlockEntity extends NetworkedBlockEntity implements ItemA
           ByteBufCodecs.BOOL, FilterData::useNbt,
           ByteBufCodecs.BOOL, FilterData::useWhitelist,
           ByteBufCodecs.BOOL, FilterData::useComponents,
-          ByteBufCodecs.map(HashMap::new, ByteBufCodecs.INT, ItemStack.STREAM_CODEC), FilterData::items,
+          ByteBufCodecs.map(HashMap::new, ByteBufCodecs.INT, ByteBufCodecs.ITEM_STACK), FilterData::items,
           FilterData::new
         );
         
@@ -210,7 +209,8 @@ public class ItemFilterBlockEntity extends NetworkedBlockEntity implements ItemA
                 if (!matchesType) continue;
                 
                 if (checkComponents) {
-                    var componentsMatch = stack.getComponentsPatch().equals(filterItem.getComponentsPatch());
+                    // 1.20.1: DataComponents don't exist; compare NBT tags as the equivalent
+                    var componentsMatch = java.util.Objects.equals(stack.getTag(), filterItem.getTag());
                     if (!componentsMatch) {
                         break;
                     }

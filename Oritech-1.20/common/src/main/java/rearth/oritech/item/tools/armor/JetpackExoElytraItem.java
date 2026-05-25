@@ -5,7 +5,6 @@ import rearth.oritech.Oritech;
 import java.util.List;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -20,7 +19,7 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import rearth.oritech.init.OritechStartupConfig;
 
 public class JetpackExoElytraItem extends BackstorageExoArmorItem implements BaseJetpackItem {
-    public JetpackExoElytraItem(Holder<ArmorMaterial> material, Type type, Item.Properties settings) {
+    public JetpackExoElytraItem(ArmorMaterial material, Type type, Item.Properties settings) {
         super(material, type, settings);
     }
     

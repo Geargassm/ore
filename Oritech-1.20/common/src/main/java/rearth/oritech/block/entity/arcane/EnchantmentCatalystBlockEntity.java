@@ -212,7 +212,7 @@ public class EnchantmentCatalystBlockEntity extends BaseSoulCollectionEntity
 
         var inputStack = inventory.getItem(1);
         var toolLevel = EnchantmentHelper.getItemEnchantmentLevel(enchantHolder.value(), inputStack);
-        inputStack.enchant(enchantHolder, toolLevel + 1);
+        inputStack.enchant(enchantHolder.value(), toolLevel + 1);
 
         collectedSouls -= getEnchantmentCost(enchantHolder.value(), toolLevel + 1, isHyperEnchanting);
 

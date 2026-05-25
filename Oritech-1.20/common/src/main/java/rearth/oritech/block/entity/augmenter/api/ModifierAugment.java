@@ -1,48 +1,53 @@
 package rearth.oritech.block.entity.augmenter.api;
 
-import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 
+import java.nio.charset.StandardCharsets;
+import java.util.UUID;
+
 public class ModifierAugment extends Augment {
-    
-    private final Holder<Attribute> targetAttribute;
+
+    private final Attribute targetAttribute;
     private final float amount;
     private final AttributeModifier.Operation operation;
-    
-    public ModifierAugment(ResourceLocation id, Holder<Attribute> targetAttribute, AttributeModifier.Operation operation, float amount, boolean toggleable) {
+    private final UUID modifierUuid;
+
+    public ModifierAugment(ResourceLocation id, Attribute targetAttribute, AttributeModifier.Operation operation, float amount, boolean toggleable) {
         super(id, toggleable);
         this.targetAttribute = targetAttribute;
         this.amount = amount;
         this.operation = operation;
+        this.modifierUuid = UUID.nameUUIDFromBytes(id.toString().getBytes(StandardCharsets.UTF_8));
     }
-    
-    
+
     @Override
     public void activate(Player player) {
         var instance = player.getAttribute(targetAttribute);
         if (instance == null) return;
-        instance.addOrReplacePermanentModifier(new AttributeModifier(id, amount, operation));
+        if (instance.getModifier(modifierUuid) != null) instance.removeModifier(modifierUuid);
+        instance.addPermanentModifier(new AttributeModifier(modifierUuid, id.toString(), amount, operation));
     }
-    
+
     @Override
     public void deactivate(Player player) {
         var instance = player.getAttribute(targetAttribute);
         if (instance == null) return;
-        instance.removeModifier(id);
+        instance.removeModifier(modifierUuid);
     }
-    
+
     @Override
     public void refreshServer(Player player) {
         var instance = player.getAttribute(targetAttribute);
         if (instance == null) return;
-        instance.addOrReplacePermanentModifier(new AttributeModifier(id, amount, operation));
+        if (instance.getModifier(modifierUuid) != null) instance.removeModifier(modifierUuid);
+        instance.addPermanentModifier(new AttributeModifier(modifierUuid, id.toString(), amount, operation));
     }
-    
+
     @Override
     public int refreshInterval() {
-        return 3000; // doesn't need to happen often, as these effects are applied permanently
+        return 3000;
     }
 }

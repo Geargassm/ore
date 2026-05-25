@@ -738,6 +738,10 @@ public class OritechRecipeGenerator extends RecipeProvider {
             SimpleCookingRecipeBuilder.blasting(Ingredient.of(itemConvertible), category, output, experience, cookingTime).group(group).unlockedBy(getHasName(itemConvertible), has(itemConvertible)).save(exporter, Oritech.id(getItemName(output) + "_from_blasting_" + getItemName(itemConvertible)));
         }
     }
+
+    public static void threeByThreePacker(Consumer<FinishedRecipe> exporter, RecipeCategory category, ItemLike output, ItemLike ingredient) {
+        RecipeProvider.threeByThreePacker(exporter, category, output, ingredient);
+    }
     
     private void addOreChains(Consumer<FinishedRecipe> exporter) {
         
@@ -1182,7 +1186,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
           .requirement(Oritech.id("augment/flight"))
           .requiredStation(ARCANE_AUGMENT_STATION_ID)
           .uiX(180).uiY(10).time(2200).rfCost(300_000_000)
-          .modifierDefinition(Attributes.GRAVITY, -0.5f, AttributeModifier.Operation.MULTIPLY_BASE)
+          .modifierDefinition(new ResourceLocation("minecraft", "gravity"), -0.5f, 1) // 1 = MULTIPLY_BASE ordinal; Attributes.GRAVITY added in 1.21
           .toggleable()
           .export(exporter, "gravity");
         

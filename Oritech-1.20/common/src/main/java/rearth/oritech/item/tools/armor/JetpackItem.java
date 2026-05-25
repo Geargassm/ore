@@ -4,7 +4,6 @@ import rearth.oritech.api.networking.PacketId;
 import dev.architectury.fluid.FluidStack;
 import org.jetbrains.annotations.Nullable;
 import rearth.oritech.Oritech;
-import rearth.oritech.api.energy.EnergyApi;
 import rearth.oritech.client.renderers.ExosuitArmorRenderer;
 import rearth.oritech.init.ComponentContent;
 import rearth.oritech.init.OritechStartupConfig;
@@ -21,7 +20,6 @@ import java.util.List;
 import java.util.function.Consumer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.model.HumanoidModel;
-import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -50,7 +48,7 @@ public class JetpackItem extends ArmorItem implements GeoItem, BaseJetpackItem {
     // set to true if space has been pressed at least once AFTER loosing ground contact (to avoid flying forwards when dropping of a cliff
     public static boolean PRESSED_SPACE = false;
     
-    public JetpackItem(Holder<ArmorMaterial> material, Type type, Item.Properties settings) {
+    public JetpackItem(ArmorMaterial material, Type type, Item.Properties settings) {
         super(material, type, settings);
     }
     
@@ -168,9 +166,9 @@ public class JetpackItem extends ArmorItem implements GeoItem, BaseJetpackItem {
         // to prevent dedicated servers from kicking the player for flying
         serverPlayer.connection.aboveGroundTickCount = 0;
         
-        stack.set(EnergyApi.ITEM.getEnergyComponent(), packet.energyStored);
+        stack.getOrCreateTag().putLong("oritech_energy", packet.energyStored);
         if (packet.fluidAmount > 0)
-            stack.set(ComponentContent.STORED_FLUID.get(), FluidStack.create(BuiltInRegistries.FLUID.get(new ResourceLocation(packet.fluidType)), packet.fluidAmount));
+            ComponentContent.setToNbt(stack, ComponentContent.storedFluidKey(), FluidStack.create(BuiltInRegistries.FLUID.get(new ResourceLocation(packet.fluidType)), packet.fluidAmount), FluidStack.CODEC);
     }
     
     public record JetpackUsageUpdatePacket(long energyStored, String fluidType, long fluidAmount) {

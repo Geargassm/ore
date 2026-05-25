@@ -146,13 +146,13 @@ public class AugmentDataRecipe implements Recipe<net.minecraft.world.Container> 
             return new EffectAugment(
               recipeId,
               this.toggleable,
-              BuiltInRegistries.MOB_EFFECT.getHolder(effectDefinition.potionEffectId).orElseThrow(),
+              BuiltInRegistries.MOB_EFFECT.get(effectDefinition.potionEffectId),
               effectDefinition.effectStrength);
         } else if (modifierDefinition != null) {
             return new ModifierAugment(
               recipeId,
-              BuiltInRegistries.ATTRIBUTE.getHolder(modifierDefinition.entityAttributeId).orElseThrow(),
-              AttributeModifier.Operation.BY_ID.apply(modifierDefinition.attributeOperationType()),
+              BuiltInRegistries.ATTRIBUTE.get(modifierDefinition.entityAttributeId),
+              AttributeModifier.Operation.values()[modifierDefinition.attributeOperationType()],
               modifierDefinition.amount(),
               this.toggleable);
         } else {

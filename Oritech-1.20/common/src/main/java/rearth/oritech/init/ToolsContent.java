@@ -34,8 +34,8 @@ public class ToolsContent implements ArchitecturyRegistryContainer<Item> {
     protected static final Item.Properties ELECTRIC_SETTINGS = UNBREAKING_SETTINGS; //.component(Oritech.ENERGY_CONTENT.componentType(), 0L);
     protected static final Item.Properties JETPACK_SETTINGS = UNBREAKING_SETTINGS; // .component(ComponentContent.STORED_FLUID.get(), FluidStack.create(FluidContent.STILL_FUEL.get().getStill(), 0)); //.component(Oritech.ENERGY_CONTENT.componentType(), 0L);
     
-    public static final Holder<ArmorMaterial> EXOSUIT_MATERIAL = ArmorMaterials.IRON;
-    public static final Holder<ArmorMaterial> JETPACK_MATERIAL = ArmorMaterials.LEATHER;
+    public static final ArmorMaterial EXOSUIT_MATERIAL = ArmorMaterials.IRON;
+    public static final ArmorMaterial JETPACK_MATERIAL = ArmorMaterials.LEATHER;
     public static final Tier ELECTRIC_MATERIAL = new ElectricToolMaterial();
     public static final Tier PROMETHIUM_MATERIAL = new PromethiumToolMaterial();
     

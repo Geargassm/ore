@@ -155,15 +155,6 @@ public class ForgeEnergyApiImpl implements BlockEnergyApi, ItemEnergyApi {
         }).orElse(null);
     }
 
-    @Override
-    @Nullable
-    public net.minecraft.core.component.DataComponentType<Long> getEnergyComponent() {
-        // TODO: DataComponentType does not exist in 1.20.1.
-        // Energy for items is stored as NBT directly (tag: "energy") by SimpleEnergyItemStorage.
-        // Return null; callers that use this for display should guard against null.
-        return null;
-    }
-
     // -------------------------------------------------------------------------
     // Inner wrappers
     // -------------------------------------------------------------------------

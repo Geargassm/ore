@@ -155,8 +155,8 @@ public class DronePortEntity extends NetworkedBlockEntity
     private void checkPositionCard() {
         
         var source = cardInventory.getItems().get(0);
-        if (source.getItem() instanceof LaserTargetDesignator && source.has(ComponentContent.TARGET_POSITION.get())) {
-            var target = source.get(ComponentContent.TARGET_POSITION.get());
+        if (source.getItem() instanceof LaserTargetDesignator && ComponentContent.hasTargetPosition(source)) {
+            var target = ComponentContent.getTargetPosition(source);
             setTargetFromDesignator(target);
         } else {
             return;

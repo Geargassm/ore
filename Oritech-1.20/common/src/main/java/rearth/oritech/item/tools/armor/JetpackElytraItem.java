@@ -18,7 +18,6 @@ import java.util.function.Consumer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
-import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -38,7 +37,7 @@ public class JetpackElytraItem extends ArmorItem implements GeoItem, BaseJetpack
     
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     
-    public JetpackElytraItem(Holder<ArmorMaterial> material, Type type, Item.Properties settings) {
+    public JetpackElytraItem(ArmorMaterial material, Type type, Item.Properties settings) {
         super(material, type, settings);
     }
     

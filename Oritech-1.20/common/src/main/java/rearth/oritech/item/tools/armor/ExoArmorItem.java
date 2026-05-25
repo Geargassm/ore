@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.function.Consumer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.model.HumanoidModel;
-import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -40,7 +39,7 @@ public class ExoArmorItem extends ArmorItem implements GeoItem, ArmorEventHandle
     
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     
-    public ExoArmorItem(Holder<ArmorMaterial> material, Type type, Properties settings) {
+    public ExoArmorItem(ArmorMaterial material, Type type, Properties settings) {
         super(material, type, settings);
     }
     

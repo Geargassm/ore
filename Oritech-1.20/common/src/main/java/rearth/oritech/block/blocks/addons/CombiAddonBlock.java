@@ -36,8 +36,8 @@ public class CombiAddonBlock extends MachineAddonBlock {
     public void setPlacedBy(Level world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
         super.setPlacedBy(world, pos, state, placer, itemStack);
         
-        if (!world.isClientSide() && itemStack.has(ComponentContent.ADDON_DATA.get()) && world.getBlockEntity(pos) instanceof CombiAddonEntity combiAddonEntity) {
-            combiAddonEntity.storedData = itemStack.get(ComponentContent.ADDON_DATA.get());
+        if (!world.isClientSide() && ComponentContent.hasNbtKey(itemStack, ComponentContent.addonDataKey()) && world.getBlockEntity(pos) instanceof CombiAddonEntity combiAddonEntity) {
+            combiAddonEntity.storedData = ComponentContent.getFromNbt(itemStack, ComponentContent.addonDataKey(), ShrinkerBlockEntity.ShrunkAddonData.CODEC);
         }
     }
     
@@ -49,9 +49,9 @@ public class CombiAddonBlock extends MachineAddonBlock {
         
         if (showExtra) {
             
-            if (!stack.has(ComponentContent.ADDON_DATA.get())) return;
-            
-            var data = stack.get(ComponentContent.ADDON_DATA.get());
+            if (!ComponentContent.hasNbtKey(stack, ComponentContent.addonDataKey())) return;
+
+            var data = ComponentContent.getFromNbt(stack, ComponentContent.addonDataKey(), ShrinkerBlockEntity.ShrunkAddonData.CODEC);
             var foundTexts = getShrinkTooltip(data);
             
             tooltip.add(Component.translatable("tooltip.oritech.combi_addon_desc").withStyle(ChatFormatting.GRAY));

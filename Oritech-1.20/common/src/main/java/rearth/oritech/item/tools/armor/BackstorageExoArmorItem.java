@@ -1,7 +1,6 @@
 package rearth.oritech.item.tools.armor;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -25,7 +24,7 @@ import static rearth.oritech.item.tools.harvesting.DrillItem.BAR_STEP_COUNT;
 
 public class BackstorageExoArmorItem extends ExoArmorItem implements OritechEnergyItem {
     
-    public BackstorageExoArmorItem(Holder<ArmorMaterial> material, Type type, Item.Properties settings) {
+    public BackstorageExoArmorItem(ArmorMaterial material, Type type, Item.Properties settings) {
         super(material, type, settings);
     }
     
