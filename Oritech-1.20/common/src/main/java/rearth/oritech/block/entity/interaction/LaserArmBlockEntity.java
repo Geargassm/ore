@@ -6,9 +6,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 
 import net.minecraft.core.Vec3i;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -279,8 +277,7 @@ public class LaserArmBlockEntity extends NetworkedBlockEntity implements
         if (hunterAddons > 0 && yieldAddons > 0) {
             var lootingSword = new ItemStack(Items.NETHERITE_SWORD);
             lootingSword.getOrCreateTag().putBoolean("Unbreakable", true);
-            var lootingEntry = level.registryAccess().registryOrThrow(Registries.ENCHANTMENT).getHolder(Enchantments.LOOTING).get();
-            lootingSword.enchant(lootingEntry, Math.min(yieldAddons, 3));
+            lootingSword.enchant(Enchantments.LOOTING, Math.min(yieldAddons, 3));
             laserPlayerEntity.getInventory().items.set(laserPlayerEntity.getInventory().selected, lootingSword);
         }
         

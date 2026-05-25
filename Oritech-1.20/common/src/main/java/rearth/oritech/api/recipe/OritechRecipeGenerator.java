@@ -337,7 +337,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
         offerChainsawRecipe(exporter, ToolsContent.PORTABLE_LASER, of(ItemContent.ADVANCED_BATTERY), of(BlockContent.ACCELERATOR_MOTOR), of(ItemContent.ADAMANT_INGOT), of(BlockContent.LASER_ARM_BLOCK), "portablelaser");
         
         // electric mace
-        offerDrillRecipe(exporter, ToolsContent.ELECTRIC_MACE, of(ItemContent.ADVANCED_BATTERY), of(ItemContent.CARBON_FIBRE_STRANDS), of(ItemContent.ADAMANT_INGOT), of(Items.HEAVY_CORE), "_emace");
+        offerDrillRecipe(exporter, ToolsContent.ELECTRIC_MACE, of(ItemContent.ADVANCED_BATTERY), of(ItemContent.CARBON_FIBRE_STRANDS), of(ItemContent.ADAMANT_INGOT), of(Items.NETHER_STAR), "_emace");
         
         // designator
         offerDrillRecipe(exporter, ItemContent.TARGET_DESIGNATOR, of(TagContent.STEEL_INGOTS), of(TagContent.ELECTRUM_INGOTS), of(ItemContent.PROCESSING_UNIT), of(TagContent.PLASTIC_PLATES), "designator");
@@ -424,8 +424,8 @@ public class OritechRecipeGenerator extends RecipeProvider {
         offerFurnaceRecipe(exporter, BlockContent.POWERED_FURNACE_BLOCK.asItem(), of(cItemTag("player_workstations/furnaces")), of(ItemContent.MAGNETIC_COIL), of(TagContent.SILICON), of(TagContent.ELECTRUM_INGOTS), of(cItemTag("ingots/copper")), "electricfurnace");
         offerFurnaceRecipe(exporter, BlockContent.POWERED_FURNACE_BLOCK.asItem(), of(cItemTag("player_workstations/furnaces")), of(ItemContent.MAGNETIC_COIL), of(TagContent.PLATINUM_INGOTS), of(TagContent.ELECTRUM_INGOTS), of(cItemTag("ingots/copper")), "electricfurnacealt");
         // assembler
-        offerFurnaceRecipe(exporter, BlockContent.ASSEMBLER_BLOCK.asItem(), of(Blocks.BLAST_FURNACE.asItem()), of(ItemContent.MOTOR), of(Items.CRAFTER), of(ItemContent.ADAMANT_INGOT), of(cItemTag("ingots/copper")), "assembler");
-        offerFurnaceRecipe(exporter, BlockContent.ASSEMBLER_BLOCK.asItem(), of(TagContent.MACHINE_PLATING), of(ItemContent.MOTOR), of(Items.CRAFTER), of(ItemContent.ADAMANT_INGOT), of(cItemTag("ingots/copper")), "assembleralt");
+        offerFurnaceRecipe(exporter, BlockContent.ASSEMBLER_BLOCK.asItem(), of(Blocks.BLAST_FURNACE.asItem()), of(ItemContent.MOTOR), of(Items.PISTON), of(ItemContent.ADAMANT_INGOT), of(cItemTag("ingots/copper")), "assembler");
+        offerFurnaceRecipe(exporter, BlockContent.ASSEMBLER_BLOCK.asItem(), of(TagContent.MACHINE_PLATING), of(ItemContent.MOTOR), of(Items.PISTON), of(ItemContent.ADAMANT_INGOT), of(cItemTag("ingots/copper")), "assembleralt");
         // foundry
         offerGeneratorRecipe(exporter, BlockContent.FOUNDRY_BLOCK.asItem(), of(Blocks.CAULDRON.asItem()), of(TagContent.ELECTRUM_INGOTS), of(ItemContent.MOTOR), of(cItemTag("ingots/copper")), "foundry");
         // refinery
@@ -840,7 +840,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
         // echo shard from ender pearl and amethyst shard
         ParticleCollisionRecipeBuilder.build().input(cItemTag("ender_pearls")).input(cItemTag("gems/amethyst")).result(Items.ECHO_SHARD).time(1000).export(exporter, "echo_shard");
         // heavy core from reinforced deepslate block and duration dust
-        ParticleCollisionRecipeBuilder.build().input(Items.REINFORCED_DEEPSLATE).input(ItemContent.DURATIUM_DUST).result(Items.HEAVY_CORE).time(8000).export(exporter, "heavy_core");
+        ParticleCollisionRecipeBuilder.build().input(Items.REINFORCED_DEEPSLATE).input(ItemContent.DURATIUM_DUST).result(Items.NETHER_STAR).time(8000).export(exporter, "heavy_core");
     }
     
     private void addDusts(Consumer<FinishedRecipe> exporter) {
@@ -1192,7 +1192,7 @@ public class OritechRecipeGenerator extends RecipeProvider {
         
         AugmentRecipeBuilder.build()
           .researchCost(ItemContent.ION_THRUSTER, 64)
-          .researchCost(Items.WIND_CHARGE, 16)
+          .researchCost(Items.PHANTOM_MEMBRANE, 16)
           .researchCost(ItemContent.PROMETHEUM_INGOT, 16)
           .researchCost(ItemContent.PLUTONIUM_PELLET, 32)
           .applyCost(ItemContent.ION_THRUSTER, 4)

@@ -133,7 +133,7 @@ public class ShrinkerBlockEntity extends NetworkedBlockEntity implements ItemApi
             
             if (level instanceof ServerLevel serverWorld) {
                 var spawnAt = addonPos.getCenter();
-                serverWorld.sendParticles(ParticleTypes.GUST, spawnAt.x, spawnAt.y, spawnAt.z, 1, 0, 0.1f, 0, 0.5f);
+                serverWorld.sendParticles(ParticleTypes.POOF, spawnAt.x, spawnAt.y, spawnAt.z, 1, 0, 0.1f, 0, 0.5f);
                 serverWorld.playSound(null, worldPosition, SoundEvents.SMALL_AMETHYST_BUD_PLACE, SoundSource.BLOCKS, 2f, 0.5f);
             }
         }

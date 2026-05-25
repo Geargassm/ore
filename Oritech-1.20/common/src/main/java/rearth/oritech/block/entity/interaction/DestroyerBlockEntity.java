@@ -4,7 +4,6 @@ import com.mojang.authlib.GameProfile;
 import net.minecraft.core.BlockPos;
 
 import net.minecraft.core.Vec3i;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -250,8 +249,7 @@ public class DestroyerBlockEntity extends MultiblockFrameInteractionEntity {
         
         var sampleTool = new ItemStack(Items.NETHERITE_PICKAXE);
         sampleTool.getOrCreateTag().putBoolean("Unbreakable", true);
-        var fortuneEntry = world.registryAccess().registryOrThrow(Registries.ENCHANTMENT).getHolder(Enchantments.FORTUNE).get();
-        sampleTool.enchant(fortuneEntry, Math.min(yieldAddons, 3));
+        sampleTool.enchant(Enchantments.FORTUNE, Math.min(yieldAddons, 3));
         
         var builder = new LootContext.Builder(world).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(pos))
                         .withParameter(LootContextParams.TOOL, sampleTool)
@@ -264,8 +262,7 @@ public class DestroyerBlockEntity extends MultiblockFrameInteractionEntity {
     public static List<ItemStack> getSilkTouchDrops(BlockState state, ServerLevel world, BlockPos pos, @Nullable BlockEntity blockEntity, @Nullable Player entity) {
         var sampleTool = new ItemStack(Items.NETHERITE_PICKAXE);
         sampleTool.getOrCreateTag().putBoolean("Unbreakable", true);
-        var silkTouchEntry = world.registryAccess().registryOrThrow(Registries.ENCHANTMENT).getHolder(Enchantments.SILK_TOUCH).get();
-        sampleTool.enchant(silkTouchEntry, 1);
+        sampleTool.enchant(Enchantments.SILK_TOUCH, 1);
         
         var builder = new LootContext.Builder(world).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(pos))
                         .withParameter(LootContextParams.TOOL, sampleTool)

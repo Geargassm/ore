@@ -259,7 +259,7 @@ public class ClientZiplineHandler {
             var random = player.level().random;
             var gustVel = player.getDeltaMovement();
             player.level().addParticle(
-              ParticleTypes.GUST,
+              ParticleTypes.POOF,
               gustPos.x, gustPos.y + 0.3, gustPos.z,
               gustVel.x + random.nextFloat() * 0.3, gustVel.y + random.nextFloat() * 0.3, gustVel.z + random.nextFloat() * 0.3
             );

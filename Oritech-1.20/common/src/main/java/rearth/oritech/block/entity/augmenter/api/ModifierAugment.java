@@ -25,6 +25,7 @@ public class ModifierAugment extends Augment {
 
     @Override
     public void activate(Player player) {
+        if (targetAttribute == null) return;
         var instance = player.getAttribute(targetAttribute);
         if (instance == null) return;
         if (instance.getModifier(modifierUuid) != null) instance.removeModifier(modifierUuid);
@@ -33,6 +34,7 @@ public class ModifierAugment extends Augment {
 
     @Override
     public void deactivate(Player player) {
+        if (targetAttribute == null) return;
         var instance = player.getAttribute(targetAttribute);
         if (instance == null) return;
         instance.removeModifier(modifierUuid);
@@ -40,6 +42,7 @@ public class ModifierAugment extends Augment {
 
     @Override
     public void refreshServer(Player player) {
+        if (targetAttribute == null) return;
         var instance = player.getAttribute(targetAttribute);
         if (instance == null) return;
         if (instance.getModifier(modifierUuid) != null) instance.removeModifier(modifierUuid);

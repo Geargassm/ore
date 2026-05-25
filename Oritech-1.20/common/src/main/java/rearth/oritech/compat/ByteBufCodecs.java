@@ -11,6 +11,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
+import com.mojang.datafixers.util.Either;
+
 import java.util.*;
 import java.util.function.IntFunction;
 
@@ -148,6 +150,32 @@ public final class ByteBufCodecs {
                 for (Map.Entry<K, V> entry : value.entrySet()) {
                     keyCodec.encode(buf, entry.getKey());
                     valueCodec.encode(buf, entry.getValue());
+                }
+            }
+        };
+    }
+
+    public static <B extends ByteBuf, L, R> StreamCodec<B, Either<L, R>> either(
+            StreamCodec<B, L> leftCodec, StreamCodec<B, R> rightCodec) {
+        return new StreamCodec<>() {
+            @Override
+            public Either<L, R> decode(B buf) {
+                boolean isRight = ((FriendlyByteBuf) buf).readBoolean();
+                if (isRight) {
+                    return Either.right(rightCodec.decode(buf));
+                } else {
+                    return Either.left(leftCodec.decode(buf));
+                }
+            }
+
+            @Override
+            public void encode(B buf, Either<L, R> value) {
+                if (value.left().isPresent()) {
+                    ((FriendlyByteBuf) buf).writeBoolean(false);
+                    leftCodec.encode(buf, value.left().get());
+                } else {
+                    ((FriendlyByteBuf) buf).writeBoolean(true);
+                    rightCodec.encode(buf, value.right().get());
                 }
             }
         };

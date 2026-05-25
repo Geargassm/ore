@@ -185,7 +185,7 @@ public class AcceleratorControllerBlockEntity extends BlockEntity implements Blo
         createCollisionParticles((int) relativeSpeed, collision, (int) particleCount);
         
         if (level instanceof ServerLevel sl)
-            sl.sendParticles(ParticleTypes.GUST, collision.x, collision.y, collision.z, 1, 0, 0, 0, 0);
+            sl.sendParticles(ParticleTypes.POOF, collision.x, collision.y, collision.z, 1, 0, 0, 0, 0);
         this.setChanged();
     }
     
@@ -518,7 +518,7 @@ public class AcceleratorControllerBlockEntity extends BlockEntity implements Blo
             if (packet.lastEvent.equals(ParticleEvent.COLLIDED)) {
                 world.playLocalSound(soundPos.x, soundPos.y, soundPos.z, SoundEvents.WARDEN_SONIC_BOOM, SoundSource.BLOCKS, 5f, 1, true);
             } else if (packet.lastEvent.equals(ParticleEvent.EXITED_FAST) || packet.lastEvent.equals(ParticleEvent.EXITED_NO_GATE)) {
-                world.playLocalSound(soundPos.x, soundPos.y, soundPos.z, SoundEvents.WIND_CHARGE_BURST.value(), SoundSource.BLOCKS, 3f, 1, true);
+                world.playLocalSound(soundPos.x, soundPos.y, soundPos.z, SoundEvents.LIGHTNING_BOLT_THUNDER, SoundSource.BLOCKS, 3f, 1, true);
             }
         }
     }

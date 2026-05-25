@@ -219,7 +219,7 @@ public class CustomAugmentsCollection {
                 portalEntity.setYRot(-player.getYRot() + 90);
                 world.addFreshEntity(portalEntity);
                 portalEntity.target = targetPos;
-                world.playSound(null, BlockPos.containing(spawnPos), SoundEvents.AMBIENT_CAVE.value(), SoundSource.BLOCKS, 2, 1.2f);
+                world.playSound(null, BlockPos.containing(spawnPos), SoundEvents.AMBIENT_CAVE, SoundSource.BLOCKS, 2, 1.2f);
                 
             }
         }

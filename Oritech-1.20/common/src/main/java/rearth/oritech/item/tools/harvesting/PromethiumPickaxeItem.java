@@ -9,7 +9,6 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
@@ -188,8 +187,7 @@ public class PromethiumPickaxeItem extends DiggerItem implements GeoItem {
             var hasExistingSilkTouch = PortableLaserItem.getEnchantmentLevel(handStack, Enchantments.SILK_TOUCH) > 0;
             
             if (!hasExistingSilkTouch) {
-                var registryEntry = world.registryAccess().registryOrThrow(Registries.ENCHANTMENT).getHolder(Enchantments.SILK_TOUCH).get();
-                handStack.enchant(registryEntry, 1);
+                handStack.enchant(Enchantments.SILK_TOUCH, 1);
                 handStack.getOrCreateTag().putBoolean(TEMP_SILK_TOUCH_KEY, true);
             }
         }
