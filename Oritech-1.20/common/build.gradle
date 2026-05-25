@@ -28,7 +28,7 @@ artifacts {
 }
 
 dependencies {
-    modImplementation "dev.architectury:architectury-common:${architectury_version}+${minecraft_version}"
+    modImplementation "dev.architectury:architectury-api:${architectury_version}+${minecraft_version}"
 
     // GeckoLib (common) — no standalone common artifact for 4.x; use forge artifact for compilation
     modCompileOnly("software.bernie.geckolib:geckolib-forge-${minecraft_version}:${geckolib_version}") {
