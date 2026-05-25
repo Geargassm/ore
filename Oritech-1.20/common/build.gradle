@@ -28,11 +28,6 @@ artifacts {
 }
 
 dependencies {
-    // GeckoLib (common) — no standalone common artifact for 4.x; use forge artifact for compilation
-    modCompileOnly("software.bernie.geckolib:geckolib-forge-${minecraft_version}:${geckolib_version}") {
-        transitive = false
-    }
-
     // Recipe viewers (compileOnly — implementation provided by loader module)
     switch (recipe_viewer) {
         case "emi":
