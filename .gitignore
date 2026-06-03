@@ -1,0 +1,7 @@
+Oritech-1.21/
+Oritech-1.21.zip
+oritech-neoforge-1.21.1-1.2.6.jar
+*.jar
+*.class
+.gradle/
+build/

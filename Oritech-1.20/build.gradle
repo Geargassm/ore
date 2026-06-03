@@ -1,0 +1,93 @@
+plugins {
+    id "dev.architectury.loom" version "1.7-SNAPSHOT" apply false
+    id "architectury-plugin" version "3.4-SNAPSHOT" apply false
+    id "me.modmuss50.mod-publish-plugin" version "0.8.0" apply false
+}
+
+apply plugin: "architectury-plugin"
+
+architectury {
+    minecraft = project.minecraft_version
+}
+
+allprojects {
+    group = project.group
+    version = project.version
+}
+
+subprojects {
+    apply plugin: "dev.architectury.loom"
+    apply plugin: "architectury-plugin"
+    apply plugin: "maven-publish"
+
+    base {
+        archivesName = "$mod_id-${project.name}-$minecraft_version"
+    }
+
+    java {
+        withSourcesJar()
+        toolchain.languageVersion = JavaLanguageVersion.of(17)
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    loom {
+        silentMojangMappingsLicense()
+    }
+
+    repositories {
+        mavenCentral()
+
+        // ModMaven — mirrors many common Mavens
+        maven { url = "https://modmaven.dev" }
+        // CurseMaven
+        maven { url = "https://beta.cursemaven.com" }
+
+        // Architectury API, REI
+        maven { url = "https://maven.architectury.dev/" }
+        // Forge
+        maven { url = "https://maven.minecraftforge.net/" }
+        // EMI
+        maven { url = "https://maven.terraformersmc.com/" }
+        // GeckoLib
+        maven { url = "https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/" }
+        // Parchment
+        maven { url = "https://maven.parchmentmc.org" }
+        // Forge Config API Port
+        maven { url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/" }
+        // JEI
+        maven { url = "https://maven.blamejared.com" }
+    }
+
+    dependencies {
+        minecraft "com.mojang:minecraft:${project.minecraft_version}"
+        mappings loom.officialMojangMappings()
+
+        // Auto Services
+        compileOnly "com.google.auto.service:auto-service:$autoServiceVersion"
+        annotationProcessor "com.google.auto.service:auto-service:$autoServiceVersion"
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = "UTF-8"
+        options.release = 17
+    }
+
+    tasks.withType(AbstractCopyTask).configureEach {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                artifactId = base.archivesName.get()
+                from components.java
+            }
+        }
+        repositories {
+            maven {
+                url System.getenv("local_maven_url") ?: "$buildDir/repo"
+            }
+        }
+    }
+}

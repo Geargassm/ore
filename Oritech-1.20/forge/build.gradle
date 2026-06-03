@@ -1,0 +1,103 @@
+plugins {
+    id "com.github.johnrengelman.shadow" version "8.1.1"
+}
+
+architectury {
+    platformSetupLoomIde()
+    forge()
+}
+
+loom {
+    forge {
+        mixinConfig "oritech.mixins.json"
+        mixinConfig "oritech_forge.mixins.json"
+    }
+    runs {
+        client {
+            programArgs "--username", "Dev"
+        }
+    }
+}
+
+configurations {
+    common
+    shadowCommon
+    compileClasspath.extendsFrom common
+    runtimeClasspath.extendsFrom common
+    developmentForge.extendsFrom common
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDir(file("src/main/generated"))
+            exclude("**/.cache")
+        }
+    }
+    data {
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+    }
+}
+
+dependencies {
+    forge "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+
+    modImplementation "dev.architectury:architectury-forge:${architectury_version}+${minecraft_version}"
+
+    // GeckoLib (Forge)
+    modImplementation "software.bernie.geckolib:geckolib-forge-${minecraft_version}:${geckolib_version}"
+
+    // Recipe viewer implementation
+    switch (recipe_viewer) {
+        case "emi":
+            modRuntimeOnly "dev.emi:emi-forge:${emi_version}"
+            modCompileOnly "dev.emi:emi-forge:${emi_version}"
+            break
+        case "rei":
+            modImplementation "me.shedaniel:RoughlyEnoughItems-forge:${rei_version}"
+            break
+        case "jei":
+            modImplementation "mezz.jei:jei-${minecraft_version}-forge:${jei_version}"
+            break
+    }
+
+    common(project(path: ":common", configuration: "namedElements")) { transitive = false }
+    shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
+}
+
+processResources {
+    from(project(":common").sourceSets.main.resources)
+    inputs.property "version", project.version
+    filesMatching(["META-INF/mods.toml"]) {
+        expand version: version
+    }
+}
+
+shadowJar {
+    exclude "fabric.mod.json"
+    configurations = [project.configurations.shadowCommon]
+    archiveClassifier = "dev-shadow"
+}
+
+remapJar {
+    input.set shadowJar.archiveFile
+    dependsOn shadowJar
+    archiveClassifier = null
+}
+
+jar {
+    archiveClassifier = "dev"
+}
+
+sourcesJar {
+    def commonSources = project(":common").sourcesJar
+    dependsOn commonSources
+    from commonSources.archiveFile.map { zipTree(it) }
+}
+
+components.java {
+    withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
+        skip()
+    }
+}
